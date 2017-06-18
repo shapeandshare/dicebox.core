@@ -14,6 +14,7 @@ from keras.callbacks import ModelCheckpoint
 import logging
 import numpy
 from lib import mnist_config as config
+from lib import dicebox_config
 from lib import filesystem_connecter as fsc
 
 # Helper: Early stopping.
@@ -90,6 +91,48 @@ def get_mnist_filesystem():
 
 
     test_image_data, test_image_labels = fsc.get_batch(config.DATA_DIRECTORY, network_input_index,
+                                             test_batch_size, category_map, noise=noise)
+    test_image_data = numpy.array(test_image_data)
+    test_image_data = test_image_data.astype('float32')
+    test_image_data /= 255
+    test_image_labels = numpy.array(test_image_labels)
+
+    logging.info("nb_classes: (%i)" % nb_classes)
+    logging.info("batch_size: (%i)" % batch_size)
+    logging.info("input_shape: (%s)" % input_shape)
+    logging.info("network_input_index: (%s)" % network_input_index)
+    logging.info("category_map: (%s)" % category_map)
+
+    #
+    #return (nb_classes, batch_size, input_shape, x_test, y_test)
+    #return (nb_classes, batch_size, input_shape, image_data, image_labels)
+    x_train = train_image_data
+    x_test = test_image_data
+    y_train = train_image_labels
+    y_test = test_image_labels
+    return (nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test)
+
+def get_dicebox_filesystem():
+    nb_classes = 5
+    batch_size = 1000
+    input_shape = (3000,)
+
+    noise = 1.0
+    train_batch_size = 5000
+    test_batch_size = 1000
+
+    network_input_index = fsc.get_data_set(dicebox_config.DATA_DIRECTORY)
+    category_map = fsc.get_data_set_categories(network_input_index)
+
+    train_image_data, train_image_labels = fsc.get_batch(dicebox_config.DATA_DIRECTORY, network_input_index,
+                                                       train_batch_size, category_map, noise=noise)
+    train_image_data = numpy.array(train_image_data)
+    train_image_data = train_image_data.astype('float32')
+    train_image_data /= 255
+    train_image_labels = numpy.array(train_image_labels)
+
+
+    test_image_data, test_image_labels = fsc.get_batch(dicebox_config.DATA_DIRECTORY, network_input_index,
                                              test_batch_size, category_map, noise=noise)
     test_image_data = numpy.array(test_image_data)
     test_image_data = test_image_data.astype('float32')
@@ -213,6 +256,10 @@ def train_and_score(network, dataset):
     elif dataset == 'mnist':
         nb_classes, batch_size, input_shape, x_train, \
             x_test, y_train, y_test = get_mnist_filesystem()
+    elif dataset == 'dicebox':
+        nb_classes, batch_size, input_shape, x_train, \
+            x_test, y_train, y_test = get_dicebox_filesystem()
+
 
     model = compile_model(network, nb_classes, input_shape)
 
