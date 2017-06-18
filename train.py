@@ -74,9 +74,9 @@ def get_mnist_filesystem():
     batch_size = 128
     input_shape = (784,)
 
-    noise = 0.0
-    train_batch_size = 6000
-    test_batch_size = 1000
+    noise = 1.0
+    train_batch_size = 60000
+    test_batch_size = 10000
 
     network_input_index = fsc.get_data_set(config.DATA_DIRECTORY)
     category_map = fsc.get_data_set_categories(network_input_index)
