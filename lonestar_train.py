@@ -8,7 +8,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
     level=logging.DEBUG,
-    filename='lonestar.log'
+    filename='lonestar_train.log'
 )
 
 def train_networks(networks, dataset):
