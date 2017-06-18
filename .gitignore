@@ -4,4 +4,6 @@ datasets/
 *.gz
 .idea/
 *.hdf5
+*.log
+
 

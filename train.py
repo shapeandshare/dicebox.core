@@ -99,6 +99,9 @@ def get_mnist_filesystem():
     logging.info("nb_classes: (%i)" % nb_classes)
     logging.info("batch_size: (%i)" % batch_size)
     logging.info("input_shape: (%s)" % input_shape)
+    logging.info("network_input_index: (%s)" % network_input_index)
+    logging.info("category_map: (%s)" % category_map)
+
     #
     #return (nb_classes, batch_size, input_shape, x_test, y_test)
     #return (nb_classes, batch_size, input_shape, image_data, image_labels)
