@@ -8,6 +8,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
     level=logging.DEBUG,
+    filemode='w',
     filename='lonestar_score.log'
 )
 
@@ -21,7 +22,8 @@ def train_networks(networks, dataset):
     pbar = tqdm(total=len(networks))
     for network in networks:
         # network.load_n_score(dataset)
-        network.load_n_score_single(dataset)
+        #network.load_n_score_single(dataset)
+        return network.load_n_predict_single(dataset)
         pbar.update(1)
     pbar.close()
 
@@ -69,14 +71,15 @@ def main():
     networks = optimizer.create_lonestar(population)
 
     # Train and get accuracy for networks.
-    train_networks(networks, dataset)
+    prediction = train_networks(networks, dataset)
+    logging.info("prediction class: (%s)" % prediction)
 
     # Get the average accuracy for this generation.
-    average_accuracy = get_average_accuracy(networks)
+    #average_accuracy = get_average_accuracy(networks)
 
     # Print out the average accuracy each generation.
-    logging.info("Generation average: %.2f%%" % (average_accuracy * 100))
-    logging.info('-'*80)
+    #logging.info("Generation average: %.2f%%" % (average_accuracy * 100))
+    #logging.info('-'*80)
 
     # Sort our final population.
     #networks = sorted(networks, key=lambda x: x.accuracy, reverse=True)
