@@ -20,7 +20,8 @@ def train_networks(networks, dataset):
     """
     pbar = tqdm(total=len(networks))
     for network in networks:
-        network.load_n_score(dataset)
+        # network.load_n_score(dataset)
+        network.load_n_score_single(dataset)
         pbar.update(1)
     pbar.close()
 
@@ -78,10 +79,10 @@ def main():
     logging.info('-'*80)
 
     # Sort our final population.
-    networks = sorted(networks, key=lambda x: x.accuracy, reverse=True)
+    #networks = sorted(networks, key=lambda x: x.accuracy, reverse=True)
 
     # Print out the top 5 networks.
-    print_networks(networks[:1])
+    #print_networks(networks[:1])
 
 if __name__ == '__main__':
     main()
