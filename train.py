@@ -71,7 +71,7 @@ def get_mnist():
 
 def get_mnist_filesystem():
     nb_classes = 10
-    batch_size = 128
+    batch_size = 1000
     input_shape = (784,)
 
     noise = 1.0
