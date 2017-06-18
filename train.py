@@ -111,8 +111,6 @@ def get_mnist_filesystem():
     y_test = test_image_labels
     return (nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test)
 
-
-
 def get_mnist_test():
     """Retrieve the MNIST dataset and process the data."""
     # Set defaults.
@@ -214,7 +212,7 @@ def train_and_score(network, dataset):
             x_test, y_train, y_test = get_cifar10()
     elif dataset == 'mnist':
         nb_classes, batch_size, input_shape, x_train, \
-            x_test, y_train, y_test = get_mnist()
+            x_test, y_train, y_test = get_mnist_filesystem()
 
     model = compile_model(network, nb_classes, input_shape)
 
@@ -274,7 +272,7 @@ def load_and_score(network, dataset):
             x_test, y_train, y_test = get_cifar10()
     elif dataset == 'mnist':
         nb_classes, batch_size, input_shape, x_train, \
-            x_test, y_train, y_test = get_mnist()
+            x_test, y_train, y_test = get_mnist_filesystem()
 
     model = compile_model(network, nb_classes, input_shape)
 
@@ -306,4 +304,28 @@ def load_and_score_single(network, dataset):
 
     score = model.evaluate(x_test, y_test, verbose=0)
 
+    model_prediction = model.predict_classes(x_test, batch_size=1, verbose=1)
+    logging.info("model_prection")
+    logging.info(model_prediction)
+
     return score[1]  # 1 is accuracy. 0 is loss.
+
+def load_and_predict_single(network, dataset):
+    if dataset == 'cifar10':
+        nb_classes, batch_size, input_shape, _, \
+            x_test, _, y_test = get_cifar10()
+    elif dataset == 'mnist':
+        nb_classes, batch_size, input_shape, x_test, y_test = get_mnist_test()
+
+    model = compile_model(network, nb_classes, input_shape)
+
+    # load weights
+    model.load_weights("weights.best.hdf5")
+
+    score = model.evaluate(x_test, y_test, verbose=0)
+
+    model_prediction = model.predict_classes(x_test, batch_size=1, verbose=1)
+    logging.info("model_prection")
+    logging.info(model_prediction)
+
+    return model_prediction

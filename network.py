@@ -5,6 +5,7 @@ from train import train_and_score
 from train import train_and_score_and_save
 from train import load_and_score
 from train import load_and_score_single
+from train import load_and_predict_single
 
 class Network():
     """Represent a network and let us operate on it.
@@ -67,6 +68,9 @@ class Network():
 
     def load_n_score_single(self, dataset):
         self.accuracy = load_and_score_single(self.network, dataset)
+
+    def load_n_predict_single(self, dataset):
+        return load_and_predict_single(self.network, dataset)
 
     def print_network(self):
         """Print out a network."""
