@@ -1,2 +1,1 @@
-# com.shapeandshare.dicebox
-Dicebox
+# dicebox
