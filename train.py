@@ -260,7 +260,6 @@ def train_and_score(network, dataset):
         nb_classes, batch_size, input_shape, x_train, \
             x_test, y_train, y_test = get_dicebox_filesystem()
 
-
     model = compile_model(network, nb_classes, input_shape)
 
     ## add some logging
@@ -278,6 +277,7 @@ def train_and_score(network, dataset):
 
     return score[1]  # 1 is accuracy. 0 is loss.
 
+
 def train_and_score_and_save(network, dataset):
     """Train the model, return test loss.
 
@@ -288,10 +288,13 @@ def train_and_score_and_save(network, dataset):
     """
     if dataset == 'cifar10':
         nb_classes, batch_size, input_shape, x_train, \
-            x_test, y_train, y_test = get_cifar10()
+        x_test, y_train, y_test = get_cifar10()
     elif dataset == 'mnist':
         nb_classes, batch_size, input_shape, x_train, \
-            x_test, y_train, y_test = get_mnist_filesystem()
+        x_test, y_train, y_test = get_mnist_filesystem()
+    elif dataset == 'dicebox':
+        nb_classes, batch_size, input_shape, x_train, \
+        x_test, y_train, y_test = get_dicebox_filesystem()
 
     model = compile_model(network, nb_classes, input_shape)
 
