@@ -142,7 +142,7 @@ def get_dicebox_filesystem():
     logging.info("nb_classes: (%i)" % nb_classes)
     logging.info("batch_size: (%i)" % batch_size)
     logging.info("input_shape: (%s)" % input_shape)
-    logging.info("network_input_index: (%s)" % network_input_index)
+    logging.debug("network_input_index: (%s)" % network_input_index)
     logging.info("category_map: (%s)" % category_map)
 
     #
@@ -175,7 +175,7 @@ def get_dicebox_filesystem_test():
     logging.info("nb_classes: (%i)" % nb_classes)
     logging.info("batch_size: (%i)" % batch_size)
     logging.info("input_shape: (%s)" % input_shape)
-    logging.info("network_input_index: (%s)" % network_input_index)
+    logging.debug("network_input_index: (%s)" % network_input_index)
     logging.info("category_map: (%s)" % category_map)
 
     #
