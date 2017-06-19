@@ -33,12 +33,22 @@ class Network():
             self.network[key] = random.choice(self.nn_param_choices[key])
 
     def create_lonestar(self):
+
+        # mnist
         # Lonestar /mnist approx 98.6% acc
         # {'nb_layers': 2, 'activation': 'relu', 'optimizer': 'adagrad', 'nb_neurons': 1597}
-        self.network['nb_layers'] = 2
-        self.network['activation'] = 'relu'
-        self.network['optimizer'] = 'adagrad'
-        self.network['nb_neurons'] = 1597
+        # self.network['nb_layers'] = 2
+        # self.network['activation'] = 'relu'
+        # self.network['optimizer'] = 'adagrad'
+        # self.network['nb_neurons'] = 1597
+
+        # dicebox 60x50
+        # Network accuracy: 80.50%
+        # {'nb_layers': 1, 'activation': 'sigmoid', 'optimizer': 'adamax', 'nb_neurons': 55}
+        self.network['nb_layers'] = 1
+        self.network['activation'] = 'sigmoid'
+        self.network['optimizer'] = 'adamax'
+        self.network['nb_neurons'] = 55
 
     def create_set(self, network):
         """Set network properties.
