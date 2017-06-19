@@ -57,7 +57,7 @@ def print_networks(networks):
 def main():
     """Evolve a network."""
     population = 1  # Number of networks in each generation.
-    dataset = 'mnist'
+    dataset = 'dicebox'
 
     nn_param_choices = {
         'nb_neurons': [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],
