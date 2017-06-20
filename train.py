@@ -160,8 +160,6 @@ def get_dicebox_filesystem_test():
     input_shape = (3000,)
 
     noise = 0.0
-    test_batch_size = 1000
-
     network_input_index = fsc.get_data_set(dicebox_config.DATA_DIRECTORY)
     category_map = fsc.get_data_set_categories(network_input_index)
 
@@ -175,7 +173,7 @@ def get_dicebox_filesystem_test():
     logging.info("nb_classes: (%i)" % nb_classes)
     logging.info("batch_size: (%i)" % batch_size)
     logging.info("input_shape: (%s)" % input_shape)
-    logging.debug("network_input_index: (%s)" % network_input_index)
+    # logging.debug("network_input_index: (%s)" % network_input_index)
     logging.info("category_map: (%s)" % category_map)
 
     #
