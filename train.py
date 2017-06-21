@@ -181,6 +181,8 @@ def get_dicebox_filesystem_test():
     #return (nb_classes, batch_size, input_shape, image_data, image_labels)
     x_test = test_image_data
     y_test = test_image_labels
+    logging.info("x_test: (%s)" % x_test)
+    logging.info("y_test: (%s)" % y_test)
     return (nb_classes, batch_size, input_shape, x_test, y_test)
 
 def get_mnist_test():

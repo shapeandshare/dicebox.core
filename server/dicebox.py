@@ -19,28 +19,13 @@ VERSION = '0.1.0'
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
-    level=logging.DEBUG,
+    level=logging.INFO,
     filemode='w',
     filename='dicebox_server.log'
 )
 
 # Allow us to load it up in tensorboard
 # file_writer = tf.summary.FileWriter('./logs', sess.graph)
-
-population = 1  # Number of networks in each generation.
-dataset = 'dicebox'
-
-nn_param_choices = {
-    'nb_neurons': [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],
-    'nb_layers': [1, 2, 3, 5, 8, 13, 21],
-    'activation': ['relu', 'elu', 'tanh', 'sigmoid'],
-    'optimizer': ['rmsprop', 'adam', 'sgd', 'adagrad',
-                  'adadelta', 'adamax', 'nadam'],
-}
-
-optimizer = Optimizer(nn_param_choices)
-networks = optimizer.create_lonestar(population)
-
 
 def process_image(image_data):
     # ugh dump to file for the time being
@@ -67,38 +52,45 @@ def process_image(image_data):
     return data
 
 
-def train_networks(networks, dataset):
-    """Train each network.
-
-    Args:
-        networks (list): Current population of networks
-        dataset (str): Dataset to use for training/evaluating
-    """
-    #pbar = tqdm(total=len(networks))
-    for network in networks:
-        # network.load_n_score(dataset)
-        #network.load_n_score_single(dataset)
-        return network.load_n_predict_single(dataset)
-        #pbar.update(1)
-    #pbar.close()
-
 def get_prediction(image_data):
+    population = 1  # Number of networks in each generation.
+    dataset = 'dicebox_raw'
+
+    nn_param_choices = {
+        'nb_neurons': [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],
+        'nb_layers': [1, 2, 3, 5, 8, 13, 21],
+        'activation': ['relu', 'elu', 'tanh', 'sigmoid'],
+        'optimizer': ['rmsprop', 'adam', 'sgd', 'adagrad',
+                      'adadelta', 'adamax', 'nadam'],
+    }
+
+    optimizer = Optimizer(nn_param_choices)
+    networks = optimizer.create_lonestar(population)
+
+
+
     try:
         #network_input = process_image(image_data)
         #prepared_input = [ network_input ]
         #network_output = sess.run(cnn.network_output, feed_dict={cnn.x: prepared_input, cnn.keep_prob: 1.0})
         #output = network_output[0].tolist()
         #return output
-        logging.info('get_prediction placeholder called..')
+        #logging.info('get_prediction placeholder called..')
+        #print('get_prediction placeholder called..')
 
         # Train and get accuracy for networks.
         #dataset = numpy.array(image_data)
         #dataset /= 255
-        dataset = image_data
-        logging.info(dataset)
-        prediction = train_networks(networks, dataset)
+
+        #logging.info(image_data)
+        prediction = {}
+        # prediction = train_networks(networks, dataset)
+        for network in networks:
+            prediction = network.load_n_predict_single(dataset, image_data)
+
         logging.info("prediction class: (%s)" % prediction)
-        return prediction
+        print("prediction class: (%s)" % prediction)
+        return prediction[0]
 
     except:
         print("Error making prediction.")
@@ -143,4 +135,4 @@ def not_found(error):
 
 if __name__ == '__main__':
     print('starting flask app')
-    app.run(debug=True,host='0.0.0.0', threaded=True)
+    app.run(debug=True,host='0.0.0.0', threaded=False)
