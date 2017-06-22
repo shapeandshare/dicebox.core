@@ -7,7 +7,7 @@ import numpy
 import math
 from lib import dicebox_config as config  # import our high level configuration
 from lib import filesystem_connecter # inport our file system connector for input
-import tensorflow as tf # for tensorflow
+#import tensorflow as tf # for tensorflow
 import json # for writing category data to file
 import operator
 
@@ -63,7 +63,7 @@ for item in network_input_index:
     headers = {
         'Content-type': 'application/json',
         'API-ACCESS-KEY': '6{t}*At&R;kbgl>Mr"K]=F+`EEe',
-        'API-VERSION': '1.0.0'
+        'API-VERSION': '0.1.0'
     }
 
     try:
@@ -79,38 +79,40 @@ for item in network_input_index:
         print('.')
         #raise
 
-    #print prediction
-    index = 0
-    keyed_prediction = {}
-    for value in prediction:
-        #print("%i, %s" % (index, value))
-        keyed_prediction[index] = value
-        index += 1
-    #print(keyed_prediction)
-    max_item = max(keyed_prediction.iteritems(), key=operator.itemgetter(1))
-    #print(max_item)
+    # print prediction
+    # index = 0
+    # keyed_prediction = {}
+    # for value in prediction:
+    #     #print("%i, %s" % (index, value))
+    #     keyed_prediction[index] = value
+    #     index += 1
+    # #print(keyed_prediction)
+    # max_item = max(keyed_prediction.iteritems(), key=operator.itemgetter(1))
+    # #print(max_item)
+    #
+    # raw_index = int(max_item[0])
+    # raw_value = float(max_item[1])
+    # #print("(%i)(%f)" % (raw_index, raw_value))
+    #
+    # for key, value in server_category_map.iteritems():
+    #     if value == raw_index:
+    #         #print(key)
+    #         readable_category = key
+    #         readable_index = value
+    #
+    # print(readable_category)
+    # print(metadata[1])
 
-    raw_index = int(max_item[0])
-    raw_value = float(max_item[1])
-    #print("(%i)(%f)" % (raw_index, raw_value))
 
-    for key, value in server_category_map.iteritems():
-        if value == raw_index:
-            #print(key)
-            readable_category = key
-            readable_index = value
-
-    print(readable_category)
-    print(metadata[1])
-#    if raw_index == int(metadata[1]):
-    if readable_category == metadata[1]:
+    if int(prediction) == int(metadata[1]):
+    #if readable_category == metadata[1]:
         print('correct!')
         summary_success += 1
     else:
         print('FAIL')
         summary_fail += 1
 
-    if count > 10:
+    if count > 100:
         count += 1
         break
     else:

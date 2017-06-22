@@ -79,8 +79,8 @@ class Network():
     def load_n_score_single(self, dataset):
         self.accuracy = load_and_score_single(self.network, dataset)
 
-    def load_n_predict_single(self, dataset):
-        return load_and_predict_single(self.network, dataset)
+    def load_n_predict_single(self, dataset, network_input):
+        return load_and_predict_single(self.network, dataset, network_input)
 
     def print_network(self):
         """Print out a network."""

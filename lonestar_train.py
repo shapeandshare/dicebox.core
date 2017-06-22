@@ -7,7 +7,8 @@ from tqdm import tqdm
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
-    level=logging.DEBUG,
+    level=logging.INFO,
+    filemode='w',
     filename='lonestar_train.log'
 )
 
@@ -54,7 +55,7 @@ def print_networks(networks):
 def main():
     """Evolve a network."""
     population = 1  # Number of networks in each generation.
-    dataset = 'mnist'
+    dataset = 'dicebox'
 
     nn_param_choices = {
         'nb_neurons': [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],

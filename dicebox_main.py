@@ -7,8 +7,9 @@ from tqdm import tqdm
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
-    level=logging.DEBUG,
-    filename='main.log.txt'
+    level=logging.INFO,
+    filemode='w',
+    filename='dicebox_main.dicebox.log'
 )
 
 def train_networks(networks, dataset):
@@ -102,7 +103,7 @@ def main():
     """Evolve a network."""
     generations = 100  # Number of times to evole the population.
     population = 50  # Number of networks in each generation.
-    dataset = 'mnist'
+    dataset = 'dicebox'
 
 #        'nb_neurons': [64, 128, 256, 512, 768, 1024],
 #         'nb_layers': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
