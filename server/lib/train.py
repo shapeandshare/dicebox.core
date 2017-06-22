@@ -440,3 +440,14 @@ def load_and_predict_single(network, dataset, network_input):
     logging.info(model_prediction)
 
     return model_prediction
+
+def initialize_model(network, dataset):
+    if dataset == 'dicebox_raw':
+        nb_classes = 5
+        input_shape = (3000,)
+        model = compile_model(network, nb_classes, input_shape)
+
+        # load weights
+        model.load_weights("weights.best.hdf5")
+
+        return model
