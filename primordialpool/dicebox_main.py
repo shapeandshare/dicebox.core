@@ -58,6 +58,10 @@ def generate(generations, population, nn_param_choices, dataset):
     for i in range(generations):
         logging.info("***Doing generation %d of %d***" %
                      (i + 1, generations))
+        logging.info('-'*80)
+        logging.info('Individuals in current generation')
+        print_networks(networks)
+        logging.info('-' * 80)
 
         # Train and get accuracy for networks.
         train_networks(networks, dataset)
