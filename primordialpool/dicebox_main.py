@@ -1,6 +1,6 @@
 """Entry point to evolving the neural network. Start here."""
 import logging
-from optimizer import Optimizer
+from lib.optimizer import Optimizer
 from tqdm import tqdm
 
 # Setup logging.
