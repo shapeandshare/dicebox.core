@@ -199,12 +199,12 @@ class Network():
 
     def get_dicebox_filesystem(self):
         nb_classes = 5
-        batch_size = 1000
+        batch_size = 6000
         input_shape = (3000,)
 
-        noise = 1.0
-        train_batch_size = 5000
-        test_batch_size = 1000
+        noise = 0.5
+        train_batch_size = 6000
+        test_batch_size = 2000
 
         train_image_data, train_image_labels = Network.fsc.get_batch(train_batch_size, noise=noise)
         train_image_data = numpy.array(train_image_data)

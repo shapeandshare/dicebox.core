@@ -185,8 +185,8 @@ class FileSystemConnector():
 
         if FileSystemConnector.CATEGORY_MAP is None:
             FileSystemConnector.CATEGORY_MAP = FileSystemConnector.get_data_set_categories(self)
-            logging.info('CATEGORY_MAP')
-            logging.info(FileSystemConnector.CATEGORY_MAP)
+            logging.debug('CATEGORY_MAP')
+            logging.debug(FileSystemConnector.CATEGORY_MAP)
 
 
     def get_batch_list(self, batch_size):
@@ -195,12 +195,41 @@ class FileSystemConnector():
         #logging.info("data set size: (%i)" % set_size)
         value_list = FileSystemConnector.DATASET_INDEX.values()
         #logging.info("value list: (%s)" % value_list)
-        for i in range (0, batch_size):
-            # get random index
-            index = int(round((float(ord(struct.unpack('c', os.urandom(1))[0])) / 255) * (set_size - 1)))
-            #logging.info("random index: (%i)" % index)
-            output.append(value_list[index])
-        #logging.info(output)
+        # for i in range (0, batch_size):
+        #     # get random index
+        #     index = int(round((float(ord(struct.unpack('c', os.urandom(1))[0])) / 255) * (set_size - 1)))
+        #     #logging.info("random index: (%i)" % index)
+        #     output.append(value_list[index])
+        # #logging.info(output)
+
+        #logging.info('building set indices')
+        set_indices = []
+        for i in range(1, set_size):
+            set_indices.append(i)
+        #logging.info(set_indices)
+        #logging.info('building batch list ..')
+        output_list = []
+        while len(output_list) < batch_size:
+            index = int(round((float(ord(struct.unpack('c', os.urandom(1))[0])) / 255) * (len(set_indices) - 1)))
+            #if index not in output_list:
+            #logging.info("index: %i" % index)
+            #logging.info("set_indices[index]: %i" % set_indices[index])
+            output_list.append(set_indices[index])
+            set_indices.remove(set_indices[index])
+            #logging.info("total: %i" % (len(output_list)))
+
+        #logging.info("output_list: (%s)" % output_list)
+
+        for i in output_list:
+            #logging.info("%i of %i" % (i, len(output_list)))
+            output.append(value_list[i])
+
+        #while len(output) < batch_size:
+        #    index = int(round((float(ord(struct.unpack('c', os.urandom(1))[0])) / 255) * (set_size - 1)))
+        #    if value_list[index] not in output:
+        #        output.append(value_list[index])
+
+        #logging.info("batch: (%s)" % output)
         return output
 
 
@@ -226,7 +255,8 @@ class FileSystemConnector():
 
             # use pixel cache if possible
             # [k,v] (filename, pixeldata)
-            if FileSystemConnector.PIXEL_CACHE.has_key(filename):
+            if FileSystemConnector.PIXEL_CACHE.has_key(filename) and self.lucky(noise):
+                # and self.lucky(noise):
                 # found in cache
                 pixel_data = FileSystemConnector.PIXEL_CACHE[filename]
                 logging.debug("loaded cached pixel data for (%s)" % filename)
@@ -238,6 +268,11 @@ class FileSystemConnector():
             image_data.append(pixel_data)
         return [image_data, image_labels]
 
+    def lucky(self, noise=0.0):
+        if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
+            logging.debug('luck bestowed')
+            return True
+        return False
 
     def process_image(self, filename, noise=0):
         pixel_data = array('B')
