@@ -202,7 +202,7 @@ class Network():
         batch_size = 6000
         input_shape = (3000,)
 
-        noise = 0.5
+        noise = 0.9
         train_batch_size = 6000
         test_batch_size = 2000
 
