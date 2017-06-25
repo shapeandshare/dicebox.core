@@ -19,7 +19,7 @@ from keras.callbacks import EarlyStopping
 from keras.callbacks import ModelCheckpoint
 import logging
 import numpy
-import dicebox_config
+import dicebox_config as config
 import filesystem_connecter
 from datetime import datetime
 import os
@@ -50,7 +50,7 @@ class Network():
 
         if Network.fsc is None:
             #logging.debug('creating a new fsc..')
-            Network.fsc = filesystem_connecter.FileSystemConnector(dicebox_config.DATA_DIRECTORY)
+            Network.fsc = filesystem_connecter.FileSystemConnector(config.DATA_DIRECTORY)
 
 
     def create_random(self):
@@ -198,13 +198,13 @@ class Network():
 
 
     def get_dicebox_filesystem(self):
-        nb_classes = 5
-        batch_size = 6000
-        input_shape = (3000,)
 
-        noise = 0.9
-        train_batch_size = 6000
-        test_batch_size = 2000
+        nb_classes = config.NB_CLASSES
+        batch_size = config.BATCH_SIZE
+        input_shape = config.INPUT_SHAPE
+        noise = config.NOISE
+        train_batch_size = config.TRAIN_BATCH_SIZE
+        test_batch_size = config.TEST_BATCH_SIZE
 
         train_image_data, train_image_labels = Network.fsc.get_batch(train_batch_size, noise=noise)
         train_image_data = numpy.array(train_image_data)

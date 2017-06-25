@@ -2,6 +2,7 @@
 import logging
 from lib.optimizer import Optimizer
 from tqdm import tqdm
+import lib.dicebox_config as config
 
 # Setup logging.
 logging.basicConfig(
@@ -104,20 +105,10 @@ def print_networks(networks):
         network.print_network()
 
 def main():
-    """Evolve a network."""
-    generations = 100  # Number of times to evole the population.
-    population = 50  # Number of networks in each generation.
-    dataset = 'dicebox'
-
-#        'nb_neurons': [64, 128, 256, 512, 768, 1024],
-#         'nb_layers': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-    nn_param_choices = {
-        'nb_neurons': [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],
-        'nb_layers': [1, 2, 3, 5, 8, 13, 21],
-        'activation': ['relu', 'elu', 'tanh', 'sigmoid'],
-        'optimizer': ['rmsprop', 'adam', 'sgd', 'adagrad',
-                      'adadelta', 'adamax', 'nadam'],
-    }
+    generations = config.GENERATIONS
+    population = config.POPULATION
+    dataset = config.DATASET
+    nn_param_choices = config.NN_PARAM_CHOICES
 
     logging.info("***Evolving %d generations with population %d***" %
                  (generations, population))
