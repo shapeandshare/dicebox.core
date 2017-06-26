@@ -8,9 +8,9 @@ import lib.dicebox_config as config
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
-    level=logging.INFO,
+    level=logging.DEBUG,
     filemode='w',
-    filename='dicebox_main.dicebox.log'
+    filename='primordialpool.log'
 )
 
 def train_networks(networks, dataset):
