@@ -285,3 +285,6 @@ class Network():
         score = self.model.evaluate(x_test, y_test, verbose=1)
 
         return score[1]  # 1 is accuracy. 0 is loss.
+
+    def save_model(self, filename):
+        self.model.save(filename)
