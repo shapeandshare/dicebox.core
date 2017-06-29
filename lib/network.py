@@ -25,7 +25,7 @@ from datetime import datetime
 import os
 
 # Helper: Early stopping.
-early_stopper = EarlyStopping(patience=5)
+early_stopper = EarlyStopping(patience=25)
 
 # Checkpoint
 filepath = "weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
@@ -78,10 +78,19 @@ class Network():
         # dicebox 60x50
         # Network accuracy: 80.50%
         # {'nb_layers': 1, 'activation': 'sigmoid', 'optimizer': 'adamax', 'nb_neurons': 55}
-        self.network['nb_layers'] = 1
+        # self.network['nb_layers'] = 1
+        # self.network['activation'] = 'sigmoid'
+        # self.network['optimizer'] = 'adamax'
+        # self.network['nb_neurons'] = 55
+
+        # dicebox_60x50
+        # {'nb_layers': 2, 'activation': 'sigmoid', 'optimizer': 'adamax', 'nb_neurons': 610}
+        # Network accuracy: 92.20 %
+        self.network['nb_layers'] = 2
         self.network['activation'] = 'sigmoid'
         self.network['optimizer'] = 'adamax'
-        self.network['nb_neurons'] = 55
+        self.network['nb_neurons'] = 610
+
 
     def create_set(self, network):
         """Set network properties.
