@@ -27,6 +27,13 @@ import os
 # Helper: Early stopping.
 early_stopper = EarlyStopping(patience=5)
 
+# Checkpoint
+filepath = "weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
+checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+
+callbacks_list = [early_stopper, checkpoint]
+
+
 class Network():
     """Represent a network and let us operate on it.
 
@@ -95,9 +102,9 @@ class Network():
         if self.accuracy == 0.:
             self.accuracy = self.train_and_score(self.network, dataset)
 
-    # def train_and_save(self, dataset):
-    #     if self.accuracy == 0.:
-    #         self.accuracy = train_and_score_and_save(self.network, dataset)
+    def train_and_save(self, dataset):
+    #    if self.accuracy == 0.:
+        self.accuracy = self.train_and_score_and_save(dataset)
 
     # def load_n_score(self, dataset):
     #     self.accuracy = load_and_score(self.network, dataset)
@@ -230,3 +237,41 @@ class Network():
         y_train = train_image_labels
         y_test = test_image_labels
         return (nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test)
+
+
+    def train_and_score_and_save(self, dataset):
+        """Train the model, return test loss.
+
+        Args:
+            network (dict): the parameters of the network
+            dataset (str): Dataset to use for training/evaluating
+
+        """
+        #if dataset == 'cifar10':
+        #    nb_classes, batch_size, input_shape, x_train, \
+        #    x_test, y_train, y_test = get_cifar10()
+        #elif dataset == 'mnist':
+        #    nb_classes, batch_size, input_shape, x_train, \
+        #    x_test, y_train, y_test = get_mnist_filesystem()
+        #el
+
+        if dataset == 'dicebox':
+            nb_classes, batch_size, input_shape, x_train, \
+            x_test, y_train, y_test = self.get_dicebox_filesystem()
+        else:
+            # no support yet!
+            logging.error('UNSUPPORTED dataset supplied to train_and_score_and_save')
+            raise
+
+        model = self.compile_model(self.network, nb_classes, input_shape)
+
+        model.fit(x_train, y_train,
+                  batch_size=batch_size,
+                  epochs=10000,  # using early stopping, so no real limit
+                  verbose=1,
+                  validation_data=(x_test, y_test),
+                  callbacks=callbacks_list)
+
+        score = model.evaluate(x_test, y_test, verbose=0)
+
+        return score[1]  # 1 is accuracy. 0 is loss.
