@@ -12,7 +12,7 @@ DATA_DIRECTORY = "%s/%s/data/" % (DATA_BASE_DIRECTORY, NETWORK_NAME)
 #TENSORBOARD_LOGGING = False
 
 
-
+EPOCHS = 100
 GENERATIONS = 100  # Number of times to evole the population.
 POPULATION = 50  # Number of networks in each generation.
 DATASET = 'dicebox'

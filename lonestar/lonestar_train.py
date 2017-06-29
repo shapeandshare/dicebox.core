@@ -17,9 +17,13 @@ def main():
 
     network = Network(nn_param_choices)
     network.create_lonestar()
-    network.train_and_save(dataset)
+    i = 1
+    while i <= config.EPOCHS:
+        logging.info("epoch (%i of %i)" % (i, config.EPOCHS))
+        network.train_and_save(dataset)
+        i += 1
 
-    logging.info("Generation average: %.2f%%" % (network.accuracy * 100))
+    logging.info("network accuracy: %.2f%%" % (network.accuracy * 100))
     logging.info('-'*80)
     network.print_network()
 

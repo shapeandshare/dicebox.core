@@ -54,11 +54,11 @@ class Network():
         self.accuracy = 0.
         self.nn_param_choices = nn_param_choices
         self.network = {}  # (dic): represents MLP network parameters
+        self.model = None
 
         if Network.fsc is None:
             #logging.debug('creating a new fsc..')
             Network.fsc = filesystem_connecter.FileSystemConnector(config.DATA_DIRECTORY)
-
 
     def create_random(self):
         """Create a random network."""
@@ -272,15 +272,16 @@ class Network():
             logging.error('UNSUPPORTED dataset supplied to train_and_score_and_save')
             raise
 
-        model = self.compile_model(self.network, nb_classes, input_shape)
+        if self.model is None:
+            self.model = self.compile_model(self.network, nb_classes, input_shape)
 
-        model.fit(x_train, y_train,
-                  batch_size=batch_size,
-                  epochs=10000,  # using early stopping, so no real limit
-                  verbose=1,
-                  validation_data=(x_test, y_test),
-                  callbacks=callbacks_list)
+        self.model.fit(x_train, y_train,
+                       batch_size=batch_size,
+                       epochs=10000,  # using early stopping, so no real limit
+                       verbose=1,
+                       validation_data=(x_test, y_test),
+                       callbacks=callbacks_list)
 
-        score = model.evaluate(x_test, y_test, verbose=0)
+        score = self.model.evaluate(x_test, y_test, verbose=1)
 
         return score[1]  # 1 is accuracy. 0 is loss.
