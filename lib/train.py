@@ -184,33 +184,33 @@ def get_dicebox_filesystem_test():
     y_test = test_image_labels
     return (nb_classes, batch_size, input_shape, x_test, y_test)
 
-def get_dicebox_raw(raw_image_data):
-    nb_classes = 5
-    batch_size = 1
-    input_shape = (3000,)
-
-    # ugh dump to file for the time being
-    filename = "./tmp/%s" % datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png')
-    with open(filename, 'wb') as f:
-        f.write(raw_image_data)
-
-    test_image_data = fsc.process_image(filename)
-
-    os.remove(filename)
-
-    test_image_data = numpy.array(test_image_data)
-    test_image_data = test_image_data.astype('float32')
-    test_image_data /= 255
-
-    #logging.info("nb_classes: (%i)" % nb_classes)
-    #logging.info("batch_size: (%i)" % batch_size)
-    #logging.info("input_shape: (%s)" % input_shape)
-
-    x_test = [test_image_data]
-    x_test = numpy.array(x_test)
-
-    #logging.info("x_test: (%s)" % x_test)
-    return nb_classes, batch_size, input_shape, x_test
+# def get_dicebox_raw(raw_image_data):
+#     nb_classes = 5
+#     batch_size = 1
+#     input_shape = (3000,)
+#
+#     # ugh dump to file for the time being
+#     filename = "./tmp/%s" % datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png')
+#     with open(filename, 'wb') as f:
+#         f.write(raw_image_data)
+#
+#     test_image_data = fsc.process_image(filename)
+#
+#     os.remove(filename)
+#
+#     test_image_data = numpy.array(test_image_data)
+#     test_image_data = test_image_data.astype('float32')
+#     test_image_data /= 255
+#
+#     #logging.info("nb_classes: (%i)" % nb_classes)
+#     #logging.info("batch_size: (%i)" % batch_size)
+#     #logging.info("input_shape: (%s)" % input_shape)
+#
+#     x_test = [test_image_data]
+#     x_test = numpy.array(x_test)
+#
+#     #logging.info("x_test: (%s)" % x_test)
+#     return nb_classes, batch_size, input_shape, x_test
 
 def get_mnist_test():
     """Retrieve the MNIST dataset and process the data."""
@@ -417,29 +417,29 @@ def load_and_score_single(network, dataset):
 
     return score[1]  # 1 is accuracy. 0 is loss.
 
-def load_and_predict_single(network, dataset, network_input):
-    if dataset == 'cifar10':
-        nb_classes, batch_size, input_shape, _, \
-            x_test, _, y_test = get_cifar10()
-    elif dataset == 'mnist':
-        nb_classes, batch_size, input_shape, x_test, y_test = get_mnist_test()
-    elif dataset == 'dicebox':
-        nb_classes, batch_size, input_shape, x_test, y_test = get_dicebox_filesystem_test()
-    elif dataset == 'dicebox_raw':
-        nb_classes, batch_size, input_shape, x_test = get_dicebox_raw(network_input)
-
-    model = compile_model(network, nb_classes, input_shape)
-
-    # load weights
-    model.load_weights("weights.best.hdf5")
-
-    #score = model.evaluate(x_test, y_test, verbose=0)
-
-    model_prediction = model.predict_classes(x_test, batch_size=1, verbose=1)
-    #logging.info("model_prection")
-    logging.info(model_prediction)
-
-    return model_prediction
+# def load_and_predict_single(network, dataset, network_input):
+#     if dataset == 'cifar10':
+#         nb_classes, batch_size, input_shape, _, \
+#             x_test, _, y_test = get_cifar10()
+#     elif dataset == 'mnist':
+#         nb_classes, batch_size, input_shape, x_test, y_test = get_mnist_test()
+#     elif dataset == 'dicebox':
+#         nb_classes, batch_size, input_shape, x_test, y_test = get_dicebox_filesystem_test()
+#     elif dataset == 'dicebox_raw':
+#         nb_classes, batch_size, input_shape, x_test = get_dicebox_raw(network_input)
+#
+#     model = compile_model(network, nb_classes, input_shape)
+#
+#     # load weights
+#     model.load_weights("weights.best.hdf5")
+#
+#     #score = model.evaluate(x_test, y_test, verbose=0)
+#
+#     model_prediction = model.predict_classes(x_test, batch_size=1, verbose=1)
+#     #logging.info("model_prection")
+#     logging.info(model_prediction)
+#
+#     return model_prediction
 
 def initialize_model(network, dataset):
     if dataset == 'dicebox_raw':

@@ -294,7 +294,7 @@ class FileSystemConnector():
             logging.debug("new size: (%i, %i)" % (Im.size[0], Im.size[1]))
 
         # Perform a random scale
-        if float(noise) >= float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
+        if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
             # random_scale = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
             random_scale = 2 * float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
             while (random_scale < 0.9):

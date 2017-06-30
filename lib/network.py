@@ -65,7 +65,7 @@ class Network():
         for key in self.nn_param_choices:
             self.network[key] = random.choice(self.nn_param_choices[key])
 
-    def create_lonestar(self):
+    def create_lonestar(self, create_model=False, weights_filename=None):
 
         # mnist
         # Lonestar /mnist approx 98.6% acc
@@ -90,6 +90,17 @@ class Network():
         self.network['activation'] = 'sigmoid'
         self.network['optimizer'] = 'adamax'
         self.network['nb_neurons'] = 610
+
+        if create_model is True:
+            if self.model is None:
+                logging.info('compiling model')
+                self.model = self.compile_model(self.network, config.NB_CLASSES, config.INPUT_SHAPE)
+            else:
+                logging.info('model already compiled, skipping.')
+
+        if weights_filename is not None:
+            logging.info("loading weights file: (%s)" % weights_filename)
+            self.load_model(weights_filename)
 
 
     def create_set(self, network):
@@ -286,5 +297,80 @@ class Network():
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
+
     def save_model(self, filename):
+        logging.debug('saving model weights to file..')
         self.model.save(filename)
+
+
+    def load_model(self, filename):
+        if self.model is None:
+            logging.error('no model! :(  compile the model first.')
+            raise
+        logging.debug('loading weights file..')
+        self.model.load_weights(filename)
+
+
+    def predict(self, dataset, network_input):
+        # if dataset == 'cifar10':
+        #     nb_classes, batch_size, input_shape, _, \
+        #     x_test, _, y_test = get_cifar10()
+        # elif dataset == 'mnist':
+        #     nb_classes, batch_size, input_shape, x_test, y_test = get_mnist_test()
+        # elif dataset == 'dicebox':
+        #     nb_classes, batch_size, input_shape, x_test, y_test = get_dicebox_filesystem_test()
+        # el
+
+        if dataset == 'dicebox_raw':
+            x_test = self.get_dicebox_raw(network_input)
+        else:
+            logging.error("UNKNOWN DATASET (%s) passed to predict_single" % dataset)
+            raise
+
+        #model = compile_model(network, nb_classes, input_shape)
+        if self.model is None:
+            #self.model = self.compile_model(self.network, nb_classes, input_shape)
+            logging.error('Unable to predict without a model. :(')
+            raise
+
+            # # load weights
+            # if filename is not None:
+            #     self.load_model(filename)
+
+        # load weights
+        #self.model.load_weights("weights.best.hdf5")
+
+        #logging.info(x_test)
+
+        # score = model.evaluate(x_test, y_test, verbose=0)
+
+        model_prediction = self.model.predict_classes(x_test, batch_size=1, verbose=1)
+        # logging.info("model_prection")
+        logging.info(model_prediction)
+
+        return model_prediction
+
+
+    def get_dicebox_raw(self, raw_image_data):
+        # ugh dump to file for the time being
+        filename = "./tmp/%s" % datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png')
+        with open(filename, 'wb') as f:
+            f.write(raw_image_data)
+
+        test_image_data = self.fsc.process_image(filename)
+
+        os.remove(filename)
+
+        test_image_data = numpy.array(test_image_data)
+        test_image_data = test_image_data.astype('float32')
+        test_image_data /= 255
+
+        #logging.info("nb_classes: (%i)" % nb_classes)
+        #logging.info("batch_size: (%i)" % batch_size)
+        #logging.info("input_shape: (%s)" % input_shape)
+
+        x_test = [test_image_data]
+        x_test = numpy.array(x_test)
+
+        #logging.info("x_test: (%s)" % x_test)
+        return x_test
