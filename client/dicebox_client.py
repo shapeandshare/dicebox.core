@@ -42,7 +42,25 @@ def get_image():
     im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     #resized_im = resize_keep_aspect_ratio(im, 255)
 
-    resized_image = cv2.resize(im, (60, 50))
+    height, width = im.shape[:2]
+
+    extra_height = float(height) % 60
+    height_offset = int(extra_height / 2)
+
+    extra_width = float(width) % 50
+    width_offset = int(extra_width / 2)
+
+    # now crop
+    x1 = int(0 + width_offset)
+    y1 = int(0 + height_offset)
+    x2 = int(width - width_offset)
+    y2 = int(height - height_offset)
+    #print("(%i, %i), (%i, %i)" % (y1, y2, x1, x2))
+    cropped_image = im[y1:y2, x1:x2]
+
+
+    resized_image = cv2.resize(cropped_image, (60, 50))
+    # resized_image = cv2.resize(im, (60, 50))
     height, width = resized_image.shape[:2]
 
     height = float(height)
@@ -150,7 +168,7 @@ while (True):
     json_data = json.dumps(outjson)
 
     prediction = {}
-
+    category = {}
     #print ('sending over the wire: %s' % json_data)
     headers = {
         'Content-type': 'application/json',
@@ -167,7 +185,7 @@ while (True):
                 if 'prediction' in response.json():
                     prediction = response.json()['prediction']
                     category = server_category_map[str(prediction)]
-                    #print("%s" % prediction)
+                    print("%s" % prediction)
                     #print("%s" % category)
     except:
         print('.')
