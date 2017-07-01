@@ -70,8 +70,8 @@ for item in network_input_index:
 
     try:
         #response = requests.post('https://dicebox.shapeandshare.com/api/prediction', data=json_data, headers=headers)
-        #response = requests.post('http://172.16.0.79:5000/api/prediction', data=json_data, headers=headers)
-        response = requests.post('http://127.0.0.1:5000/api/prediction', data=json_data, headers=headers)
+        response = requests.post('http://172.16.0.79:5000/api/prediction', data=json_data, headers=headers)
+        #response = requests.post('http://127.0.0.1:5000/api/prediction', data=json_data, headers=headers)
         if response is not None:
             if response.status_code != 500:
                 if 'prediction' in response.json():

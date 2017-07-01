@@ -158,7 +158,7 @@ while (True):
 
     with open('./tmp/%s' % filename, 'rb') as file:
         file_content = file.read()
-    #os.remove('./tmp/%s' % filename)
+    os.remove('./tmp/%s' % filename)
     #os.rename('./tmp/%s' % filename, './data/1d4/%s' % filename)
     base64_encoded_content = file_content.encode('base64')
 
@@ -178,8 +178,8 @@ while (True):
 
     try:
         #response = requests.post('https://dicebox.shapeandshare.com/api/prediction', data=json_data, headers=headers)
-        #response = requests.post('http://172.16.0.79:5000/api/prediction', data=json_data, headers=headers)
-        response = requests.post('http://127.0.0.1:5000/api/prediction', data=json_data, headers=headers)
+        response = requests.post('http://172.16.0.79:5000/api/prediction', data=json_data, headers=headers)
+        #response = requests.post('http://127.0.0.1:5000/api/prediction', data=json_data, headers=headers)
         if response is not None:
             if response.status_code != 500:
                 if 'prediction' in response.json():
@@ -193,19 +193,15 @@ while (True):
 
     #print prediction
 
-    #for key, value in sorted(prediction.iteritems(), key=lambda (k, v): (v, k)):
-    #    #print "%s: %s" % (key, value)
-    #    cv2.putText(camera_capture, "%s: %s" % (key, value), (5, 20 + 20 * i), font, 0.5, (255, 255, 255), 1)
-    #    i -= 1
-    #    if i < 0:
-    #        i = 4
+    # training_category = '1d4_1'
+    # if category == training_category:
+    #     os.rename("./tmp/%s" % filename, "./tmp/%s/%s" % (category, filename))
+    # else:
+    #     print('misclassified')
+    #     os.rename("./tmp/%s" % filename, "./tmp/misclassified/%s" % filename)
 
-    training_category = 'unknown'
-    if category == training_category:
-        os.rename("./tmp/%s" % filename, "./tmp/%s/%s" % (category, filename))
-    else:
-        print('misclassified')
-        os.rename("./tmp/%s" % filename, "./tmp/misclassified/%s" % filename)
+
+
 
     cv2.namedWindow('dice box', cv2.WINDOW_NORMAL)
     # lets make a pretty output window
