@@ -118,7 +118,7 @@ for item in network_input_index:
      print('FAIL')
      summary_fail += 1
 
-    if count > 1000:
+    if count > 10000:
      count += 1
      break
     else:

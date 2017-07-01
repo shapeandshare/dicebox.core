@@ -19,7 +19,7 @@ VERSION = '0.1.0'
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
-    level=logging.INFO,
+    level=logging.DEBUG,
     filemode='w',
     filename='./logs/dicebox_server.log'
 )
@@ -61,15 +61,13 @@ logging.basicConfig(
 #     data = numpy.frombuffer(pixel_data, dtype=numpy.uint8)
 #     return data
 
+dataset = 'dicebox_raw'
+model_weight_filename = 'weights.best.hdf5'
+nn_param_choices = config.NN_PARAM_CHOICES
+network = Network(nn_param_choices)
 
 def get_prediction(image_data):
-    dataset = 'dicebox_raw'
-    model_weight_filename = 'weights.best.hdf5'
-    nn_param_choices = config.NN_PARAM_CHOICES
-
-    network = Network(nn_param_choices)
     network.create_lonestar(create_model=True, weights_filename=model_weight_filename)
-
     try:
         prediction = {}
         # for network in networks:

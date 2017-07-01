@@ -95,12 +95,11 @@ class Network():
             if self.model is None:
                 logging.info('compiling model')
                 self.model = self.compile_model(self.network, config.NB_CLASSES, config.INPUT_SHAPE)
-            else:
-                logging.info('model already compiled, skipping.')
-
-        if weights_filename is not None:
-            logging.info("loading weights file: (%s)" % weights_filename)
-            self.load_model(weights_filename)
+                if weights_filename is not None:
+                    logging.info("loading weights file: (%s)" % weights_filename)
+                    self.load_model(weights_filename)
+            # else:
+            #     logging.info('model already compiled, skipping.')
 
 
     def create_set(self, network):
