@@ -28,8 +28,8 @@ camera = cv2.VideoCapture(camera_port)
 #camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 10000);
 
 # 780x650
-camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 780);
-camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 650);
+camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 1);
+camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 1);
 
 #60x50
 #camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 60);
@@ -142,7 +142,7 @@ for d in jdata:
     #print("%s:%s" % (d, jdata[d]))
     server_category_map[d] = jdata[d]
 
-print(server_category_map)
+#print(server_category_map)
 ###############################################################################
 # main loop
 ###############################################################################
@@ -158,7 +158,7 @@ while (True):
 
     with open('./tmp/%s' % filename, 'rb') as file:
         file_content = file.read()
-    os.remove('./tmp/%s' % filename)
+    #os.remove('./tmp/%s' % filename)
     #os.rename('./tmp/%s' % filename, './data/1d4/%s' % filename)
     base64_encoded_content = file_content.encode('base64')
 
@@ -185,7 +185,7 @@ while (True):
                 if 'prediction' in response.json():
                     prediction = response.json()['prediction']
                     category = server_category_map[str(prediction)]
-                    print("%s" % prediction)
+                    #print("%s" % prediction)
                     #print("%s" % category)
     except:
         print('.')
@@ -199,6 +199,13 @@ while (True):
     #    i -= 1
     #    if i < 0:
     #        i = 4
+
+    training_category = 'unknown'
+    if category == training_category:
+        os.rename("./tmp/%s" % filename, "./tmp/%s/%s" % (category, filename))
+    else:
+        print('misclassified')
+        os.rename("./tmp/%s" % filename, "./tmp/misclassified/%s" % filename)
 
     cv2.namedWindow('dice box', cv2.WINDOW_NORMAL)
     # lets make a pretty output window
