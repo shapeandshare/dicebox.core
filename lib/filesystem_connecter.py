@@ -344,7 +344,7 @@ class FileSystemConnector():
             for y in range(0, height):
                 pixel_value = pixel[x, y]
                 # logging.info("(%f)" % float(noise))
-                chance = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
+                # chance = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
                 # logging.info("(%f)" % chance)
                 # if float(noise) >= float(chance):
                 #  # logging.info("  adding pixel noise (%f/%f)" % (float(noise), chance)) # add noise

@@ -95,13 +95,11 @@ class Network():
             if self.model is None:
                 logging.info('compiling model')
                 self.model = self.compile_model(self.network, config.NB_CLASSES, config.INPUT_SHAPE)
-            else:
-                logging.info('model already compiled, skipping.')
-
-        if weights_filename is not None:
-            logging.info("loading weights file: (%s)" % weights_filename)
-            self.load_model(weights_filename)
-
+                if weights_filename is not None:
+                    logging.info("loading weights file: (%s)" % weights_filename)
+                    self.load_model(weights_filename)
+            # else:
+            #     logging.info('model already compiled, skipping.')
 
     def create_set(self, network):
         """Set network properties.
@@ -344,7 +342,7 @@ class Network():
 
         # score = model.evaluate(x_test, y_test, verbose=0)
 
-        model_prediction = self.model.predict_classes(x_test, batch_size=1, verbose=1)
+        model_prediction = self.model.predict_classes(x_test, batch_size=1, verbose=0)
         # logging.info("model_prection")
         logging.info(model_prediction)
 

@@ -61,15 +61,13 @@ logging.basicConfig(
 #     data = numpy.frombuffer(pixel_data, dtype=numpy.uint8)
 #     return data
 
+dataset = 'dicebox_raw'
+model_weight_filename = 'weights.best.hdf5'
+nn_param_choices = config.NN_PARAM_CHOICES
+network = Network(nn_param_choices)
 
 def get_prediction(image_data):
-    dataset = 'dicebox_raw'
-    model_weight_filename = 'weights.best.hdf5'
-    nn_param_choices = config.NN_PARAM_CHOICES
-
-    network = Network(nn_param_choices)
     network.create_lonestar(create_model=True, weights_filename=model_weight_filename)
-
     try:
         prediction = {}
         # for network in networks:
@@ -77,11 +75,12 @@ def get_prediction(image_data):
         #prediction = network.load_n_predict_single(dataset, image_data)
         prediction = network.predict(dataset, image_data)
         logging.info("prediction class: (%s)" % prediction)
-        print("prediction class: (%s)" % prediction)
+        #print("prediction class: (%s)" % prediction)
         return prediction[0]
 
     except:
-        print("Error making prediction.")
+        #print("Error making prediction.")
+        logging.error('Error making prediction..')
         raise
         return {}
 
@@ -122,5 +121,6 @@ def not_found(error):
 
 
 if __name__ == '__main__':
-    print('starting flask app')
-    app.run(debug=True,host='0.0.0.0', threaded=False)
+    #print('starting flask app')
+    logging.debug('starting flask app')
+    app.run(debug=True,host='0.0.0.0', threaded=True)
