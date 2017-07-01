@@ -101,7 +101,6 @@ class Network():
             # else:
             #     logging.info('model already compiled, skipping.')
 
-
     def create_set(self, network):
         """Set network properties.
 
@@ -343,7 +342,7 @@ class Network():
 
         # score = model.evaluate(x_test, y_test, verbose=0)
 
-        model_prediction = self.model.predict_classes(x_test, batch_size=1, verbose=1)
+        model_prediction = self.model.predict_classes(x_test, batch_size=1, verbose=0)
         # logging.info("model_prection")
         logging.info(model_prediction)
 

@@ -8,6 +8,7 @@ import requests
 import os
 import numpy
 import math
+from lib import dicebox_config as config  # import our high level configuration
 
 ###############################################################################
 # configure our camera, and begin our capture and prediction loop
@@ -22,17 +23,34 @@ ramp_frames = 3
 # All it needs is the index to a camera port.
 camera = cv2.VideoCapture(camera_port)
 
-camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 10000);
-camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 10000);
 
+#camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 10000);
+#camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 10000);
+
+# 780x650
+camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 780);
+camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 650);
+
+#60x50
+#camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 60);
+#camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 50);
 
 def get_image():
     # read is the easiest way to get a full image out of a VideoCapture object.
     retval, im = camera.read()
     # Our operations on the frame come here
     im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    resized_im = resize_keep_aspect_ratio(im, 255)
-    return im, resized_im
+    #resized_im = resize_keep_aspect_ratio(im, 255)
+
+    resized_image = cv2.resize(im, (60, 50))
+    height, width = resized_image.shape[:2]
+
+    height = float(height)
+    width = float(width)
+    #print("height: (%f)" % height)
+    #print("width: (%f)" % width)
+
+    return resized_image
 
 
 def resize_keep_aspect_ratio(input, desired_size):
@@ -94,17 +112,31 @@ for i in xrange(ramp_frames):
 font = cv.CV_FONT_HERSHEY_SIMPLEX
 
 
+
+with open("%s/category_map.txt" % config.DATA_DIRECTORY) as data_file:
+    jdata = json.load(data_file)
+
+server_category_map = {}
+for d in jdata:
+#    print(jdata[d])
+#    print(d)
+#    server_category_map[d] = jdata[d]
+    #print("%s:%s" % (d, jdata[d]))
+    server_category_map[d] = jdata[d]
+
+print(server_category_map)
 ###############################################################################
 # main loop
 ###############################################################################
 while (True):
     # Take the actual image we want to keep
-    camera_capture, resized_image  = get_image()
+    #camera_capture, resized_image  = get_image()
+    camera_capture  = get_image()
     filename = datetime.now().strftime('capture_%Y-%m-%d_%H_%M_%S_%f.png')
 
     # A nice feature of the imwrite method is that it will automatically choose the
     # correct format based on the file extension you provide. Convenient!
-    cv2.imwrite('./tmp/%s' % filename, resized_image)
+    cv2.imwrite('./tmp/%s' % filename, camera_capture)
 
     with open('./tmp/%s' % filename, 'rb') as file:
         file_content = file.read()
@@ -123,7 +155,7 @@ while (True):
     headers = {
         'Content-type': 'application/json',
         'API-ACCESS-KEY': '6{t}*At&R;kbgl>Mr"K]=F+`EEe',
-        'API-VERSION': '1.0.0'
+        'API-VERSION': '0.1.0'
     }
 
     try:
@@ -134,7 +166,9 @@ while (True):
             if response.status_code != 500:
                 if 'prediction' in response.json():
                     prediction = response.json()['prediction']
-                    print("%s" % prediction)
+                    category = server_category_map[str(prediction)]
+                    #print("%s" % prediction)
+                    #print("%s" % category)
     except:
         print('.')
         #raise
@@ -154,8 +188,9 @@ while (True):
     #cv2.putText(camera_capture, "%s" % prediction, (20, 20), font, 0.5, (255, 255, 255), 1)
     #cv2.imshow('dice box', camera_capture)
 
-    cv2.putText(resized_image, "%s" % prediction, (5, 15), font, 0.5, (255, 255, 255), 1)
-    cv2.imshow('dice box', resized_image)
+    #cv2.putText(camera_capture, "%s" % category, (5, 15), font, 0.5, (255, 255, 255), 1)
+    cv2.putText(camera_capture, "%s" % category, (5, 15), font, 0.3, (255, 255, 255), 1)
+    cv2.imshow('dice box', camera_capture)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

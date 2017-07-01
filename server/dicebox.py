@@ -19,7 +19,7 @@ VERSION = '0.1.0'
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
-    level=logging.DEBUG,
+    level=logging.INFO,
     filemode='w',
     filename='./logs/dicebox_server.log'
 )
@@ -75,11 +75,12 @@ def get_prediction(image_data):
         #prediction = network.load_n_predict_single(dataset, image_data)
         prediction = network.predict(dataset, image_data)
         logging.info("prediction class: (%s)" % prediction)
-        print("prediction class: (%s)" % prediction)
+        #print("prediction class: (%s)" % prediction)
         return prediction[0]
 
     except:
-        print("Error making prediction.")
+        #print("Error making prediction.")
+        logging.error('Error making prediction..')
         raise
         return {}
 
@@ -120,5 +121,6 @@ def not_found(error):
 
 
 if __name__ == '__main__':
-    print('starting flask app')
-    app.run(debug=True,host='0.0.0.0', threaded=False)
+    #print('starting flask app')
+    logging.debug('starting flask app')
+    app.run(debug=True,host='0.0.0.0', threaded=True)
