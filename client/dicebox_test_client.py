@@ -22,17 +22,19 @@ with open("%s/category_map.txt" % config.DATA_DIRECTORY) as data_file:
 
 server_category_map = {}
 for d in jdata:
-    print(d)
-    print(jdata[d])
-    server_category_map[d] = jdata[d]
+#    print(jdata[d])
+#    print(d)
+#    server_category_map[d] = jdata[d]
+    print("%s:%s" % (jdata[d], d))
+    server_category_map[jdata[d]] = d
 
-print(category_map)
-#print(server_category_map)
+#print(category_map)
+print(server_category_map)
 if category_map == server_category_map:
     print('category maps match!')
 else:
     print('local data set and server category maps do NOT match!')
-    raise
+    #raise
 
 ###############################################################################
 # Evaluate the Model
@@ -74,12 +76,12 @@ for item in network_input_index:
             if response.status_code != 500:
                 if 'prediction' in response.json():
                     prediction = response.json()['prediction']
-                    #print("%s" % prediction)
+                    #print("server prediction: (%s)" % prediction)
     except:
         print('.')
         #raise
 
-    # print prediction
+    #print prediction
     # index = 0
     # keyed_prediction = {}
     # for value in prediction:
@@ -101,22 +103,26 @@ for item in network_input_index:
     #         readable_index = value
     #
     # print(readable_category)
+
+    # Get the local image index for comparision against the server prediction
     # print(metadata[1])
+    # print(server_category_map[metadata[1]])
+    print("%s:%s" % (metadata[1], server_category_map[metadata[1]]))
+    print("server prediction: (%s)" % prediction)
 
-
-    if int(prediction) == int(metadata[1]):
+    if int(prediction) == int(server_category_map[metadata[1]]):
     #if readable_category == metadata[1]:
-        print('correct!')
-        summary_success += 1
+     print('correct!')
+     summary_success += 1
     else:
-        print('FAIL')
-        summary_fail += 1
+     print('FAIL')
+     summary_fail += 1
 
-    if count > 100:
-        count += 1
-        break
+    if count > 1000:
+     count += 1
+     break
     else:
-        count += 1
+     count += 1
 
     #for key, value in sorted(prediction.iteritems(), key=lambda (k, v): (v, k)):
     #    #print "%s: %s" % (key, value)
@@ -134,4 +140,3 @@ print("failures: (%i)" % summary_fail)
 print("total tests: (%i)" % count)
 print("success rate: (%f)" % success_percentage)
 print("failure rate: (%f)" % failure_percentage)
-

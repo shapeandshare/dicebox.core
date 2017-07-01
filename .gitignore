@@ -6,3 +6,11 @@ datasets/
 *.hdf5
 *.log
 client/dicebox_test_data/
+
+#what io have done..
+# sym links
+primordialpool/datasets
+primordialpool/lib
+server/lib
+lonestar/datasets
+lonestar/lib

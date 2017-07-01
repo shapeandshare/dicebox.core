@@ -18,14 +18,14 @@ import filesystem_connecter as fsc
 from datetime import datetime
 import os
 
-# Helper: Early stopping.
-early_stopper = EarlyStopping(patience=5)
-
-# Checkpoint
-filepath = "weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
-checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
-
-callbacks_list = [early_stopper, checkpoint]
+# # Helper: Early stopping.
+# early_stopper = EarlyStopping(patience=5)
+#
+# # Checkpoint
+# filepath = "weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
+# checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+#
+# callbacks_list = [early_stopper, checkpoint]
 
 def get_cifar10():
     """Retrieve the CIFAR dataset and process the data."""
@@ -113,47 +113,47 @@ def get_mnist_filesystem():
     y_test = test_image_labels
     return (nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test)
 
-def get_dicebox_filesystem():
-    nb_classes = 5
-    batch_size = 1000
-    input_shape = (3000,)
-
-    noise = 1.0
-    train_batch_size = 5000
-    test_batch_size = 1000
-
-    network_input_index = fsc.get_data_set(dicebox_config.DATA_DIRECTORY)
-    category_map = fsc.get_data_set_categories(network_input_index)
-
-    train_image_data, train_image_labels = fsc.get_batch(dicebox_config.DATA_DIRECTORY, network_input_index,
-                                                       train_batch_size, category_map, noise=noise)
-    train_image_data = numpy.array(train_image_data)
-    train_image_data = train_image_data.astype('float32')
-    train_image_data /= 255
-    train_image_labels = numpy.array(train_image_labels)
-
-
-    test_image_data, test_image_labels = fsc.get_batch(dicebox_config.DATA_DIRECTORY, network_input_index,
-                                             test_batch_size, category_map, noise=noise)
-    test_image_data = numpy.array(test_image_data)
-    test_image_data = test_image_data.astype('float32')
-    test_image_data /= 255
-    test_image_labels = numpy.array(test_image_labels)
-
-    logging.info("nb_classes: (%i)" % nb_classes)
-    logging.info("batch_size: (%i)" % batch_size)
-    logging.info("input_shape: (%s)" % input_shape)
-    logging.debug("network_input_index: (%s)" % network_input_index)
-    logging.info("category_map: (%s)" % category_map)
-
-    #
-    #return (nb_classes, batch_size, input_shape, x_test, y_test)
-    #return (nb_classes, batch_size, input_shape, image_data, image_labels)
-    x_train = train_image_data
-    x_test = test_image_data
-    y_train = train_image_labels
-    y_test = test_image_labels
-    return (nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test)
+# def get_dicebox_filesystem():
+#     nb_classes = 5
+#     batch_size = 1000
+#     input_shape = (3000,)
+#
+#     noise = 1.0
+#     train_batch_size = 5000
+#     test_batch_size = 1000
+#
+#     network_input_index = fsc.get_data_set(dicebox_config.DATA_DIRECTORY)
+#     category_map = fsc.get_data_set_categories(network_input_index)
+#
+#     train_image_data, train_image_labels = fsc.get_batch(dicebox_config.DATA_DIRECTORY, network_input_index,
+#                                                        train_batch_size, category_map, noise=noise)
+#     train_image_data = numpy.array(train_image_data)
+#     train_image_data = train_image_data.astype('float32')
+#     train_image_data /= 255
+#     train_image_labels = numpy.array(train_image_labels)
+#
+#
+#     test_image_data, test_image_labels = fsc.get_batch(dicebox_config.DATA_DIRECTORY, network_input_index,
+#                                              test_batch_size, category_map, noise=noise)
+#     test_image_data = numpy.array(test_image_data)
+#     test_image_data = test_image_data.astype('float32')
+#     test_image_data /= 255
+#     test_image_labels = numpy.array(test_image_labels)
+#
+#     logging.info("nb_classes: (%i)" % nb_classes)
+#     logging.info("batch_size: (%i)" % batch_size)
+#     logging.info("input_shape: (%s)" % input_shape)
+#     logging.debug("network_input_index: (%s)" % network_input_index)
+#     logging.info("category_map: (%s)" % category_map)
+#
+#     #
+#     #return (nb_classes, batch_size, input_shape, x_test, y_test)
+#     #return (nb_classes, batch_size, input_shape, image_data, image_labels)
+#     x_train = train_image_data
+#     x_test = test_image_data
+#     y_train = train_image_labels
+#     y_test = test_image_labels
+#     return (nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test)
 
 def get_dicebox_filesystem_test():
     nb_classes = 5
@@ -184,33 +184,33 @@ def get_dicebox_filesystem_test():
     y_test = test_image_labels
     return (nb_classes, batch_size, input_shape, x_test, y_test)
 
-def get_dicebox_raw(raw_image_data):
-    nb_classes = 5
-    batch_size = 1
-    input_shape = (3000,)
-
-    # ugh dump to file for the time being
-    filename = "./tmp/%s" % datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png')
-    with open(filename, 'wb') as f:
-        f.write(raw_image_data)
-
-    test_image_data = fsc.process_image(filename)
-
-    os.remove(filename)
-
-    test_image_data = numpy.array(test_image_data)
-    test_image_data = test_image_data.astype('float32')
-    test_image_data /= 255
-
-    #logging.info("nb_classes: (%i)" % nb_classes)
-    #logging.info("batch_size: (%i)" % batch_size)
-    #logging.info("input_shape: (%s)" % input_shape)
-
-    x_test = [test_image_data]
-    x_test = numpy.array(x_test)
-
-    #logging.info("x_test: (%s)" % x_test)
-    return nb_classes, batch_size, input_shape, x_test
+# def get_dicebox_raw(raw_image_data):
+#     nb_classes = 5
+#     batch_size = 1
+#     input_shape = (3000,)
+#
+#     # ugh dump to file for the time being
+#     filename = "./tmp/%s" % datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png')
+#     with open(filename, 'wb') as f:
+#         f.write(raw_image_data)
+#
+#     test_image_data = fsc.process_image(filename)
+#
+#     os.remove(filename)
+#
+#     test_image_data = numpy.array(test_image_data)
+#     test_image_data = test_image_data.astype('float32')
+#     test_image_data /= 255
+#
+#     #logging.info("nb_classes: (%i)" % nb_classes)
+#     #logging.info("batch_size: (%i)" % batch_size)
+#     #logging.info("input_shape: (%s)" % input_shape)
+#
+#     x_test = [test_image_data]
+#     x_test = numpy.array(x_test)
+#
+#     #logging.info("x_test: (%s)" % x_test)
+#     return nb_classes, batch_size, input_shape, x_test
 
 def get_mnist_test():
     """Retrieve the MNIST dataset and process the data."""
@@ -263,108 +263,108 @@ def get_mnist_test():
     #return (nb_classes, batch_size, input_shape, x_test, y_test)
     return (nb_classes, batch_size, input_shape, image_data, image_labels)
 
-def compile_model(network, nb_classes, input_shape):
-    """Compile a sequential model.
+# def compile_model(network, nb_classes, input_shape):
+#     """Compile a sequential model.
+#
+#     Args:
+#         network (dict): the parameters of the network
+#
+#     Returns:
+#         a compiled network.
+#
+#     """
+#     # Get our network parameters.
+#     nb_layers = network['nb_layers']
+#     nb_neurons = network['nb_neurons']
+#     activation = network['activation']
+#     optimizer = network['optimizer']
+#
+#     model = Sequential()
+#
+#     # Add each layer.
+#     for i in range(nb_layers):
+#
+#         # Need input shape for first layer.
+#         if i == 0:
+#             model.add(Dense(nb_neurons, activation=activation, input_shape=input_shape))
+#         else:
+#             model.add(Dense(nb_neurons, activation=activation))
+#
+#         model.add(Dropout(0.2))  # hard-coded dropout
+#
+#     # Output layer.
+#     model.add(Dense(nb_classes, activation='softmax'))
+#
+#     model.compile(loss='categorical_crossentropy', optimizer=optimizer,
+#                   metrics=['accuracy'])
+#
+#     return model
 
-    Args:
-        network (dict): the parameters of the network
+# def train_and_score(network, dataset):
+#     """Train the model, return test loss.
+#
+#     Args:
+#         network (dict): the parameters of the network
+#         dataset (str): Dataset to use for training/evaluating
+#
+#     """
+#     if dataset == 'cifar10':
+#         nb_classes, batch_size, input_shape, x_train, \
+#             x_test, y_train, y_test = get_cifar10()
+#     elif dataset == 'mnist':
+#         nb_classes, batch_size, input_shape, x_train, \
+#             x_test, y_train, y_test = get_mnist_filesystem()
+#     elif dataset == 'dicebox':
+#         nb_classes, batch_size, input_shape, x_train, \
+#             x_test, y_train, y_test = get_dicebox_filesystem()
+#
+#     model = compile_model(network, nb_classes, input_shape)
+#
+#     ## add some logging
+#     logging.info('Fitting model:')
+#     logging.info(network)
+#
+#     model.fit(x_train, y_train,
+#               batch_size=batch_size,
+#               epochs=10000,  # using early stopping, so no real limit
+#               verbose=1,
+#               validation_data=(x_test, y_test),
+#               callbacks=[early_stopper])
+#
+#     score = model.evaluate(x_test, y_test, verbose=0)
+#
+#     return score[1]  # 1 is accuracy. 0 is loss.
 
-    Returns:
-        a compiled network.
-
-    """
-    # Get our network parameters.
-    nb_layers = network['nb_layers']
-    nb_neurons = network['nb_neurons']
-    activation = network['activation']
-    optimizer = network['optimizer']
-
-    model = Sequential()
-
-    # Add each layer.
-    for i in range(nb_layers):
-
-        # Need input shape for first layer.
-        if i == 0:
-            model.add(Dense(nb_neurons, activation=activation, input_shape=input_shape))
-        else:
-            model.add(Dense(nb_neurons, activation=activation))
-
-        model.add(Dropout(0.2))  # hard-coded dropout
-
-    # Output layer.
-    model.add(Dense(nb_classes, activation='softmax'))
-
-    model.compile(loss='categorical_crossentropy', optimizer=optimizer,
-                  metrics=['accuracy'])
-
-    return model
-
-def train_and_score(network, dataset):
-    """Train the model, return test loss.
-
-    Args:
-        network (dict): the parameters of the network
-        dataset (str): Dataset to use for training/evaluating
-
-    """
-    if dataset == 'cifar10':
-        nb_classes, batch_size, input_shape, x_train, \
-            x_test, y_train, y_test = get_cifar10()
-    elif dataset == 'mnist':
-        nb_classes, batch_size, input_shape, x_train, \
-            x_test, y_train, y_test = get_mnist_filesystem()
-    elif dataset == 'dicebox':
-        nb_classes, batch_size, input_shape, x_train, \
-            x_test, y_train, y_test = get_dicebox_filesystem()
-
-    model = compile_model(network, nb_classes, input_shape)
-
-    ## add some logging
-    logging.info('Fitting model:')
-    logging.info(network)
-
-    model.fit(x_train, y_train,
-              batch_size=batch_size,
-              epochs=10000,  # using early stopping, so no real limit
-              verbose=1,
-              validation_data=(x_test, y_test),
-              callbacks=[early_stopper])
-
-    score = model.evaluate(x_test, y_test, verbose=0)
-
-    return score[1]  # 1 is accuracy. 0 is loss.
-
-def train_and_score_and_save(network, dataset):
-    """Train the model, return test loss.
-
-    Args:
-        network (dict): the parameters of the network
-        dataset (str): Dataset to use for training/evaluating
-
-    """
-    if dataset == 'cifar10':
-        nb_classes, batch_size, input_shape, x_train, \
-        x_test, y_train, y_test = get_cifar10()
-    elif dataset == 'mnist':
-        nb_classes, batch_size, input_shape, x_train, \
-        x_test, y_train, y_test = get_mnist_filesystem()
-    elif dataset == 'dicebox':
-        nb_classes, batch_size, input_shape, x_train, \
-        x_test, y_train, y_test = get_dicebox_filesystem()
-
-    model = compile_model(network, nb_classes, input_shape)
-
-    model.fit(x_train, y_train,
-              batch_size=batch_size,
-              epochs=10000,  # using early stopping, so no real limit
-              verbose=1,
-              validation_data=(x_test, y_test),
-              callbacks=callbacks_list)
-
-    score = model.evaluate(x_test, y_test, verbose=0)
-
-    return score[1]  # 1 is accuracy. 0 is loss.
+# def train_and_score_and_save(network, dataset):
+#     """Train the model, return test loss.
+#
+#     Args:
+#         network (dict): the parameters of the network
+#         dataset (str): Dataset to use for training/evaluating
+#
+#     """
+#     if dataset == 'cifar10':
+#         nb_classes, batch_size, input_shape, x_train, \
+#         x_test, y_train, y_test = get_cifar10()
+#     elif dataset == 'mnist':
+#         nb_classes, batch_size, input_shape, x_train, \
+#         x_test, y_train, y_test = get_mnist_filesystem()
+#     elif dataset == 'dicebox':
+#         nb_classes, batch_size, input_shape, x_train, \
+#         x_test, y_train, y_test = get_dicebox_filesystem()
+#
+#     model = compile_model(network, nb_classes, input_shape)
+#
+#     model.fit(x_train, y_train,
+#               batch_size=batch_size,
+#               epochs=10000,  # using early stopping, so no real limit
+#               verbose=1,
+#               validation_data=(x_test, y_test),
+#               callbacks=callbacks_list)
+#
+#     score = model.evaluate(x_test, y_test, verbose=0)
+#
+#     return score[1]  # 1 is accuracy. 0 is loss.
 
 def load_and_score(network, dataset):
     """Train the model, return test loss.
@@ -417,29 +417,29 @@ def load_and_score_single(network, dataset):
 
     return score[1]  # 1 is accuracy. 0 is loss.
 
-def load_and_predict_single(network, dataset, network_input):
-    if dataset == 'cifar10':
-        nb_classes, batch_size, input_shape, _, \
-            x_test, _, y_test = get_cifar10()
-    elif dataset == 'mnist':
-        nb_classes, batch_size, input_shape, x_test, y_test = get_mnist_test()
-    elif dataset == 'dicebox':
-        nb_classes, batch_size, input_shape, x_test, y_test = get_dicebox_filesystem_test()
-    elif dataset == 'dicebox_raw':
-        nb_classes, batch_size, input_shape, x_test = get_dicebox_raw(network_input)
-
-    model = compile_model(network, nb_classes, input_shape)
-
-    # load weights
-    model.load_weights("weights.best.hdf5")
-
-    #score = model.evaluate(x_test, y_test, verbose=0)
-
-    model_prediction = model.predict_classes(x_test, batch_size=1, verbose=1)
-    #logging.info("model_prection")
-    logging.info(model_prediction)
-
-    return model_prediction
+# def load_and_predict_single(network, dataset, network_input):
+#     if dataset == 'cifar10':
+#         nb_classes, batch_size, input_shape, _, \
+#             x_test, _, y_test = get_cifar10()
+#     elif dataset == 'mnist':
+#         nb_classes, batch_size, input_shape, x_test, y_test = get_mnist_test()
+#     elif dataset == 'dicebox':
+#         nb_classes, batch_size, input_shape, x_test, y_test = get_dicebox_filesystem_test()
+#     elif dataset == 'dicebox_raw':
+#         nb_classes, batch_size, input_shape, x_test = get_dicebox_raw(network_input)
+#
+#     model = compile_model(network, nb_classes, input_shape)
+#
+#     # load weights
+#     model.load_weights("weights.best.hdf5")
+#
+#     #score = model.evaluate(x_test, y_test, verbose=0)
+#
+#     model_prediction = model.predict_classes(x_test, batch_size=1, verbose=1)
+#     #logging.info("model_prection")
+#     logging.info(model_prediction)
+#
+#     return model_prediction
 
 def initialize_model(network, dataset):
     if dataset == 'dicebox_raw':

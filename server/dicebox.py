@@ -5,7 +5,7 @@ import sys
 import base64
 import os
 from datetime import datetime
-
+from lib.network import Network
 from PIL import Image
 from array import *
 import numpy
@@ -24,51 +24,58 @@ logging.basicConfig(
     filename='./logs/dicebox_server.log'
 )
 
-population = 1  # Number of networks in each generation.
-dataset = 'dicebox_raw'
+#population = 1  # Number of networks in each generation.
+#dataset = 'dicebox_raw'
 
-nn_param_choices = {
-    'nb_neurons': [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],
-    'nb_layers': [1, 2, 3, 5, 8, 13, 21],
-    'activation': ['relu', 'elu', 'tanh', 'sigmoid'],
-    'optimizer': ['rmsprop', 'adam', 'sgd', 'adagrad',
-                  'adadelta', 'adamax', 'nadam'],
-}
+#nn_param_choices = {
+#    'nb_neurons': [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],
+#    'nb_layers': [1, 2, 3, 5, 8, 13, 21],
+#    'activation': ['relu', 'elu', 'tanh', 'sigmoid'],
+#    'optimizer': ['rmsprop', 'adam', 'sgd', 'adagrad',
+#                  'adadelta', 'adamax', 'nadam'],
+#}
 
-optimizer = Optimizer(nn_param_choices)
-networks = optimizer.create_lonestar(population)
 
-def process_image(image_data):
-    # ugh dump to file for the time being
-    filename = "./tmp/%s" % datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png')
-    with open(filename, 'wb') as f:
-        f.write(image_data)
 
-    pixel_data = array('B')
-
-    #print('converting payload into an image object')
-    #m2 = Image.frombytes('RGB', IMAGE_SIZE, io.BytesIO.load(image_data), decoder_name='raw')
-
-    Im = Image.open(filename)
-    pixel = Im.load()
-    os.remove(filename)
-
-    width, height = Im.size
-
-    for x in range(0, width):
-        for y in range(0, height):
-            pixel_data.append(pixel[x, y])
-
-    data = numpy.frombuffer(pixel_data, dtype=numpy.uint8)
-    return data
+# def process_image(image_data):
+#     # ugh dump to file for the time being
+#     filename = "./tmp/%s" % datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png')
+#     with open(filename, 'wb') as f:
+#         f.write(image_data)
+#
+#     pixel_data = array('B')
+#
+#     #print('converting payload into an image object')
+#     #m2 = Image.frombytes('RGB', IMAGE_SIZE, io.BytesIO.load(image_data), decoder_name='raw')
+#
+#     Im = Image.open(filename)
+#     pixel = Im.load()
+#     os.remove(filename)
+#
+#     width, height = Im.size
+#
+#     for x in range(0, width):
+#         for y in range(0, height):
+#             pixel_data.append(pixel[x, y])
+#
+#     data = numpy.frombuffer(pixel_data, dtype=numpy.uint8)
+#     return data
 
 
 def get_prediction(image_data):
+    dataset = 'dicebox_raw'
+    model_weight_filename = 'weights.best.hdf5'
+    nn_param_choices = config.NN_PARAM_CHOICES
+
+    network = Network(nn_param_choices)
+    network.create_lonestar(create_model=True, weights_filename=model_weight_filename)
+
     try:
         prediction = {}
-        for network in networks:
-            prediction = network.load_n_predict_single(dataset, image_data)
-
+        # for network in networks:
+        #     prediction = network.load_n_predict_single(dataset, image_data)
+        #prediction = network.load_n_predict_single(dataset, image_data)
+        prediction = network.predict(dataset, image_data)
         logging.info("prediction class: (%s)" % prediction)
         print("prediction class: (%s)" % prediction)
         return prediction[0]
