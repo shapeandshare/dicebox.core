@@ -158,8 +158,8 @@ while (True):
 
     with open('./tmp/%s' % filename, 'rb') as file:
         file_content = file.read()
-    os.remove('./tmp/%s' % filename)
-    #os.rename('./tmp/%s' % filename, './data/1d4/%s' % filename)
+    #os.remove('./tmp/%s' % filename)
+    #os.rename('./tmp/%s' % filename, './tmp/1d6_6/%s' % filename)
     base64_encoded_content = file_content.encode('base64')
 
     outjson = {}
@@ -178,8 +178,8 @@ while (True):
 
     try:
         #response = requests.post('https://dicebox.shapeandshare.com/api/prediction', data=json_data, headers=headers)
-        response = requests.post('http://172.16.0.79:5000/api/prediction', data=json_data, headers=headers)
-        #response = requests.post('http://127.0.0.1:5000/api/prediction', data=json_data, headers=headers)
+        #response = requests.post('http://172.16.0.79:5000/api/prediction', data=json_data, headers=headers)
+        response = requests.post('http://127.0.0.1:5000/api/prediction', data=json_data, headers=headers)
         if response is not None:
             if response.status_code != 500:
                 if 'prediction' in response.json():
@@ -193,7 +193,7 @@ while (True):
 
     #print prediction
 
-    # training_category = '1d4_1'
+    # training_category = '1d4_4'
     # if category == training_category:
     #     os.rename("./tmp/%s" % filename, "./tmp/%s/%s" % (category, filename))
     # else:

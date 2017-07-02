@@ -25,7 +25,7 @@ NN_PARAM_CHOICES = {
                   'adadelta', 'adamax', 'nadam'],
 }
 
-NB_CLASSES = 5
+NB_CLASSES = 11
 BATCH_SIZE = 2000
 INPUT_SHAPE = (3000,)
 NOISE = 0.1
