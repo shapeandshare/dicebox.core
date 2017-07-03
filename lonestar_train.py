@@ -9,22 +9,20 @@ logging.basicConfig(
     datefmt='%m/%d/%Y %I:%M:%S %p',
     level=logging.INFO,
     filemode='w',
-    filename='lonestar_train.log'
+    filename="%s/lonestar_train.log" % config.LOGS_DIR
 )
 
 def main():
-    nn_param_choices = config.NN_PARAM_CHOICES
-    dataset = config.DATASET
-
-    network = Network(nn_param_choices)
+    network = Network(config.NN_PARAM_CHOICES)
     network.create_lonestar()
+
     i = 1
     while i <= config.EPOCHS:
         logging.info("epoch (%i of %i)" % (i, config.EPOCHS))
-        network.train_and_save(dataset)
+        network.train_and_save(config.DATASET)
 
         # save the model after every epoch, regardless of accuracy.
-        filename = "weights.epoch_%i.final.%s.hdf5" % (i, datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f'))
+        filename = "%s/weights.epoch_%i.final.%s.hdf5" % (config.WEIGHTS_DIR, i, datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f'))
         logging.info("saving model weights after epoch %i to file %s" % (i, filename))
         network.save_model(filename)
 
