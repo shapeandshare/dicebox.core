@@ -1,3 +1,7 @@
+# Derived from https://github.com/harvitronix/neural-network-genetic-algorithm
+# Derived source copyright: Matt Harvey, 2017, Derived source license: The MIT License
+# See docs/Matt Harvey.LICENSE
+
 """Class that represents the network to be evolved."""
 import random
 import logging
