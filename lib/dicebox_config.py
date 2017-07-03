@@ -28,6 +28,7 @@ TEST_BATCH_SIZE = 10000
 
 LOGS_DIR='./logs'
 WEIGHTS_DIR='./weights'
+TMP_DIR='./tmp'
 
 ###############################################################################
 # Server Configuration Options

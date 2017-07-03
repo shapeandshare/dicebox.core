@@ -5,7 +5,7 @@ import numpy
 from PIL import Image
 from array import *
 import logging
-from datetime import datetime
+# from datetime import datetime  # used when dumping raw transforms to disk
 
 
 class FileSystemConnector():
@@ -68,12 +68,10 @@ class FileSystemConnector():
             cat_one_hot[int(category_map[item[1]])] = 1
             image_labels.append(cat_one_hot)
             # image_labels.append(category_map[item[1]])
-            # logging.info(cat_one_hot)
 
             # use pixel cache if possible
             # [k,v] (filename, pixeldata)
             if FileSystemConnector.PIXEL_CACHE.has_key(filename) and self.lucky(noise):
-                # and self.lucky(noise):
                 # found in cache
                 pixel_data = FileSystemConnector.PIXEL_CACHE[filename]
                 logging.debug("loaded cached pixel data for (%s)" % filename)
@@ -85,11 +83,13 @@ class FileSystemConnector():
             image_data.append(pixel_data)
         return [image_data, image_labels]
 
+
     def lucky(self, noise=0.0):
         if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
             logging.debug('luck bestowed')
             return True
         return False
+
 
     def process_image(self, filename, noise=0):
         pixel_data = array('B')
@@ -171,7 +171,7 @@ class FileSystemConnector():
         data = numpy.frombuffer(pixel_data, dtype=numpy.uint8)
         return data
 
-    # public method
+
     def get_data_set_categories(self):
         natural_categories = []
         category_map = {}
