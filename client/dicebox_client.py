@@ -168,8 +168,13 @@ while (True):
     with open('./tmp/%s' % filename, 'rb') as file:
         file_content = file.read()
 
-    if KEEP_INPUT and ONLY_KEEP_MISCLASSIFIED_INPUT and not SERVER_ERROR:
-        os.rename('./tmp/%s' % filename, './tmp/%s/%s' % (server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], filename))
+    if KEEP_INPUT and not SERVER_ERROR:
+        #print(MISCLASSIFIED_CATEGORY_INDEX)
+        #print(ONLY_KEEP_MISCLASSIFIED_INPUT)
+        if not MISCLASSIFIED_CATEGORY_INDEX and ONLY_KEEP_MISCLASSIFIED_INPUT:
+            os.remove('./tmp/%s' % filename)
+        else:
+            os.rename('./tmp/%s' % filename, './tmp/%s/%s' % (server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], filename))
     else:
         os.remove('./tmp/%s' % filename)
 
