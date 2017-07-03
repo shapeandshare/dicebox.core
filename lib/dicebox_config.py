@@ -1,21 +1,14 @@
 ###############################################################################
 # Configuration Options
 ###############################################################################
-#BATCH_SIZE = 1
+
 NETWORK_NAME = 'dicebox_60x50'
+DATASET = 'dicebox'
+NB_CLASSES = 11
+INPUT_SHAPE = (3000,)
 
 DATA_BASE_DIRECTORY = 'datasets'
 DATA_DIRECTORY = "%s/%s/data/" % (DATA_BASE_DIRECTORY, NETWORK_NAME)
-#CHECKPOINT_DIRECTORY = "%s/%s/checkpoint/" % (DATA_BASE_DIRECTORY, NETWORK_NAME)
-#CHECKPOINT_FILE = 'model.ckpt'
-#TENSORBOARD_LOG_DIRECTORY = "%s/%s/logs/" % (DATA_BASE_DIRECTORY, NETWORK_NAME)
-#TENSORBOARD_LOGGING = False
-
-
-EPOCHS = 10000
-GENERATIONS = 100  # Number of times to evole the population.
-POPULATION = 50  # Number of networks in each generation.
-DATASET = 'dicebox'
 
 NN_PARAM_CHOICES = {
     'nb_neurons': [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],
@@ -25,9 +18,23 @@ NN_PARAM_CHOICES = {
                   'adadelta', 'adamax', 'nadam'],
 }
 
-NB_CLASSES = 11
+EPOCHS = 10000
+GENERATIONS = 100  # Number of times to evole the population.
+POPULATION = 50  # Number of networks in each generation.
 BATCH_SIZE = 5000
-INPUT_SHAPE = (3000,)
 NOISE = 0.3
 TRAIN_BATCH_SIZE = 120000
 TEST_BATCH_SIZE = 10000
+
+LOGS_DIR='./logs'
+WEIGHTS_DIR='./weights'
+TMP_DIR='./tmp'
+
+###############################################################################
+# Server Configuration Options
+###############################################################################
+API_ACCESS_KEY = '6{t}*At&R;kbgl>Mr"K]=F+`EEe'
+API_VERSION = '0.1.0'
+LISTENING_HOST='0.0.0.0'
+FLASK_DEBUG=False
+MODEL_WEIGHTS_FILENAME='weights.best.hdf5'

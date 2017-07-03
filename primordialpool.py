@@ -1,16 +1,19 @@
 """Entry point to evolving the neural network. Start here."""
 import logging
-from optimizer import Optimizer
+from lib.optimizer import Optimizer
 from tqdm import tqdm
+import lib.dicebox_config as config
+
 
 # Setup logging.
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
-    level=logging.INFO,
+    level=logging.DEBUG,
     filemode='w',
-    filename='dicebox_main.dicebox.log'
+    filename="%s/primordialpool.log" % config.LOGS_DIR
 )
+
 
 def train_networks(networks, dataset):
     """Train each network.
@@ -24,6 +27,7 @@ def train_networks(networks, dataset):
         network.train(dataset)
         pbar.update(1)
     pbar.close()
+
 
 def get_average_accuracy(networks):
     """Get the average accuracy for a group of networks.
@@ -40,6 +44,7 @@ def get_average_accuracy(networks):
         total_accuracy += network.accuracy
 
     return total_accuracy / len(networks)
+
 
 def generate(generations, population, nn_param_choices, dataset):
     """Generate a network with the genetic algorithm.
@@ -58,6 +63,10 @@ def generate(generations, population, nn_param_choices, dataset):
     for i in range(generations):
         logging.info("***Doing generation %d of %d***" %
                      (i + 1, generations))
+        logging.info('-'*80)
+        logging.info('Individuals in current generation')
+        print_networks(networks)
+        logging.info('-' * 80)
 
         # Train and get accuracy for networks.
         train_networks(networks, dataset)
@@ -88,6 +97,7 @@ def generate(generations, population, nn_param_choices, dataset):
     # Print out the top 5 networks.
     print_networks(networks[:5])
 
+
 def print_networks(networks):
     """Print a list of networks.
 
@@ -99,26 +109,11 @@ def print_networks(networks):
     for network in networks:
         network.print_network()
 
+
 def main():
-    """Evolve a network."""
-    generations = 100  # Number of times to evole the population.
-    population = 50  # Number of networks in each generation.
-    dataset = 'dicebox'
+    logging.info("***Evolving %d generations with population %d***" % (config.GENERATIONS, config.POPULATION))
+    generate(config.GENERATIONS, config.POPULATION, config.NN_PARAM_CHOICES, config.DATASET)
 
-#        'nb_neurons': [64, 128, 256, 512, 768, 1024],
-#         'nb_layers': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-    nn_param_choices = {
-        'nb_neurons': [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597],
-        'nb_layers': [1, 2, 3, 5, 8, 13, 21],
-        'activation': ['relu', 'elu', 'tanh', 'sigmoid'],
-        'optimizer': ['rmsprop', 'adam', 'sgd', 'adagrad',
-                      'adadelta', 'adamax', 'nadam'],
-    }
-
-    logging.info("***Evolving %d generations with population %d***" %
-                 (generations, population))
-
-    generate(generations, population, nn_param_choices, dataset)
 
 if __name__ == '__main__':
     main()

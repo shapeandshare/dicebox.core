@@ -1,15 +1,6 @@
 """Class that represents the network to be evolved."""
 import random
 import logging
-#from train import train_and_score
-
-#from train import train_and_score_and_save
-#from train import load_and_score
-#from train import load_and_score_single
-#from train import load_and_predict_single
-
-#import filesystem_connecter as fsc
-
 from keras.callbacks import EarlyStopping
 from keras.datasets import mnist, cifar10
 from keras.models import Sequential
@@ -28,7 +19,7 @@ import os
 early_stopper = EarlyStopping(patience=25)
 
 # Checkpoint
-filepath = "weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
+filepath = "%s/weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5" % config.WEIGHTS_DIR
 checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 
 callbacks_list = [early_stopper, checkpoint]
@@ -60,10 +51,12 @@ class Network():
             #logging.debug('creating a new fsc..')
             Network.fsc = filesystem_connecter.FileSystemConnector(config.DATA_DIRECTORY)
 
+
     def create_random(self):
         """Create a random network."""
         for key in self.nn_param_choices:
             self.network[key] = random.choice(self.nn_param_choices[key])
+
 
     def create_lonestar(self, create_model=False, weights_filename=None):
 
@@ -93,13 +86,14 @@ class Network():
 
         if create_model is True:
             if self.model is None:
-                logging.info('compiling model')
+                logging.debug('compiling model')
                 self.model = self.compile_model(self.network, config.NB_CLASSES, config.INPUT_SHAPE)
                 if weights_filename is not None:
                     logging.info("loading weights file: (%s)" % weights_filename)
                     self.load_model(weights_filename)
             # else:
             #     logging.info('model already compiled, skipping.')
+
 
     def create_set(self, network):
         """Set network properties.
@@ -109,6 +103,7 @@ class Network():
 
         """
         self.network = network
+
 
     def train(self, dataset):
         """Train the network and record the accuracy.
@@ -120,18 +115,11 @@ class Network():
         if self.accuracy == 0.:
             self.accuracy = self.train_and_score(self.network, dataset)
 
+
     def train_and_save(self, dataset):
     #    if self.accuracy == 0.:
         self.accuracy = self.train_and_score_and_save(dataset)
 
-    # def load_n_score(self, dataset):
-    #     self.accuracy = load_and_score(self.network, dataset)
-
-    # def load_n_score_single(self, dataset):
-    #     self.accuracy = load_and_score_single(self.network, dataset)
-
-    # def load_n_predict_single(self, dataset, network_input):
-    #     return load_and_predict_single(self.network, dataset, network_input)
 
     def print_network(self):
         """Print out a network."""
@@ -168,7 +156,6 @@ class Network():
 
         model = self.compile_model(network, nb_classes, input_shape)
 
-        ## add some logging
         logging.info('Fitting model:')
         logging.info(network)
 
@@ -243,13 +230,10 @@ class Network():
         test_image_data /= 255
         test_image_labels = numpy.array(test_image_labels)
 
-        logging.info("nb_classes: (%i)" % nb_classes)
-        logging.info("batch_size: (%i)" % batch_size)
-        logging.info("input_shape: (%s)" % input_shape)
+        logging.debug("nb_classes: (%i)" % nb_classes)
+        logging.debug("batch_size: (%i)" % batch_size)
+        logging.debug("input_shape: (%s)" % input_shape)
 
-        #
-        #return (nb_classes, batch_size, input_shape, x_test, y_test)
-        #return (nb_classes, batch_size, input_shape, image_data, image_labels)
         x_train = train_image_data
         x_test = test_image_data
         y_train = train_image_labels
@@ -325,25 +309,11 @@ class Network():
             logging.error("UNKNOWN DATASET (%s) passed to predict_single" % dataset)
             raise
 
-        #model = compile_model(network, nb_classes, input_shape)
         if self.model is None:
-            #self.model = self.compile_model(self.network, nb_classes, input_shape)
             logging.error('Unable to predict without a model. :(')
             raise
 
-            # # load weights
-            # if filename is not None:
-            #     self.load_model(filename)
-
-        # load weights
-        #self.model.load_weights("weights.best.hdf5")
-
-        #logging.info(x_test)
-
-        # score = model.evaluate(x_test, y_test, verbose=0)
-
         model_prediction = self.model.predict_classes(x_test, batch_size=1, verbose=0)
-        # logging.info("model_prection")
         logging.info(model_prediction)
 
         return model_prediction
@@ -351,7 +321,7 @@ class Network():
 
     def get_dicebox_raw(self, raw_image_data):
         # ugh dump to file for the time being
-        filename = "./tmp/%s" % datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png')
+        filename = "%s/%s" % (config.TMP_DIR, datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png'))
         with open(filename, 'wb') as f:
             f.write(raw_image_data)
 
@@ -363,12 +333,7 @@ class Network():
         test_image_data = test_image_data.astype('float32')
         test_image_data /= 255
 
-        #logging.info("nb_classes: (%i)" % nb_classes)
-        #logging.info("batch_size: (%i)" % batch_size)
-        #logging.info("input_shape: (%s)" % input_shape)
-
         x_test = [test_image_data]
         x_test = numpy.array(x_test)
 
-        #logging.info("x_test: (%s)" % x_test)
         return x_test
