@@ -1,3 +1,7 @@
+# Derived from https://github.com/harvitronix/neural-network-genetic-algorithm
+# Derived source copyright: Matt Harvey, 2017, Derived source license: The MIT License
+# See docs/Matt Harvey.LICENSE
+
 """Entry point to evolving the neural network. Start here."""
 import logging
 from lib.optimizer import Optimizer
