@@ -25,8 +25,8 @@ for d in jdata:
 #    print(jdata[d])
 #    print(d)
 #    server_category_map[d] = jdata[d]
-    print("%s:%s" % (jdata[d], d))
-    server_category_map[jdata[d]] = d
+    #print("%s:%s" % (d, jdata[d]))
+    server_category_map[d] = jdata[d]
 
 #print(category_map)
 print(server_category_map)
@@ -61,6 +61,7 @@ for item in network_input_index:
     json_data = json.dumps(outjson)
 
     prediction = {}
+    category = {}
 
     headers = {
         'Content-type': 'application/json',
@@ -70,12 +71,13 @@ for item in network_input_index:
 
     try:
         #response = requests.post('https://dicebox.shapeandshare.com/api/prediction', data=json_data, headers=headers)
-        response = requests.post('http://172.16.0.79:5000/api/prediction', data=json_data, headers=headers)
-        #response = requests.post('http://127.0.0.1:5000/api/prediction', data=json_data, headers=headers)
+        #response = requests.post('http://172.16.0.79:5000/api/prediction', data=json_data, headers=headers)
+        response = requests.post('http://127.0.0.1:5000/api/prediction', data=json_data, headers=headers)
         if response is not None:
             if response.status_code != 500:
                 if 'prediction' in response.json():
                     prediction = response.json()['prediction']
+                    category = server_category_map[str(prediction)]
                     #print("server prediction: (%s)" % prediction)
     except:
         print('.')
@@ -107,10 +109,10 @@ for item in network_input_index:
     # Get the local image index for comparision against the server prediction
     # print(metadata[1])
     # print(server_category_map[metadata[1]])
-    print("%s:%s" % (metadata[1], server_category_map[metadata[1]]))
-    print("server prediction: (%s)" % prediction)
+    #print("%s" % (metadata[1]))
+    #print("server prediction: (%s)" % category)
 
-    if int(prediction) == int(server_category_map[metadata[1]]):
+    if category == metadata[1]:
     #if readable_category == metadata[1]:
      print('correct!')
      summary_success += 1
@@ -118,7 +120,7 @@ for item in network_input_index:
      print('FAIL')
      summary_fail += 1
 
-    if count > 10000:
+    if count > 1000:
      count += 1
      break
     else:
