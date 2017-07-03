@@ -24,12 +24,12 @@ ramp_frames = 3
 camera = cv2.VideoCapture(camera_port)
 
 
-#camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 10000);
-#camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 10000);
+camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 1000);
+camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 1000);
 
 # 780x650
-camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 1);
-camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 1);
+#camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 1);
+#camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 1);
 
 #60x50
 #camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 60);
@@ -37,9 +37,9 @@ camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 1);
 
 def get_image():
     # read is the easiest way to get a full image out of a VideoCapture object.
-    retval, im = camera.read()
+    retval, camera_capture = camera.read()
     # Our operations on the frame come here
-    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    im = cv2.cvtColor(camera_capture, cv2.COLOR_BGR2GRAY)
     #resized_im = resize_keep_aspect_ratio(im, 255)
 
     height, width = im.shape[:2]
@@ -68,7 +68,7 @@ def get_image():
     #print("height: (%f)" % height)
     #print("width: (%f)" % width)
 
-    return resized_image
+    return camera_capture, resized_image
 
 
 def resize_keep_aspect_ratio(input, desired_size):
@@ -142,6 +142,15 @@ for d in jdata:
     #print("%s:%s" % (d, jdata[d]))
     server_category_map[d] = jdata[d]
 
+CURRENT_EXPECTED_CATEGORY_INDEX=1
+MAX_EXPECTED_CATEGORY_INDEX = len(server_category_map)
+MISCLASSIFIED_CATEGORY_INDEX = True
+
+KEEP_INPUT = False
+ONLY_KEEP_MISCLASSIFIED_INPUT = True
+
+SERVER_ERROR = False
+
 #print(server_category_map)
 ###############################################################################
 # main loop
@@ -149,17 +158,21 @@ for d in jdata:
 while (True):
     # Take the actual image we want to keep
     #camera_capture, resized_image  = get_image()
-    camera_capture  = get_image()
+    camera_capture, resized_image = get_image()
     filename = datetime.now().strftime('capture_%Y-%m-%d_%H_%M_%S_%f.png')
 
     # A nice feature of the imwrite method is that it will automatically choose the
     # correct format based on the file extension you provide. Convenient!
-    cv2.imwrite('./tmp/%s' % filename, camera_capture)
+    cv2.imwrite('./tmp/%s' % filename, resized_image)
 
     with open('./tmp/%s' % filename, 'rb') as file:
         file_content = file.read()
-    #os.remove('./tmp/%s' % filename)
-    #os.rename('./tmp/%s' % filename, './tmp/1d6_6/%s' % filename)
+
+    if KEEP_INPUT and ONLY_KEEP_MISCLASSIFIED_INPUT and not SERVER_ERROR:
+        os.rename('./tmp/%s' % filename, './tmp/%s/%s' % (server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], filename))
+    else:
+        os.remove('./tmp/%s' % filename)
+
     base64_encoded_content = file_content.encode('base64')
 
     outjson = {}
@@ -182,13 +195,15 @@ while (True):
         response = requests.post('http://127.0.0.1:5000/api/prediction', data=json_data, headers=headers)
         if response is not None:
             if response.status_code != 500:
+                SERVER_ERROR = False
                 if 'prediction' in response.json():
                     prediction = response.json()['prediction']
                     category = server_category_map[str(prediction)]
                     #print("%s" % prediction)
                     #print("%s" % category)
     except:
-        print('.')
+        #print('.')
+        SERVER_ERROR = True
         #raise
 
     #print prediction
@@ -201,7 +216,16 @@ while (True):
     #     os.rename("./tmp/%s" % filename, "./tmp/misclassified/%s" % filename)
 
 
+    #print(MAX_EXPECTED_CATEGORY_INDEX)
+    #print(CURRENT_EXPECTED_CATEGORY_INDEX)
+    #print(server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)])
 
+    if category == server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)]:
+        MISCLASSIFIED_CATEGORY_INDEX = False
+        #print(False)
+    else:
+        MISCLASSIFIED_CATEGORY_INDEX = True
+        #print(True)
 
     cv2.namedWindow('dice box', cv2.WINDOW_NORMAL)
     # lets make a pretty output window
@@ -210,12 +234,40 @@ while (True):
     #cv2.imshow('dice box', camera_capture)
 
     #cv2.putText(camera_capture, "%s" % category, (5, 15), font, 0.5, (255, 255, 255), 1)
-    cv2.putText(camera_capture, "%s" % category, (5, 15), font, 0.3, (255, 255, 255), 1)
-    cv2.imshow('dice box', camera_capture)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    # im[y1:y2, x1:x2]
+    output_display = camera_capture
+    height, width = output_display.shape[:2]
+    output_display[height-50:height, 0:60] = cv2.cvtColor(resized_image, cv.CV_GRAY2RGB)
+
+    output_label = "[pred %s/exp %s][match? %r][record? %r][only keep misclassified? %r][server error? %r]" % (category, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], not MISCLASSIFIED_CATEGORY_INDEX, KEEP_INPUT, ONLY_KEEP_MISCLASSIFIED_INPUT, SERVER_ERROR)
+
+    cv2.putText(output_display, output_label, (5, 15), font, 0.3, (255, 255, 255), 1)
+
+    cv2.imshow('dice box', output_display)
+
+    input_key = cv2.waitKey(1)
+
+    if input_key & 0xFF == ord('q'):
         break
 
+    if input_key & 0xFF == ord('c'):
+        if CURRENT_EXPECTED_CATEGORY_INDEX >= MAX_EXPECTED_CATEGORY_INDEX:
+            CURRENT_EXPECTED_CATEGORY_INDEX = 1
+        else:
+            CURRENT_EXPECTED_CATEGORY_INDEX += 1
+
+    if input_key & 0xFF == ord('z'):
+        if KEEP_INPUT == True:
+            KEEP_INPUT = False
+        else:
+            KEEP_INPUT = True
+
+    if input_key & 0xFF == ord('b'):
+            if ONLY_KEEP_MISCLASSIFIED_INPUT == True:
+                ONLY_KEEP_MISCLASSIFIED_INPUT = False
+            else:
+                ONLY_KEEP_MISCLASSIFIED_INPUT = True
 
 ###############################################################################
 # cleanup
