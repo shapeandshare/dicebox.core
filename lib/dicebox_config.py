@@ -18,6 +18,15 @@ NN_PARAM_CHOICES = {
                   'adadelta', 'adamax', 'nadam'],
 }
 
+# {'nb_layers': 2, 'activation': 'sigmoid', 'optimizer': 'adamax', 'nb_neurons': 987}
+#07/03/2017 04:02:49 AM - INFO - Network accuracy: 97.27%
+NN_LONESTAR_PARAMS = {
+    'nb_neurons': 987,
+    'nb_layers': 2,
+    'activation': 'sigmoid',
+    'optimizer': 'adamax'
+}
+
 EPOCHS = 10000
 GENERATIONS = 100  # Number of times to evole the population.
 POPULATION = 50  # Number of networks in each generation.

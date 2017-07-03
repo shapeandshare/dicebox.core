@@ -83,10 +83,16 @@ class Network():
         # dicebox_60x50
         # {'nb_layers': 2, 'activation': 'sigmoid', 'optimizer': 'adamax', 'nb_neurons': 610}
         # Network accuracy: 92.20 %
-        self.network['nb_layers'] = 2
-        self.network['activation'] = 'sigmoid'
-        self.network['optimizer'] = 'adamax'
-        self.network['nb_neurons'] = 610
+        #self.network['nb_layers'] = 2
+        #self.network['activation'] = 'sigmoid'
+        #self.network['optimizer'] = 'adamax'
+        #self.network['nb_neurons'] = 610
+
+        # Load from external definition
+        self.network['nb_layers'] = config.NN_LONESTAR_PARAMS['nb_layers']
+        self.network['activation'] = config.NN_LONESTAR_PARAMS['activation']
+        self.network['optimizer'] = config.NN_LONESTAR_PARAMS['optimizer']
+        self.network['nb_neurons'] = config.NN_LONESTAR_PARAMS['nb_neurons']
 
         if create_model is True:
             if self.model is None:
