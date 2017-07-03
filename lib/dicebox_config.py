@@ -12,7 +12,7 @@ DATA_DIRECTORY = "%s/%s/data/" % (DATA_BASE_DIRECTORY, NETWORK_NAME)
 #TENSORBOARD_LOGGING = False
 
 
-EPOCHS = 100
+EPOCHS = 10000
 GENERATIONS = 100  # Number of times to evole the population.
 POPULATION = 50  # Number of networks in each generation.
 DATASET = 'dicebox'
@@ -25,9 +25,9 @@ NN_PARAM_CHOICES = {
                   'adadelta', 'adamax', 'nadam'],
 }
 
-NB_CLASSES = 5
-BATCH_SIZE = 200
+NB_CLASSES = 11
+BATCH_SIZE = 5000
 INPUT_SHAPE = (3000,)
-NOISE = 0.9
-TRAIN_BATCH_SIZE = 8000
-TEST_BATCH_SIZE = 2000
+NOISE = 0.3
+TRAIN_BATCH_SIZE = 120000
+TEST_BATCH_SIZE = 10000
