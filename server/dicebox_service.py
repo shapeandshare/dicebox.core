@@ -14,8 +14,7 @@ logging.basicConfig(
     filename="%s/dicebox_server.log" % config.LOGS_DIR
 )
 
-nn_param_choices = config.NN_PARAM_CHOICES
-network = Network(nn_param_choices)
+network = Network(config.NN_PARAM_CHOICES)
 
 def get_prediction(image_data):
     network.create_lonestar(create_model=True, weights_filename="%s/%s" %(config.WEIGHTS_DIR, config.MODEL_WEIGHTS_FILENAME))
