@@ -257,6 +257,7 @@ while (True):
         break
 
     if input_key & 0xFF == ord('c'):
+        KEEP_INPUT = False
         if CURRENT_EXPECTED_CATEGORY_INDEX >= MAX_EXPECTED_CATEGORY_INDEX:
             CURRENT_EXPECTED_CATEGORY_INDEX = 1
         else:
