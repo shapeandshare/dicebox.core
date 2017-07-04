@@ -30,9 +30,9 @@ NN_LONESTAR_PARAMS = {
 EPOCHS = 10000
 GENERATIONS = 100  # Number of times to evole the population.
 POPULATION = 50  # Number of networks in each generation.
-BATCH_SIZE = 10000
-NOISE = 0.3
-TRAIN_BATCH_SIZE = 160000
+BATCH_SIZE = 15000
+NOISE = 0.1
+TRAIN_BATCH_SIZE = 212000
 TEST_BATCH_SIZE = 15000
 
 LOGS_DIR='./logs'
