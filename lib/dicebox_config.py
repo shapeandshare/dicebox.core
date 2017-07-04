@@ -15,7 +15,7 @@ NN_PARAM_CHOICES = {
     'nb_layers': [1, 2, 3, 5, 8, 13, 21],
     'activation': ['relu', 'elu', 'tanh', 'sigmoid'],
     'optimizer': ['rmsprop', 'adam', 'sgd', 'adagrad',
-                  'adadelta', 'adamax', 'nadam'],
+                  'adadelta', 'adamax', 'nadam']
 }
 
 # {'nb_layers': 2, 'activation': 'sigmoid', 'optimizer': 'adamax', 'nb_neurons': 987}
