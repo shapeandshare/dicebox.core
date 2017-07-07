@@ -2,10 +2,12 @@
 # Configuration Options
 ###############################################################################
 
-NETWORK_NAME = 'dicebox_60x50'
 DATASET = 'dicebox'
 NB_CLASSES = 11
-INPUT_SHAPE = (3000,)
+IMAGE_WIDTH=1920
+IMAGE_HEIGHT=1080
+NETWORK_NAME = "%s_%ix%i" % (DATASET, IMAGE_WIDTH, IMAGE_HEIGHT)
+INPUT_SHAPE = (IMAGE_WIDTH*IMAGE_HEIGHT,)
 
 DATA_BASE_DIRECTORY = 'datasets'
 DATA_DIRECTORY = "%s/%s/data/" % (DATA_BASE_DIRECTORY, NETWORK_NAME)
