@@ -4,12 +4,8 @@
 
 """Class that represents the network to be evolved."""
 import random
-import logging
-from keras.callbacks import EarlyStopping
-from keras.datasets import mnist, cifar10
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
-from keras.utils.np_utils import to_categorical
 from keras.callbacks import EarlyStopping
 from keras.callbacks import ModelCheckpoint
 import logging
@@ -29,7 +25,7 @@ checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_o
 callbacks_list = [early_stopper, checkpoint]
 
 
-class Network():
+class Network:
     """Represent a network and let us operate on it.
 
     Currently only works for an MLP.
@@ -52,42 +48,15 @@ class Network():
         self.model = None
 
         if Network.fsc is None:
-            #logging.debug('creating a new fsc..')
+            # logging.debug('creating a new fsc..')
             Network.fsc = filesystem_connecter.FileSystemConnector(config.DATA_DIRECTORY)
-
 
     def create_random(self):
         """Create a random network."""
         for key in self.nn_param_choices:
             self.network[key] = random.choice(self.nn_param_choices[key])
 
-
     def create_lonestar(self, create_model=False, weights_filename=None):
-
-        # mnist
-        # Lonestar /mnist approx 98.6% acc
-        # {'nb_layers': 2, 'activation': 'relu', 'optimizer': 'adagrad', 'nb_neurons': 1597}
-        # self.network['nb_layers'] = 2
-        # self.network['activation'] = 'relu'
-        # self.network['optimizer'] = 'adagrad'
-        # self.network['nb_neurons'] = 1597
-
-        # dicebox 60x50
-        # Network accuracy: 80.50%
-        # {'nb_layers': 1, 'activation': 'sigmoid', 'optimizer': 'adamax', 'nb_neurons': 55}
-        # self.network['nb_layers'] = 1
-        # self.network['activation'] = 'sigmoid'
-        # self.network['optimizer'] = 'adamax'
-        # self.network['nb_neurons'] = 55
-
-        # dicebox_60x50
-        # {'nb_layers': 2, 'activation': 'sigmoid', 'optimizer': 'adamax', 'nb_neurons': 610}
-        # Network accuracy: 92.20 %
-        #self.network['nb_layers'] = 2
-        #self.network['activation'] = 'sigmoid'
-        #self.network['optimizer'] = 'adamax'
-        #self.network['nb_neurons'] = 610
-
         # Load from external definition
         self.network['nb_layers'] = config.NN_LONESTAR_PARAMS['nb_layers']
         self.network['activation'] = config.NN_LONESTAR_PARAMS['activation']
@@ -104,7 +73,6 @@ class Network():
             # else:
             #     logging.info('model already compiled, skipping.')
 
-
     def create_set(self, network):
         """Set network properties.
 
@@ -113,7 +81,6 @@ class Network():
 
         """
         self.network = network
-
 
     def train(self, dataset):
         """Train the network and record the accuracy.
@@ -125,44 +92,21 @@ class Network():
         if self.accuracy == 0.:
             self.accuracy = self.train_and_score(self.network, dataset)
 
-
     def train_and_save(self, dataset):
-    #    if self.accuracy == 0.:
+        # if self.accuracy == 0.:
         self.accuracy = self.train_and_score_and_save(dataset)
-
 
     def print_network(self):
         """Print out a network."""
         logging.info(self.network)
         logging.info("Network accuracy: %.2f%%" % (self.accuracy * 100))
 
-
-#####################################################################################
-#
-#
-#####################################################################################
-
-
     def train_and_score(self, network, dataset):
-
-        """
-        Train the model, return test loss.
-        Args:
-            network (dict): the parameters of the network
-            dataset (str): Dataset to use for training/evaluating
-        """
-
-        # if dataset == 'cifar10':
-        #     nb_classes, batch_size, input_shape, x_train, \
-        #         x_test, y_train, y_test = get_cifar10()
-        # elif dataset == 'mnist':
-        #     nb_classes, batch_size, input_shape, x_train, \
-        #         x_test, y_train, y_test = get_mnist_filesystem()
-        # el
-
         if dataset == 'dicebox':
             nb_classes, batch_size, input_shape, x_train, \
                 x_test, y_train, y_test = self.get_dicebox_filesystem()
+        else:
+            raise
 
         model = self.compile_model(network, nb_classes, input_shape)
 
@@ -180,17 +124,7 @@ class Network():
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
-
     def compile_model(self, network, nb_classes, input_shape):
-        """Compile a sequential model.
-    
-        Args:
-            network (dict): the parameters of the network
-    
-        Returns:
-            a compiled network.
-    
-        """
         # Get our network parameters.
         nb_layers = network['nb_layers']
         nb_neurons = network['nb_neurons']
@@ -218,9 +152,7 @@ class Network():
 
         return model
 
-
     def get_dicebox_filesystem(self):
-
         nb_classes = config.NB_CLASSES
         batch_size = config.BATCH_SIZE
         input_shape = config.INPUT_SHAPE
@@ -248,28 +180,11 @@ class Network():
         x_test = test_image_data
         y_train = train_image_labels
         y_test = test_image_labels
-        return (nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test)
-
+        return nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test
 
     def train_and_score_and_save(self, dataset):
-        """Train the model, return test loss.
-
-        Args:
-            network (dict): the parameters of the network
-            dataset (str): Dataset to use for training/evaluating
-
-        """
-        #if dataset == 'cifar10':
-        #    nb_classes, batch_size, input_shape, x_train, \
-        #    x_test, y_train, y_test = get_cifar10()
-        #elif dataset == 'mnist':
-        #    nb_classes, batch_size, input_shape, x_train, \
-        #    x_test, y_train, y_test = get_mnist_filesystem()
-        #el
-
         if dataset == 'dicebox':
-            nb_classes, batch_size, input_shape, x_train, \
-            x_test, y_train, y_test = self.get_dicebox_filesystem()
+            nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_filesystem()
         else:
             # no support yet!
             logging.error('UNSUPPORTED dataset supplied to train_and_score_and_save')
@@ -289,11 +204,9 @@ class Network():
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
-
     def save_model(self, filename):
         logging.debug('saving model weights to file..')
         self.model.save(filename)
-
 
     def load_model(self, filename):
         if self.model is None:
@@ -302,17 +215,7 @@ class Network():
         logging.debug('loading weights file..')
         self.model.load_weights(filename)
 
-
     def predict(self, dataset, network_input):
-        # if dataset == 'cifar10':
-        #     nb_classes, batch_size, input_shape, _, \
-        #     x_test, _, y_test = get_cifar10()
-        # elif dataset == 'mnist':
-        #     nb_classes, batch_size, input_shape, x_test, y_test = get_mnist_test()
-        # elif dataset == 'dicebox':
-        #     nb_classes, batch_size, input_shape, x_test, y_test = get_dicebox_filesystem_test()
-        # el
-
         if dataset == 'dicebox_raw':
             x_test = self.get_dicebox_raw(network_input)
         else:
@@ -327,7 +230,6 @@ class Network():
         logging.info(model_prediction)
 
         return model_prediction
-
 
     def get_dicebox_raw(self, raw_image_data):
         # ugh dump to file for the time being

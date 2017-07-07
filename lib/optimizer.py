@@ -14,7 +14,8 @@ from operator import add
 import random
 from network import Network
 
-class Optimizer():
+
+class Optimizer:
     """Class that implements genetic algorithm for MLP optimization."""
 
     def __init__(self, nn_param_choices, retain=0.4,

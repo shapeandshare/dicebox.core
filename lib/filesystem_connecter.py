@@ -8,7 +8,7 @@ import logging
 # from datetime import datetime  # used when dumping raw transforms to disk
 
 
-class FileSystemConnector():
+class FileSystemConnector:
 
     DATASET_INDEX = None
     DATA_DIRECTORY = None
@@ -29,7 +29,6 @@ class FileSystemConnector():
             logging.debug('CATEGORY_MAP')
             logging.debug(FileSystemConnector.CATEGORY_MAP)
 
-
     def get_batch_list(self, batch_size):
         output = []
         set_size = len(FileSystemConnector.DATASET_INDEX)
@@ -48,7 +47,6 @@ class FileSystemConnector():
         for i in output_list:
             output.append(value_list[i])
         return output
-
 
     def get_batch(self, batch_size, noise=0):
         image_data = []
@@ -77,12 +75,11 @@ class FileSystemConnector():
                 logging.debug("loaded cached pixel data for (%s)" % filename)
             else:
                 pixel_data = self.process_image(filename, noise)
-                FileSystemConnector.PIXEL_CACHE[filename] = pixel_data # add to cache
+                FileSystemConnector.PIXEL_CACHE[filename] = pixel_data  # add to cache
                 logging.debug("cached pixel data for (%s)" % filename)
 
             image_data.append(pixel_data)
         return [image_data, image_labels]
-
 
     def lucky(self, noise=0.0):
         if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
@@ -90,48 +87,47 @@ class FileSystemConnector():
             return True
         return False
 
-
     def process_image(self, filename, noise=0):
         pixel_data = array('B')
 
-        Im = Image.open(filename)
+        im = Image.open(filename)
 
-        original_width, original_height = Im.size
+        original_width, original_height = im.size
         # original_size = original_width, original_height
         logging.debug("original size: (%i, %i)" % (original_width, original_height))
 
-        ## See if there is noise
+        # See if there is noise
         if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
             #  # then we introduce noise
             rotation_angle = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255 * 25
             if float(ord(struct.unpack('c', os.urandom(1))[0])) / 255 > 0.5:
                 rotation_angle = rotation_angle * -1
             logging.debug("Rotating image %f" % rotation_angle)
-            Im = Im.rotate(rotation_angle)
-            logging.debug("new size: (%i, %i)" % (Im.size[0], Im.size[1]))
+            im = im.rotate(rotation_angle)
+            logging.debug("new size: (%i, %i)" % (im.size[0], im.size[1]))
 
         # Perform a random scale
         if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
             # random_scale = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
             random_scale = 2 * float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
-            while (random_scale < 0.9):
+            while random_scale < 0.9:
                 random_scale = 2 * float(ord(struct.unpack('c', os.urandom(1))[0])) / 500
 
             logging.debug("Scaling image %f" % random_scale)
-            width, height = Im.size
+            width, height = im.size
             new_width = int(width * random_scale)
             new_height = int(height * random_scale)
             if new_width > 0 and new_height > 0:
                 new_size = int(width * random_scale), int(height * random_scale)
                 # logging.info(new_size)
-                Im = Im.resize(new_size)
-                # Im = Im.resize(new_size, Image.ANTIALIAS)
-                logging.debug("new size: (%i, %i)" % (Im.size[0], Im.size[1]))
+                im = im.resize(new_size)
+                # im = im.resize(new_size, Image.ANTIALIAS)
+                logging.debug("new size: (%i, %i)" % (im.size[0], im.size[1]))
 
         # Crop Image If Required
         logging.debug('Crop image if required')
         # Now ensure we are the same dimensions as when we started
-        new_width, new_height = Im.size
+        new_width, new_height = im.size
         # if new_width > original_width or new_height > original_height:
         new_middle_x = float(new_width) / 2
         new_middle_y = float(new_height) / 2
@@ -144,18 +140,18 @@ class FileSystemConnector():
         logging.debug("right: %i" % right)
         logging.debug("lower: %i" % lower)
 
-        Im = Im.crop((left, upper, right, lower))
-        logging.debug("new size: (%i, %i)" % (Im.size[0], Im.size[1]))
-        Im = Im.resize((original_width, original_height), Image.ANTIALIAS)
-        logging.debug("new size: (%i, %i)" % (Im.size[0], Im.size[1]))
+        im = im.crop((left, upper, right, lower))
+        logging.debug("new size: (%i, %i)" % (im.size[0], im.size[1]))
+        im = im.resize((original_width, original_height), Image.ANTIALIAS)
+        logging.debug("new size: (%i, %i)" % (im.size[0], im.size[1]))
 
         # dump to file for manual review
         # filename = datetime.now().strftime('transform_%Y-%m-%d_%H_%M_%S_%f.png')
-        # Im.save("./tmp/%s" % filename)
+        # im.save("./tmp/%s" % filename)
 
-        pixel = Im.load()
+        pixel = im.load()
 
-        width, height = Im.size
+        width, height = im.size
 
         for x in range(0, width):
             for y in range(0, height):
@@ -170,7 +166,6 @@ class FileSystemConnector():
 
         data = numpy.frombuffer(pixel_data, dtype=numpy.uint8)
         return data
-
 
     def get_data_set_categories(self):
         natural_categories = []
@@ -189,10 +184,9 @@ class FileSystemConnector():
         # logging.info(category_map)
         return category_map
 
-
     def get_data_set(self):
         # data_directory = '/home/console/Workbench/Repositories/dicebox/train/data/'
-        #data_directory = FileSystemConnector.DATA_DIRECTORY
+        # data_directory = FileSystemConnector.DATA_DIRECTORY
         data_set = {}
         for root, dirnames, filenames in os.walk(FileSystemConnector.DATA_DIRECTORY):
             for filename in fnmatch.filter(filenames, '*.png'):
