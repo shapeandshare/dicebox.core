@@ -1,7 +1,8 @@
 ###############################################################################
 # dice box
 ###############################################################################
-import cv, cv2
+import cv
+import cv2
 from datetime import datetime
 import json
 import requests
@@ -28,12 +29,13 @@ camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, config.IMAGE_WIDTH)
 camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, config.IMAGE_HEIGHT)
 
 # 780x650
-#camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 1);
-#camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 1);
+# camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 1);
+# camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 1);
 
-#60x50
-#camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 60);
-#camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 50);
+# 60x50
+# camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 60);
+# camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 50);
+
 
 def get_image():
     retval, im = camera.read()
@@ -41,8 +43,8 @@ def get_image():
     return im
 
 
-def resize_keep_aspect_ratio(input, desired_size):
-    height, width = input.shape[:2]
+def resize_keep_aspect_ratio(input_image, desired_size):
+    height, width = input_image.shape[:2]
 
     height = float(height)
     width = float(width)
@@ -67,7 +69,6 @@ def resize_keep_aspect_ratio(input, desired_size):
         new_width = width * scale
         x = (desired_size - new_width) / 2
 
-
     # print("desired size: (%f)" % desired_size)
     # print("x: (%f)" % x)
     # print("y: (%f)" % y)
@@ -77,14 +78,14 @@ def resize_keep_aspect_ratio(input, desired_size):
     # print("new_height: (%i)" % new_height)
     # print("new_width: (%i)" % new_width)
 
-    resized_input = cv2.resize(input, (new_width, new_height))
+    resized_input = cv2.resize(input_image, (new_width, new_height))
 
     output = numpy.zeros((desired_size, desired_size), numpy.uint8)
 
     x_offset = int(math.floor(x+new_width))
     y_offset = int(math.floor(y+new_height))
-    #print("x_offset: (%i)" % x_offset)
-    #print("y_offset: (%i)" % y_offset)
+    # print("x_offset: (%i)" % x_offset)
+    # print("y_offset: (%i)" % y_offset)
 
     # new lets drop the resized imput onto the output
     output[int(y):int(y_offset), int(x):int(x_offset)] = resized_input
@@ -99,20 +100,18 @@ for i in xrange(ramp_frames):
 
 font = cv.CV_FONT_HERSHEY_SIMPLEX
 
-
-
 with open("%s/category_map.txt" % config.DATA_DIRECTORY) as data_file:
     jdata = json.load(data_file)
 
 server_category_map = {}
 for d in jdata:
-#    print(jdata[d])
-#    print(d)
-#    server_category_map[d] = jdata[d]
-    #print("%s:%s" % (d, jdata[d]))
+    # print(jdata[d])
+    # print(d)
+    # server_category_map[d] = jdata[d]
+    # print("%s:%s" % (d, jdata[d]))
     server_category_map[d] = jdata[d]
 
-CURRENT_EXPECTED_CATEGORY_INDEX=1
+CURRENT_EXPECTED_CATEGORY_INDEX = 1
 MAX_EXPECTED_CATEGORY_INDEX = len(server_category_map)
 MISCLASSIFIED_CATEGORY_INDEX = True
 
@@ -121,13 +120,12 @@ ONLY_KEEP_MISCLASSIFIED_INPUT = True
 
 SERVER_ERROR = False
 
-#print(server_category_map)
 ###############################################################################
 # main loop
 ###############################################################################
-while (True):
+while True:
     # Take the actual image we want to keep
-    #camera_capture, resized_image  = get_image()
+    # camera_capture, resized_image  = get_image()
     camera_capture = get_image()
     filename = datetime.now().strftime('capture_%Y-%m-%d_%H_%M_%S_%f.png')
 
@@ -135,12 +133,12 @@ while (True):
     # correct format based on the file extension you provide. Convenient!
     cv2.imwrite('./tmp/%s' % filename, camera_capture)
 
-    with open('./tmp/%s' % filename, 'rb') as file:
-        file_content = file.read()
+    with open('./tmp/%s' % filename, 'rb') as tmp_file:
+        file_content = tmp_file.read()
 
     if KEEP_INPUT:
-        #print(MISCLASSIFIED_CATEGORY_INDEX)
-        #print(ONLY_KEEP_MISCLASSIFIED_INPUT)
+        # print(MISCLASSIFIED_CATEGORY_INDEX)
+        # print(ONLY_KEEP_MISCLASSIFIED_INPUT)
         if not MISCLASSIFIED_CATEGORY_INDEX and ONLY_KEEP_MISCLASSIFIED_INPUT:
             os.remove('./tmp/%s' % filename)
         else:
@@ -157,7 +155,7 @@ while (True):
 
     prediction = {}
     category = {}
-    #print ('sending over the wire: %s' % json_data)
+    # print ('sending over the wire: %s' % json_data)
     headers = {
         'Content-type': 'application/json',
         'API-ACCESS-KEY': '6{t}*At&R;kbgl>Mr"K]=F+`EEe',
@@ -165,8 +163,8 @@ while (True):
     }
 
     try:
-        #response = requests.post('https://dicebox.shapeandshare.com/api/prediction', data=json_data, headers=headers)
-        #response = requests.post('http://172.16.0.79:5000/api/prediction', data=json_data, headers=headers)
+        # response = requests.post('https://dicebox.shapeandshare.com/api/prediction', data=json_data, headers=headers)
+        # response = requests.post('http://172.16.0.79:5000/api/prediction', data=json_data, headers=headers)
         response = requests.post('http://127.0.0.1:5000/api/prediction', data=json_data, headers=headers)
         if response is not None:
             if response.status_code != 500:
@@ -174,14 +172,14 @@ while (True):
                 if 'prediction' in response.json():
                     prediction = response.json()['prediction']
                     category = server_category_map[str(prediction)]
-                    #print("%s" % prediction)
-                    #print("%s" % category)
+                    # print("%s" % prediction)
+                    # print("%s" % category)
     except:
-        #print('.')
+        # print('.')
         SERVER_ERROR = True
-        #raise
+        # raise
 
-    #print prediction
+    # print prediction
 
     # training_category = '1d4_4'
     # if category == training_category:
@@ -190,30 +188,29 @@ while (True):
     #     print('misclassified')
     #     os.rename("./tmp/%s" % filename, "./tmp/misclassified/%s" % filename)
 
-
-    #print(MAX_EXPECTED_CATEGORY_INDEX)
-    #print(CURRENT_EXPECTED_CATEGORY_INDEX)
-    #print(server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)])
+    # print(MAX_EXPECTED_CATEGORY_INDEX)
+    # print(CURRENT_EXPECTED_CATEGORY_INDEX)
+    # print(server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)])
 
     if category == server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)]:
         MISCLASSIFIED_CATEGORY_INDEX = False
-        #print(False)
+        # print(False)
     else:
         MISCLASSIFIED_CATEGORY_INDEX = True
-        #print(True)
+        # print(True)
 
     cv2.namedWindow('dice box', cv2.WINDOW_NORMAL)
     # lets make a pretty output window
 
-    #cv2.putText(camera_capture, "%s" % prediction, (20, 20), font, 0.5, (255, 255, 255), 1)
-    #cv2.imshow('dice box', camera_capture)
+    # cv2.putText(camera_capture, "%s" % prediction, (20, 20), font, 0.5, (255, 255, 255), 1)
+    # cv2.imshow('dice box', camera_capture)
 
-    #cv2.putText(camera_capture, "%s" % category, (5, 15), font, 0.5, (255, 255, 255), 1)
+    # cv2.putText(camera_capture, "%s" % category, (5, 15), font, 0.5, (255, 255, 255), 1)
 
     # im[y1:y2, x1:x2]
     output_display = camera_capture
-    #height, width = output_display.shape[:2]
-    #output_display[height-50:height, 0:60] = cv2.cvtColor(resized_image, cv.CV_GRAY2RGB)
+    # height, width = output_display.shape[:2]
+    # output_display[height-50:height, 0:60] = cv2.cvtColor(resized_image, cv.CV_GRAY2RGB)
 
     output_label = "[pred %s/exp %s][match? %r][record? %r][only keep misclassified? %r][server error? %r]" % (category, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], not MISCLASSIFIED_CATEGORY_INDEX, KEEP_INPUT, ONLY_KEEP_MISCLASSIFIED_INPUT, SERVER_ERROR)
 
@@ -234,13 +231,13 @@ while (True):
             CURRENT_EXPECTED_CATEGORY_INDEX += 1
 
     if input_key & 0xFF == ord('z'):
-        if KEEP_INPUT == True:
+        if KEEP_INPUT is True:
             KEEP_INPUT = False
         else:
             KEEP_INPUT = True
 
     if input_key & 0xFF == ord('b'):
-            if ONLY_KEEP_MISCLASSIFIED_INPUT == True:
+            if ONLY_KEEP_MISCLASSIFIED_INPUT is True:
                 ONLY_KEEP_MISCLASSIFIED_INPUT = False
             else:
                 ONLY_KEEP_MISCLASSIFIED_INPUT = True
