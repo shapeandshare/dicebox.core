@@ -12,6 +12,7 @@ logging.basicConfig(
     filename="%s/lonestar_train.log" % config.LOGS_DIR
 )
 
+
 def main():
     network = Network(config.NN_PARAM_CHOICES)
     network.create_lonestar()
