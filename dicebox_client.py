@@ -24,8 +24,8 @@ ramp_frames = 3
 camera = cv2.VideoCapture(camera_port)
 
 
-camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 1000);
-camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 1000);
+camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, config.IMAGE_WIDTH)
+camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, config.IMAGE_HEIGHT)
 
 # 780x650
 #camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 1);
@@ -36,39 +36,9 @@ camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 1000);
 #camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 50);
 
 def get_image():
-    # read is the easiest way to get a full image out of a VideoCapture object.
-    retval, camera_capture = camera.read()
-    # Our operations on the frame come here
-    im = cv2.cvtColor(camera_capture, cv2.COLOR_BGR2GRAY)
-    #resized_im = resize_keep_aspect_ratio(im, 255)
-
-    height, width = im.shape[:2]
-
-    extra_height = float(height) % 60
-    height_offset = int(extra_height / 2)
-
-    extra_width = float(width) % 50
-    width_offset = int(extra_width / 2)
-
-    # now crop
-    x1 = int(0 + width_offset)
-    y1 = int(0 + height_offset)
-    x2 = int(width - width_offset)
-    y2 = int(height - height_offset)
-    #print("(%i, %i), (%i, %i)" % (y1, y2, x1, x2))
-    cropped_image = im[y1:y2, x1:x2]
-
-
-    resized_image = cv2.resize(cropped_image, (60, 50))
-    # resized_image = cv2.resize(im, (60, 50))
-    height, width = resized_image.shape[:2]
-
-    height = float(height)
-    width = float(width)
-    #print("height: (%f)" % height)
-    #print("width: (%f)" % width)
-
-    return camera_capture, resized_image
+    retval, im = camera.read()
+    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    return im
 
 
 def resize_keep_aspect_ratio(input, desired_size):
@@ -158,17 +128,17 @@ SERVER_ERROR = False
 while (True):
     # Take the actual image we want to keep
     #camera_capture, resized_image  = get_image()
-    camera_capture, resized_image = get_image()
+    camera_capture = get_image()
     filename = datetime.now().strftime('capture_%Y-%m-%d_%H_%M_%S_%f.png')
 
     # A nice feature of the imwrite method is that it will automatically choose the
     # correct format based on the file extension you provide. Convenient!
-    cv2.imwrite('./tmp/%s' % filename, resized_image)
+    cv2.imwrite('./tmp/%s' % filename, camera_capture)
 
     with open('./tmp/%s' % filename, 'rb') as file:
         file_content = file.read()
 
-    if KEEP_INPUT and not SERVER_ERROR:
+    if KEEP_INPUT:
         #print(MISCLASSIFIED_CATEGORY_INDEX)
         #print(ONLY_KEEP_MISCLASSIFIED_INPUT)
         if not MISCLASSIFIED_CATEGORY_INDEX and ONLY_KEEP_MISCLASSIFIED_INPUT:
@@ -242,12 +212,12 @@ while (True):
 
     # im[y1:y2, x1:x2]
     output_display = camera_capture
-    height, width = output_display.shape[:2]
-    output_display[height-50:height, 0:60] = cv2.cvtColor(resized_image, cv.CV_GRAY2RGB)
+    #height, width = output_display.shape[:2]
+    #output_display[height-50:height, 0:60] = cv2.cvtColor(resized_image, cv.CV_GRAY2RGB)
 
     output_label = "[pred %s/exp %s][match? %r][record? %r][only keep misclassified? %r][server error? %r]" % (category, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], not MISCLASSIFIED_CATEGORY_INDEX, KEEP_INPUT, ONLY_KEEP_MISCLASSIFIED_INPUT, SERVER_ERROR)
 
-    cv2.putText(output_display, output_label, (5, 15), font, 0.3, (255, 255, 255), 1)
+    cv2.putText(output_display, output_label, (5, 30), font, 1.0, (255, 255, 255), 1)
 
     cv2.imshow('dice box', output_display)
 
