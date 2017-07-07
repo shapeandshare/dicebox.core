@@ -22,8 +22,8 @@ ramp_frames = 3
 # All it needs is the index to a camera port.
 camera = cv2.VideoCapture(camera_port)
 
-camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 10000);
-camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 10000);
+camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 1920);
+camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 1080);
 
 
 def get_image():

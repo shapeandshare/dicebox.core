@@ -2,10 +2,12 @@
 # Configuration Options
 ###############################################################################
 
-NETWORK_NAME = 'dicebox_60x50'
 DATASET = 'dicebox'
 NB_CLASSES = 11
-INPUT_SHAPE = (3000,)
+IMAGE_WIDTH=1920
+IMAGE_HEIGHT=1080
+NETWORK_NAME = "%s_%ix%i" % (DATASET, IMAGE_WIDTH, IMAGE_HEIGHT)
+INPUT_SHAPE = (IMAGE_WIDTH*IMAGE_HEIGHT,)
 
 DATA_BASE_DIRECTORY = 'datasets'
 DATA_DIRECTORY = "%s/%s/data/" % (DATA_BASE_DIRECTORY, NETWORK_NAME)
@@ -30,10 +32,17 @@ NN_LONESTAR_PARAMS = {
 EPOCHS = 10000
 GENERATIONS = 100  # Number of times to evole the population.
 POPULATION = 50  # Number of networks in each generation.
-BATCH_SIZE = 15000
 NOISE = 0.1
-TRAIN_BATCH_SIZE = 212000
-TEST_BATCH_SIZE = 15000
+
+# Settings for the 1920x1080 dataset
+BATCH_SIZE = 150
+TRAIN_BATCH_SIZE = 3100
+TEST_BATCH_SIZE = 300
+
+# Settings for the 60x50 dataset
+#BATCH_SIZE = 15000
+#TRAIN_BATCH_SIZE = 212000
+#TEST_BATCH_SIZE = 15000
 
 LOGS_DIR='./logs'
 WEIGHTS_DIR='./weights'
