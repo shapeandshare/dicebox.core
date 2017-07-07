@@ -16,8 +16,9 @@ logging.basicConfig(
 
 network = Network(config.NN_PARAM_CHOICES)
 
+
 def get_prediction(image_data):
-    network.create_lonestar(create_model=True, weights_filename="%s/%s" %(config.WEIGHTS_DIR, config.MODEL_WEIGHTS_FILENAME))
+    network.create_lonestar(create_model=True, weights_filename="%s/%s" % (config.WEIGHTS_DIR, config.MODEL_WEIGHTS_FILENAME))
     try:
         prediction = network.predict('dicebox_raw', image_data)
         logging.info("prediction class: (%s)" % prediction)
@@ -29,6 +30,7 @@ def get_prediction(image_data):
 
 
 app = Flask(__name__)
+
 
 @app.route('/api/prediction', methods=['POST'])
 def make_api_prediction_public():
@@ -45,12 +47,12 @@ def make_api_prediction_public():
     decoded_image_data = base64.b64decode(predication_data)
     prediction = get_prediction(decoded_image_data)
 
-    return make_response(jsonify({'prediction': prediction }), 201)
+    return make_response(jsonify({'prediction': prediction}), 201)
 
 
 @app.route('/api/version', methods=['GET'])
 def make_version_public():
-    return make_response(jsonify({ 'version':  str(config.API_VERSION)}), 201)
+    return make_response(jsonify({'version':  str(config.API_VERSION)}), 201)
 
 
 @app.route('/health/plain', methods=['GET'])
@@ -65,4 +67,4 @@ def not_found(error):
 
 if __name__ == '__main__':
     logging.debug('starting flask app')
-    app.run(debug=config.FLASK_DEBUG,host=config.LISTENING_HOST, threaded=True)
+    app.run(debug=config.FLASK_DEBUG, host=config.LISTENING_HOST, threaded=True)
