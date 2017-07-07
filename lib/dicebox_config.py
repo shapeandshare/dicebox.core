@@ -80,4 +80,3 @@ API_VERSION = my_config.get('SERVER', 'api_version')
 LISTENING_HOST = my_config.get('SERVER', 'listening_host')
 FLASK_DEBUG = my_config.getboolean('SERVER', 'flask_debug')
 MODEL_WEIGHTS_FILENAME = my_config.get('SERVER', 'model_weights_filename')
-
