@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request, make_response, abort
 import base64
 from lib.network import Network
 import logging
+import json
 
 # Setup logging.
 logging.basicConfig(
@@ -15,6 +16,12 @@ logging.basicConfig(
 )
 
 network = Network(config.NN_PARAM_CHOICES)
+
+with open('./category_map.json') as data_file:
+    jdata = json.load(data_file)
+server_category_map = {}
+for d in jdata:
+    server_category_map[str(jdata[d])] = str(d)
 
 
 def get_classification(image_data):
@@ -30,6 +37,16 @@ def get_classification(image_data):
 
 
 app = Flask(__name__)
+
+
+@app.route('/api/categories', methods=['POST'])
+def make_api_categorymap_public():
+    if request.headers['API-ACCESS-KEY'] != config.API_ACCESS_KEY:
+        abort(401)
+    if request.headers['API-VERSION'] != config.API_VERSION:
+        abort(400)
+
+    return make_response(jsonify({'category_map': server_category_map}), 201)
 
 
 @app.route('/api/classify', methods=['POST'])
