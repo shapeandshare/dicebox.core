@@ -215,15 +215,15 @@ class Network:
         logging.debug('loading weights file..')
         self.model.load_weights(filename)
 
-    def predict(self, dataset, network_input):
+    def classify(self, dataset, network_input):
         if dataset == 'dicebox_raw':
             x_test = self.get_dicebox_raw(network_input)
         else:
-            logging.error("UNKNOWN DATASET (%s) passed to predict_single" % dataset)
+            logging.error("UNKNOWN DATASET (%s) passed to classify" % dataset)
             raise
 
         if self.model is None:
-            logging.error('Unable to predict without a model. :(')
+            logging.error('Unable to classify without a model. :(')
             raise
 
         model_prediction = self.model.predict_classes(x_test, batch_size=1, verbose=0)

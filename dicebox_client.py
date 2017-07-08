@@ -139,13 +139,13 @@ while True:
     }
 
     try:
-        url = "%s%s:%i/api/prediction" % (config.SERVER_URI, config.CLASSIFICATION_SERVER, config.SERVER_PORT)
+        url = "%s%s:%i/api/classify" % (config.SERVER_URI, config.CLASSIFICATION_SERVER, config.SERVER_PORT)
         response = requests.post(url, data=json_data, headers=headers)
         if response is not None:
             if response.status_code != 500:
                 SERVER_ERROR = False
-                if 'prediction' in response.json():
-                    prediction = response.json()['prediction']
+                if 'classification' in response.json():
+                    prediction = response.json()['classification']
                     category = server_category_map[str(prediction)]
     except:
         SERVER_ERROR = True
