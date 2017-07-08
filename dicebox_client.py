@@ -183,7 +183,7 @@ while True:
     cv2.namedWindow('dice box', cv2.WINDOW_NORMAL)
     output_display = camera_capture
 
-    output_label_1 = "[pred %s/exp %s][match? %r]" % (category, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], not MISCLASSIFIED_CATEGORY_INDEX)
+    output_label_1 = "[classified %s/expected %s][match? %r]" % (category, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], not MISCLASSIFIED_CATEGORY_INDEX)
     output_label_2 = "[record? %r][only keep misclassified? %r]" % (KEEP_INPUT, ONLY_KEEP_MISCLASSIFIED_INPUT)
     output_label_3 = "[server error? %r]" % SERVER_ERROR
 
