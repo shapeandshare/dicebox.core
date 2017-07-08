@@ -90,10 +90,7 @@ Start the service:
 Dicebox API
 ===========
 
-Default URL for API
-
-`http(s)://{host}:5000/`
-
+Default URL for API: `http(s)://{hostname}:5000/`
 
 Anonymous End-Points
 -------------------
