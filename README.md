@@ -114,7 +114,7 @@ Result:
 `
 
 **Get Service Health**
-
+ 
 For use in load balanced environments.
 
 ```
@@ -147,21 +147,16 @@ Used to classify the image data.
 ```
     [POST] /classify
 ```
-Post Body
-
-```
-    {
-        "data": "Base64 encoded PNG image"
-    }
-```
+Post Body: 
+` { "data": "Base64 encoded PNG image" }`
 
 Result:  The label index for the classification.
 
 Example
 ```
-{
-    "classification": 7
-}
+    {
+        "classification": 7
+    }
 
 ```
 **Get Categories**
@@ -178,21 +173,21 @@ A list of label to index mappings.
 Example
 
 ```
-{
-    "category_map": {
-        "0": "1d4_1",
-        "1": "1d4_2",
-        "2": "1d4_3",
-        "3": "1d4_4",
-        "4": "1d6_1",
-        "5": "1d6_2",
-        "6": "1d6_3",
-        "7": "1d6_4",
-        "8": "1d6_5",
-        "9": "1d6_6",
-        "10": "unknown"
+    {
+        "category_map": {
+            "0": "1d4_1",
+            "1": "1d4_2",
+            "2": "1d4_3",
+            "3": "1d4_4",
+            "4": "1d6_1",
+            "5": "1d6_2",
+            "6": "1d6_3",
+            "7": "1d6_4",
+            "8": "1d6_5",
+            "9": "1d6_6",
+            "10": "unknown"
+        }
     }
-}
 ```
 
 Client Consumption
