@@ -101,7 +101,7 @@ for i in xrange(ramp_frames):
 
 
 
-with open("%s/category_map.txt" % config.DATA_DIRECTORY) as data_file:
+with open('./category_map.json') as data_file:
     jdata = json.load(data_file)
 
 server_category_map = {}
@@ -110,7 +110,10 @@ for d in jdata:
     # print(d)
     # server_category_map[d] = jdata[d]
     # print("%s:%s" % (d, jdata[d]))
-    server_category_map[d] = jdata[d]
+    # server_category_map[d] = jdata[d]
+    server_category_map[str(jdata[d])] = str(d)
+
+# print(server_category_map)
 
 CURRENT_EXPECTED_CATEGORY_INDEX = 1
 MAX_EXPECTED_CATEGORY_INDEX = len(server_category_map)
@@ -129,23 +132,24 @@ while True:
     # camera_capture, resized_image  = get_image()
     camera_capture = get_image()
     filename = datetime.now().strftime('capture_%Y-%m-%d_%H_%M_%S_%f.png')
+    tmp_file_path = "%s/%s" % (config.TMP_DIR, filename)
 
     # A nice feature of the imwrite method is that it will automatically choose the
     # correct format based on the file extension you provide. Convenient!
-    cv2.imwrite('./tmp/%s' % filename, camera_capture)
+    cv2.imwrite(tmp_file_path, camera_capture)
 
-    with open('./tmp/%s' % filename, 'rb') as tmp_file:
+    with open(tmp_file_path, 'rb') as tmp_file:
         file_content = tmp_file.read()
 
     if KEEP_INPUT:
         # print(MISCLASSIFIED_CATEGORY_INDEX)
         # print(ONLY_KEEP_MISCLASSIFIED_INPUT)
         if not MISCLASSIFIED_CATEGORY_INDEX and ONLY_KEEP_MISCLASSIFIED_INPUT:
-            os.remove('./tmp/%s' % filename)
+            os.remove(tmp_file_path)
         else:
-            os.rename('./tmp/%s' % filename, './tmp/%s/%s' % (server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], filename))
+            os.rename(tmp_file_path, '%s/%s/%s' % (config.TMP_DIR, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], filename))
     else:
-        os.remove('./tmp/%s' % filename)
+        os.remove(tmp_file_path)
 
     base64_encoded_content = file_content.encode('base64')
 
@@ -159,14 +163,13 @@ while True:
     # print ('sending over the wire: %s' % json_data)
     headers = {
         'Content-type': 'application/json',
-        'API-ACCESS-KEY': '6{t}*At&R;kbgl>Mr"K]=F+`EEe',
-        'API-VERSION': '0.1.0'
+        'API-ACCESS-KEY': config.API_ACCESS_KEY,
+        'API-VERSION': config.API_VERSION
     }
 
     try:
-        # response = requests.post('https://dicebox.shapeandshare.com/api/prediction', data=json_data, headers=headers)
-        # response = requests.post('http://172.16.0.79:5000/api/prediction', data=json_data, headers=headers)
-        response = requests.post('http://127.0.0.1:5000/api/prediction', data=json_data, headers=headers)
+        url = "%s%s:%i/api/prediction" % (config.SERVER_URI, config.CLASSIFICATION_SERVER, config.SERVER_PORT)
+        response = requests.post(url, data=json_data, headers=headers)
         if response is not None:
             if response.status_code != 500:
                 SERVER_ERROR = False
