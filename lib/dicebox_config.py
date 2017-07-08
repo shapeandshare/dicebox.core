@@ -29,8 +29,8 @@ DATA_DIRECTORY = "%s/%s/data/" % (DATA_BASE_DIRECTORY, NETWORK_NAME)
 NN_PARAM_CHOICES = {
     'nb_neurons': json.loads(my_config.get('TAXONOMY', 'neurons')),
     'nb_layers': json.loads(my_config.get('TAXONOMY', 'layers')),
-    'activation': my_config.get('TAXONOMY', 'activation'),
-    'optimizer': my_config.get('TAXONOMY', 'optimizer')
+    'activation': json.loads(my_config.get('TAXONOMY', 'activation')),
+    'optimizer': json.loads(my_config.get('TAXONOMY', 'optimizer'))
 }
 
 
