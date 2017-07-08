@@ -25,10 +25,10 @@ Those who need automated dice roll recognition, or wish to use dicebox on anothe
 Quick Start
 -----------
 ```
-screen
-cd {project_root}
-pip install -r requirements.txt
-source ~/tensorflow/bin/active
+    screen
+    cd {project_root}
+    pip install -r requirements.txt
+    source ~/tensorflow/bin/active
 ```
 
 Requirements
@@ -38,81 +38,173 @@ Requirements
 
 The requirements can be automatically installed using the below command:
 ```
-pip install -r requirements.txt
+    pip install -r requirements.txt
 ```
 These are the individual modules required by this project:
 
 ```
-requests==2.13.0
-numpy==1.11.0
-Flask==0.12.1
-tqdm==4.14.0
-tensorflow==1.1.0
-Keras==2.0.4
-Pillow==4.2.0
+    requests==2.13.0
+    numpy==1.11.0
+    Flask==0.12.1
+    tqdm==4.14.0
+    tensorflow==1.1.0
+    Keras==2.0.4
+    Pillow==4.2.0
 ```
 
 Data Sets
 ---------
-Dataset currently exceeds 100k images and is growing constaintly.
+Dicebox Dataset 60x50 | gray scale png files | approx 227k images
 
-Dicebox Dataset | 60x50 gray scale png files.
+Dicebox Dataset 480x270 | gray scale png files | approx 17k images
 
+    
 Configuration
 =============
-`lib\dicebox_config.py` contains the hyper-parameters for dicebox.
+`dicebox.config` contains the hyper-parameters for dicebox.
 
 
 The Primordial Pool
 ===================
 Based on the defined hyper-parameters will create successive generations of neural networks.  Evolutional optimization is employs to select for successive generations.
 ```
-python ./primordialpool.py
+    python ./primordialpool.py
 ```
 
 Lonestar Training
 =================
 Allows for the saving of specific networks pulled from the pool.  The trained weights will be saved for use later.
 ```
-python ./lonestar_train.py
+    python ./lonestar_train.py
 ```
 
 Classification via REST API
 ===========================
-Creates the lonestar model, loads the weights, and then performs classifications via REST API calls.
+Provides an end-point that performs classifications via REST API calls.
 
 Start the service:
 ```
-python ./dicebox_service.py
+    python ./dicebox_service.py
 ```
 
 Dicebox API
 ===========
 
-`http://{host}:5000/`
+Default URL for API
+
+`http(s)://{host}:5000/`
 
 
 Anonymous End-Points
 -------------------
-`/api/version`
 
-`/health/plain`
+**Get Service API Version**
 
-Authentication Required
+For verification of service API version.
+
+```
+    [GET] /api/version
+```
+
+Result:
+`
+{
+    "version": "String"
+}
+`
+
+**Get Service Health**
+
+For use in load balanced environments.
+
+```
+    [GET] /health/plain
+```
+Result:
+`true` or `false`
+
+
+Authentication Required End-Points
 -----------------------
-`/prediction`
 
+**Request Header**
+
+The below end-points require several host headers to be present on the request.
+
+```
+    'Content-type': 'application/json',
+    'API-ACCESS-KEY': 'String',
+    'API-VERSION': 'String'
+```
+
+* API-ACCESS-KEY: 'Guid used for authorization'
+* API-VERSION: 'Version of the API to use'
+
+**Classification**
+
+Used to classify the image data.
+
+```
+    [POST] /classify
+```
+Post Body
+
+```
+    {
+        "data": "Base64 encoded PNG image"
+    }
+```
+
+Result:  The label index for the classification.
+
+Example
+```
+{
+    "classification": 7
+}
+
+```
+**Get Categories**
+
+ Used to turn classification results into human-readable labels.
+
+```
+    [GET] /categories
+```
+Result
+
+A list of label to index mappings.
+
+Example
+
+```
+{
+    "category_map": {
+        "0": "1d4_1",
+        "1": "1d4_2",
+        "2": "1d4_3",
+        "3": "1d4_4",
+        "4": "1d6_1",
+        "5": "1d6_2",
+        "6": "1d6_3",
+        "7": "1d6_4",
+        "8": "1d6_5",
+        "9": "1d6_6",
+        "10": "unknown"
+    }
+}
+```
 
 Client Consumption
 ==================
 For an interactive experience:
 ```
-python ./client/dicebox_client.py
+    python ./client/dicebox_client.py
 ```
 
 For rapidly testing a large set of images:
 ```
-python ./client/dicebox_test_client.py
+    python ./client/dicebox_test_client.py
 ```
 
 Contributing
