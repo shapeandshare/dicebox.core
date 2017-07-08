@@ -39,7 +39,7 @@ def get_classification(image_data):
 app = Flask(__name__)
 
 
-@app.route('/api/categories', methods=['POST'])
+@app.route('/api/categories', methods=['GET'])
 def make_api_categorymap_public():
     if request.headers['API-ACCESS-KEY'] != config.API_ACCESS_KEY:
         abort(401)
