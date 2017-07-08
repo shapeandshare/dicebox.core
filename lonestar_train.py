@@ -2,6 +2,7 @@ import logging
 import lib.dicebox_config as config
 from lib.network import Network
 from datetime import datetime
+import json
 
 # Setup logging.
 logging.basicConfig(
@@ -16,6 +17,9 @@ logging.basicConfig(
 def main():
     network = Network(config.NN_PARAM_CHOICES)
     network.create_lonestar()
+
+    with open('./category_map.json', 'w') as category_mapping_file:
+        category_mapping_file.write(json.dumps(network.fsc.CATEGORY_MAP))
 
     i = 1
     while i <= config.EPOCHS:
