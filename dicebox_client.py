@@ -75,27 +75,62 @@ def resize_keep_aspect_ratio(input_image, desired_size):
     return output
 
 
+def get_category_map():
+    jdata = {}
+    response = make_api_call('api/categories', None)
+    if 'category_map' in response:
+        jdata = response['category_map']
+        print('loaded category map from server.')
+
+    if len(jdata) == 0:
+        with open('./category_map.json') as data_file:
+            raw_cat_data = json.load(data_file)
+        for d in raw_cat_data:
+            jdata[str(raw_cat_data[d])] = str(d)
+        print('loaded category map from file.')
+
+    # print(jdata)
+    return jdata
+
+
+def make_api_call(end_point, json_data):
+    headers = {
+        'Content-type': 'application/json',
+        'API-ACCESS-KEY': config.API_ACCESS_KEY,
+        'API-VERSION': config.API_VERSION
+    }
+    try:
+        url = "%s%s:%i/%s" % (config.SERVER_URI, config.CLASSIFICATION_SERVER, config.SERVER_PORT, end_point)
+        response = requests.post(url, data=json_data, headers=headers)
+        if response is not None:
+            if response.status_code != 500:
+                return response.json()
+    except:
+        return {}
+    return {}
+
+
 # Ramp the camera - these frames will be discarded and are only used to allow v4l2
 # to adjust light levels, if necessary
 for i in xrange(ramp_frames):
     temp = get_image()
 
 
-with open('./category_map.json') as data_file:
-    jdata = json.load(data_file)
+# Get our classification categories
+server_category_map = get_category_map()
 
-server_category_map = {}
-for d in jdata:
-    server_category_map[str(jdata[d])] = str(d)
 
+# Setup our default state
 CURRENT_EXPECTED_CATEGORY_INDEX = 1
 MAX_EXPECTED_CATEGORY_INDEX = len(server_category_map)
 MISCLASSIFIED_CATEGORY_INDEX = True
-
 KEEP_INPUT = False
 ONLY_KEEP_MISCLASSIFIED_INPUT = True
-
 SERVER_ERROR = False
+
+
+
+
 
 ###############################################################################
 # main loop
@@ -131,23 +166,13 @@ while True:
 
     prediction = {}
     category = {}
-    # print ('sending over the wire: %s' % json_data)
-    headers = {
-        'Content-type': 'application/json',
-        'API-ACCESS-KEY': config.API_ACCESS_KEY,
-        'API-VERSION': config.API_VERSION
-    }
 
-    try:
-        url = "%s%s:%i/api/classify" % (config.SERVER_URI, config.CLASSIFICATION_SERVER, config.SERVER_PORT)
-        response = requests.post(url, data=json_data, headers=headers)
-        if response is not None:
-            if response.status_code != 500:
-                SERVER_ERROR = False
-                if 'classification' in response.json():
-                    prediction = response.json()['classification']
-                    category = server_category_map[str(prediction)]
-    except:
+    SERVER_ERROR = False
+    response = make_api_call('api/classify', json_data)
+    if 'classification' in response:
+        prediction = response['classification']
+        category = server_category_map[str(prediction)]
+    else:
         SERVER_ERROR = True
 
     if category == server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)]:
