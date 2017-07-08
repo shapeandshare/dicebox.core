@@ -142,15 +142,16 @@ The below end-points require several host headers to be present on the request.
 
 **Classification**
 
-Used to classify the image data.
+Used to classify the image data.  Return the label index for the classification.
+
 
 ```
     [POST] /classify
 ```
-Post Body: 
-` { "data": "Base64 encoded PNG image" }`
+Post Body: `{ "data": "Base64 encoded PNG image" }`
 
-Result:  The label index for the classification.
+Result: `{ "classification": integer }`
+
 
 Example
 ```
@@ -166,9 +167,7 @@ Example
 ```
     [GET] /categories
 ```
-Result
-
-A list of label to index mappings.
+Result: A list of label to index mappings.
 
 Example
 
