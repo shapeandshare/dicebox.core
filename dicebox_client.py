@@ -36,6 +36,7 @@ camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, config.IMAGE_HEIGHT)
 # camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 60);
 # camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 50);
 
+font = cv.CV_FONT_HERSHEY_SIMPLEX
 
 def get_image():
     retval, im = camera.read()
@@ -98,7 +99,7 @@ def resize_keep_aspect_ratio(input_image, desired_size):
 for i in xrange(ramp_frames):
     temp = get_image()
 
-font = cv.CV_FONT_HERSHEY_SIMPLEX
+
 
 with open("%s/category_map.txt" % config.DATA_DIRECTORY) as data_file:
     jdata = json.load(data_file)
