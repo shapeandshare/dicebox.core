@@ -1,9 +1,9 @@
 # dicebox
-               ..let's shake things up..
+               Let's shake things up!
 
 Mission Statement / Why
 -----------------------
-I have a simple dream.  A dream of one day playing Dugeons and Dragons on YouTube and have REAL dice involved.  There are lots of great programs with shared dice rollers in them.  I know.  What I want is the real deal.  So I began crafting dicebox.
+I have a simple dream.  A dream of one day playing Dugeons and Dragons live online and have REAL dice involved.  There are lots of great programs with shared dice rollers in them.  I know.  What I want is the real deal.  So I began crafting dicebox.
 
 Dicebox has come through a number of iterations, but finally landed on the implementation and code heritage it has based on what works, is widely available, and accepted for this problem domain.
 
@@ -11,13 +11,21 @@ Thanks everyone!
 
 Overview / Abstract
 -------------------
-Trainable image classification system capable of predicting through a REST API.
+A robust trainable image classification system.
 
 1. Visual Image Classification
+
+    Dicebox is a visual classification system.
+
+
 2. Evolutionary Neural Network
-3. Service Oriented Architecture
 
+    Dicebox is capable of being applied to a large variety of classification problems.  Sometimes unique or novel problems need to be solved an a neural network structure unknown.  In this case dicebox provides a means to evolve a network tailed to the particular problem.
 
+3. Service-oriented Architecture
+
+  The trained classification system is access through a REST API.
+  
 Audience
 --------
 Those who need automated dice roll recognition, or wish to use dicebox on another data set.
@@ -53,14 +61,12 @@ These are the individual modules required by this project:
 
 Data Sets
 ---------
-Dicebox Dataset 60x50 | gray scale png files | approx 227k images
-
-Dicebox Dataset 480x270 | gray scale png files | approx 17k images
-
-    
+[Download](https://s3-us-west-2.amazonaws.com/diceboximages/dist/dicebox_60x50.070817.tar.gz)
+ | Dicebox Dataset 60x50 | approx 265k  gray scale png images of 1d4 and 1d6 dices.
+     
 Configuration
 =============
-`dicebox.config` contains the hyper-parameters for dicebox.
+`dicebox.config` contains the configurable parameters for dicebox.
 
 The below section controls the parameters for the network input.
 ```
@@ -75,9 +81,10 @@ Images are expected to be in the below directory structure.
 ```
 (dataset_base_directory)\
     (name)_(width)x(height)\
-        (category_1)\
-        (category_2)\
-        [..]
+        data\
+            (category_1)\
+            (category_2)\
+            [..]
 ```
 
 When evolution is underway in the primordial pool the below parameters control the options for the networks that can be appear within individuals.
@@ -271,15 +278,11 @@ Example
 
 Client Consumption
 ==================
-For an interactive experience:
+Sample client application.  Useful for supervised training.
 ```
     python ./client/dicebox_client.py
 ```
 
-For rapidly testing a large set of images:
-```
-    python ./client/dicebox_test_client.py
-```
 
 Contributing
 ------------
