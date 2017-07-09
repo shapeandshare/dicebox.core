@@ -15,12 +15,12 @@ A robust trainable image classification system.
 
 1. Visual Image Classification
 
-    Dicebox is a visual classification system.
+    Dicebox is a visual classification system.  It can be reconfigured for different image sizes and categories.
 
 
 2. Evolutionary Neural Network
 
-    Dicebox is capable of being applied to a large variety of classification problems.  Sometimes unique or novel problems need to be solved an a neural network structure unknown.  In this case dicebox provides a means to evolve a network tailed to the particular problem.
+    Dicebox is capable of being applied to a large variety of classification problems.  Sometimes unique or novel problems need to be solved and a neural network structure is unknown.  In this case dicebox provides a means to evolve a network tailored to the particular problem.
 
 3. Service-oriented Architecture
 
@@ -33,9 +33,12 @@ Those who need automated dice roll recognition, or wish to use dicebox on anothe
 Quick Start
 -----------
 ```
-    cd {project_root}
     source ~/tensorflow/bin/active
+    cd {project_root}
     pip install -r requirements.txt
+    wget https://s3-us-west-2.amazonaws.com/diceboximages/dist/dicebox_60x50.070817.tar.gz
+    tar xfvz ./dicebox_60x50.070817.tar.gz
+    mkdir logs tmp weights
 ```
 
 Requirements
@@ -282,6 +285,12 @@ Sample client application.  Useful for supervised training.
 ```
     python ./client/dicebox_client.py
 ```
+
+Known Limitations
+----------------
+* Static access token
+* Supports only gray-scale images
+
 
 
 Contributing
