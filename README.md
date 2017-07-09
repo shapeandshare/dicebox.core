@@ -25,10 +25,9 @@ Those who need automated dice roll recognition, or wish to use dicebox on anothe
 Quick Start
 -----------
 ```
-    screen
     cd {project_root}
-    pip install -r requirements.txt
     source ~/tensorflow/bin/active
+    pip install -r requirements.txt
 ```
 
 Requirements
@@ -63,6 +62,90 @@ Configuration
 =============
 `dicebox.config` contains the hyper-parameters for dicebox.
 
+The below section controls the parameters for the network input.
+```
+[DATASET]
+    name = dicebox
+    categories = 11
+    image_width = 480
+    image_height = 270
+```
+
+Images are expected to be in the below directory structure.
+```
+(dataset_base_directory)\
+    (name)_(width)x(height)\
+        (category_1)\
+        (category_2)\
+        [..]
+```
+
+When evolution is underway in the primordial pool the below parameters control the options for the networks that can be appear within individuals.
+```
+[TAXONOMY]
+    neurons: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597]
+    layers: [1, 2, 3, 5, 8, 13, 21]
+    activation: ["relu", "elu", "tanh", "sigmoid"]
+    optimizer: ["rmsprop", "adam", "sgd", "adagrad", "adadelta", "adamax", "nadam"]
+```
+
+Individual networks can be defined and trained.  This controls the network that is trained and used by the service.
+```
+[LONESTAR]
+    neurons = 987
+    layers = 2
+    activation = sigmoid
+    optimizer = adamax
+```
+
+The number of epochs, individuals, and generations used during evolution are defined a below.
+```
+[EVOLUTION]
+    epochs = 10000
+    generations = 100
+    population = 50
+```
+
+When training the lonestar network, the below options control the training regiment.
+```
+[TRAINING]
+    batch_size = 500
+    train_batch_size = 5000
+    test_batch_size = 500
+```
+
+Defines the directoried used for the various file system operations.
+```
+[DIRECTORY]
+    dataset_base_directory = datasets
+    logs_dir = ./logs
+    weights_dir = ./weights
+    tmp_dir = ./tmp
+```
+
+Controls the service configuration.
+```
+[SERVER]
+    api_access_key = 6e249b5f-b483-4e0d-b50b-81d95e3d9a59
+    api_version = 0.2.1
+    listening_host = 0.0.0.0
+    flask_debug = False
+    model_weights_filename = weights.best.hdf5
+```
+
+Noise, luck, whatever it is.  Here's its control.
+```
+[GLOBAL]
+    noise = 0.1
+```
+
+Service configuration for the dicebox client.
+```
+[CLIENT]
+    classification_server = localhost
+    classification_port = 5000
+    uri = http://
+```
 
 The Primordial Pool
 ===================
