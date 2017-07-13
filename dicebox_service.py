@@ -10,9 +10,9 @@ import json
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
-    level=logging.INFO,
+    level=logging.DEBUG,
     filemode='w',
-    filename="%s/dicebox_server.log" % config.LOGS_DIR
+    filename="%s/dicebox_service.log" % config.LOGS_DIR
 )
 
 network = Network(config.NN_PARAM_CHOICES)
@@ -33,7 +33,7 @@ def get_classification(image_data):
 
     except:
         logging.error('Error making prediction..')
-        return {}
+        return -1
 
 
 app = Flask(__name__)
