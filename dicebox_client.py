@@ -23,6 +23,7 @@ ramp_frames = 3
 
 # Now we can initialize the camera capture object with the cv2.VideoCapture class.
 # All it needs is the index to a camera port.
+
 camera = cv2.VideoCapture(camera_port)
 camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, config.IMAGE_WIDTH)
 camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, config.IMAGE_HEIGHT)
@@ -30,8 +31,12 @@ camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, config.IMAGE_HEIGHT)
 font = cv.CV_FONT_HERSHEY_SIMPLEX
 
 def get_image():
-    retval, im = camera.read()
-    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    try:
+        retval, im = camera.read()
+        im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    except:
+        print('Unable to read from camera!')
+
     #im = im.resize((config.IMAGE_WIDTH, config.IMAGE_HEIGHT), Image.ANTIALIAS)
     return im
 
@@ -197,7 +202,10 @@ while True:
     cv2.putText(output_display, output_label_2, (5, 35), font, 0.5, (255, 255, 255), 1)
     cv2.putText(output_display, output_label_3, (5, 55), font, 0.5, (255, 255, 255), 1)
 
-    cv2.imshow('dice box', output_display)
+    try:
+        cv2.imshow('dice box', output_display)
+    except:
+        print("Unable to display output!")
 
     input_key = cv2.waitKey(1)
 
