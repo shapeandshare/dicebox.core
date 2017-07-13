@@ -6,6 +6,7 @@ from PIL import Image
 from array import *
 import logging
 # from datetime import datetime  # used when dumping raw transforms to disk
+import dicebox_config as config
 
 
 class FileSystemConnector:
@@ -142,7 +143,10 @@ class FileSystemConnector:
 
         im = im.crop((left, upper, right, lower))
         logging.debug("new size: (%i, %i)" % (im.size[0], im.size[1]))
-        im = im.resize((original_width, original_height), Image.ANTIALIAS)
+
+        # Ensure the input will match in input tensor
+        #im = im.resize((original_width, original_height), Image.ANTIALIAS)
+        im = im.resize((config.IMAGE_WIDTH, config.IMAGE_HEIGHT), Image.ANTIALIAS)
         logging.debug("new size: (%i, %i)" % (im.size[0], im.size[1]))
 
         # dump to file for manual review
