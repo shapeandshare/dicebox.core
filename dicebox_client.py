@@ -10,6 +10,7 @@ import os
 import numpy
 import math
 from lib import dicebox_config as config  # import our high level configuration
+from PIL import Image
 
 ###############################################################################
 # configure our camera, and begin our capture and prediction loop
@@ -28,10 +29,10 @@ camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, config.IMAGE_HEIGHT)
 
 font = cv.CV_FONT_HERSHEY_SIMPLEX
 
-
 def get_image():
     retval, im = camera.read()
     im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    #im = im.resize((config.IMAGE_WIDTH, config.IMAGE_HEIGHT), Image.ANTIALIAS)
     return im
 
 
@@ -77,7 +78,7 @@ def resize_keep_aspect_ratio(input_image, desired_size):
 
 def get_category_map():
     jdata = {}
-    response = make_api_call('api/categories', None)
+    response = make_api_call('api/categories', None, 'GET')
     if 'category_map' in response:
         jdata = response['category_map']
         print('loaded category map from server.')
@@ -93,7 +94,7 @@ def get_category_map():
     return jdata
 
 
-def make_api_call(end_point, json_data):
+def make_api_call(end_point, json_data, call_type):
     headers = {
         'Content-type': 'application/json',
         'API-ACCESS-KEY': config.API_ACCESS_KEY,
@@ -101,7 +102,12 @@ def make_api_call(end_point, json_data):
     }
     try:
         url = "%s%s:%i/%s" % (config.SERVER_URI, config.CLASSIFICATION_SERVER, config.SERVER_PORT, end_point)
-        response = requests.post(url, data=json_data, headers=headers)
+        response = None
+        if call_type == 'GET':
+            response = requests.get(url, data=json_data, headers=headers)
+        elif call_type == 'POST':
+            response = requests.post(url, data=json_data, headers=headers)
+
         if response is not None:
             if response.status_code != 500:
                 return response.json()
@@ -168,7 +174,7 @@ while True:
     category = {}
 
     SERVER_ERROR = False
-    response = make_api_call('api/classify', json_data)
+    response = make_api_call('api/classify', json_data, 'POST')
     if 'classification' in response:
         prediction = response['classification']
         category = server_category_map[str(prediction)]
