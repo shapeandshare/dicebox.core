@@ -1,14 +1,6 @@
 # dicebox
                Let's shake things up!
 
-Mission Statement / Why
------------------------
-I have a simple dream.  A dream of one day playing Dugeons and Dragons live online and have REAL dice involved.  There are lots of great programs with shared dice rollers in them.  I know.  What I want is the real deal.  So I began crafting dicebox.
-
-Dicebox has come through a number of iterations, but finally landed on the implementation and code heritage it has based on what works, is widely available, and accepted for this problem domain.
-
-Thanks everyone!
-
 Overview / Abstract
 -------------------
 A robust trainable image classification system.
@@ -66,7 +58,30 @@ Data Sets
 ---------
 [Download](https://s3-us-west-2.amazonaws.com/diceboximages/dist/dicebox_60x50.070817.tar.gz)
  | Dicebox Dataset 60x50 | approx 265k  gray scale png images of 1d4 and 1d6 dices.
-     
+
+Weights
+-------
+[Download](https://s3-us-west-2.amazonaws.com/diceboxweights/weights.epoch_224.final.2017-07-12_16_26_10_253809.hdf5.tar.gz) | 
+Dicebox weights trained on the above dataset.
+
+dicebox.config settings for the weights file:
+```
+[DATASET]
+categories = 11
+image_width = 60
+name = dicebox
+image_height = 50
+```
+```
+[LONESTAR]
+neurons = 987
+layers = 3
+activation = elu
+optimizer = adam
+```
+To use the weights file, download and extract into the ./weights directory.  By default the service will look for a weights file named weights.best.hdf5.  You'll want to rename/copy this file or update the relavent setting within the dicebox.config file.
+
+
 Configuration
 =============
 `dicebox.config` contains the configurable parameters for dicebox.
@@ -291,6 +306,36 @@ Known Limitations
 * Static access token
 * Supports only gray-scale images
 
+
+Mission Statement / Why
+-----------------------
+To play Dungeons and Dragons live online and have REAL dice involved.
+
+There are lots of great programs with shared dice rollers in them. There's even VR, and augmented reality.
+
+I know.
+
+
+But, what I want is the real deal.  I want to be able grab my die, roll it, and have the experience shared easily.
+
+Specifically, I want something:
+* That was real-time 
+* Used any camera available, and viewing angle
+* Be easy to use
+* Be usable by more than a single people 
+* Not force users into specific implementations
+* Not require special/expensive setups
+* Easy to connect to other applications, services, or devices
+* Be beautiful (filled with as much love, art, and beauty that I can)
+* Be magical (be of sufficiently advanced technology as to be indistinguishable from magic)
+* Be itself a device/system that can stand alone with the above stated abilities
+
+
+Dicebox has come through a number of iterations to get to where it is today.  I suspect it will probably have more, and may even evolve beyond anything I have yet to image. ;)
+
+
+References
+----------
 
 
 Contributing
