@@ -10,7 +10,8 @@ import os
 import numpy
 import math
 from lib import dicebox_config as config  # import our high level configuration
-from PIL import Image
+# from PIL import Image
+# import sys
 
 ###############################################################################
 # configure our camera, and begin our capture and prediction loop
@@ -132,14 +133,22 @@ server_category_map = get_category_map()
 
 
 # Setup our default state
+global CURRENT_EXPECTED_CATEGORY_INDEX
 CURRENT_EXPECTED_CATEGORY_INDEX = 1
+
 MAX_EXPECTED_CATEGORY_INDEX = len(server_category_map)
+
+global MISCLASSIFIED_CATEGORY_INDEX
 MISCLASSIFIED_CATEGORY_INDEX = True
+
+global KEEP_INPUT
 KEEP_INPUT = False
+
+global ONLY_KEEP_MISCLASSIFIED_INPUT
 ONLY_KEEP_MISCLASSIFIED_INPUT = True
+
+global SERVER_ERROR
 SERVER_ERROR = False
-
-
 
 
 
