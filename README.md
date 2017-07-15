@@ -78,7 +78,7 @@ Data Sets
  | Dicebox Dataset 60x50 | approx 265k  gray scale png images of 1d4 and 1d6 dices.
 
 
-###The creation the dataset
+### The creation the dataset
 Using the below equipment and the supervised training program the images were generated over successive sessions.
 
 #### Equipment
