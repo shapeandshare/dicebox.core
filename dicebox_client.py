@@ -134,7 +134,7 @@ server_category_map = get_category_map()
 
 # Setup our default state
 global CURRENT_EXPECTED_CATEGORY_INDEX
-CURRENT_EXPECTED_CATEGORY_INDEX = 1
+CURRENT_EXPECTED_CATEGORY_INDEX = 11
 
 MAX_EXPECTED_CATEGORY_INDEX = len(server_category_map)
 
@@ -201,7 +201,12 @@ while True:
         MISCLASSIFIED_CATEGORY_INDEX = True
 
     cv2.namedWindow('dice box', cv2.WINDOW_NORMAL)
+
     output_display = camera_capture
+    resized_display = cv2.resize(output_display, (config.IMAGE_WIDTH, config.IMAGE_HEIGHT))
+
+    height, width = output_display.shape[:2]
+    output_display[height - 50:height, 0:60] = resized_display  # cv2.cvtColor(resized_display, cv2.COLOR_BGR2GRAY)
 
     output_label_1 = "[classified %s/expected %s][match? %r]" % (category, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], not MISCLASSIFIED_CATEGORY_INDEX)
     output_label_2 = "[record? %r][only keep misclassified? %r]" % (KEEP_INPUT, ONLY_KEEP_MISCLASSIFIED_INPUT)
