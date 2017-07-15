@@ -1,22 +1,23 @@
 # dicebox
                Let's shake things up!
 
-Overview / Abstract
--------------------
-A robust trainable image classification system.
+Overview
+--------
+An image classification system implemented with a SOA (Service Oriented Architecture).
 
 1. Visual Image Classification
 
     Dicebox is a visual classification system.  It can be reconfigured for different image sizes and categories.
 
-
 2. Evolutionary Neural Network
 
     Dicebox is capable of being applied to a large variety of classification problems.  Sometimes unique or novel problems need to be solved and a neural network structure is unknown.  In this case dicebox provides a means to evolve a network tailored to the particular problem.
 
-3. Service-oriented Architecture
-
-  The trained classification system is access through a REST API.
+3. Service-Oriented Architecture
+   
+   The finalized & trained classification system is accessed through a REST API.  The project includes several client implementations.
+   Future enhancements will continue to expand the API capabilities.
+  
   
 Audience
 --------
@@ -25,13 +26,30 @@ Those who need automated dice roll recognition, or wish to use dicebox on anothe
 Quick Start
 -----------
 ```
+    # Ensure tensorflow is ready to go
     source ~/tensorflow/bin/active
+    
+    # Ensure we are in the project directory
     cd {project_root}
+    
+    # Enure the environment is sane
+    mkdir logs tmp weights datasets
     pip install -r requirements.txt
+    
+    # Download the dataset
+    cd datasets
     wget https://s3-us-west-2.amazonaws.com/diceboximages/dist/dicebox_60x50.070817.tar.gz
     tar xfvz ./dicebox_60x50.070817.tar.gz
-    mkdir logs tmp weights
+    cd ..
+    
+    # Download the weights file for use by the classification serivce.
+    cd weights
+    wget https://s3-us-west-2.amazonaws.com/diceboxweights/weights.epoch_224.final.2017-07-12_16_26_10_253809.hdf5.tar.gz
+    tar xfvz ./weights.epoch_224.final.2017-07-12_16_26_10_253809.hdf5.tar.gz
+    cp ./weights/weights.epoch_224.final.2017-07-12_16_26_10_253809.hdf5 ./weights/weights.best.hdf5
+    cd ..
 ```
+At this point all the bundled applications should function with the default configuration.
 
 Requirements
 ------------
@@ -64,7 +82,7 @@ Weights
 [Download](https://s3-us-west-2.amazonaws.com/diceboxweights/weights.epoch_224.final.2017-07-12_16_26_10_253809.hdf5.tar.gz) | 
 Dicebox weights trained on the above dataset.
 
-dicebox.config settings for the weights file:
+**dicebox.config settings for the weights file**
 ```
 [DATASET]
 categories = 11
@@ -105,7 +123,7 @@ Images are expected to be in the below directory structure.
             [..]
 ```
 
-When evolution is underway in the primordial pool the below parameters control the options for the networks that can be appear within individuals.
+The genotypes for the networks (individuals) are defined below; and can be changed. :)
 ```
 [TAXONOMY]
     neurons: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597]
@@ -139,7 +157,7 @@ When training the lonestar network, the below options control the training regim
     test_batch_size = 500
 ```
 
-Defines the directoried used for the various file system operations.
+Defines the directories used for the various file system operations.
 ```
 [DIRECTORY]
     dataset_base_directory = datasets
@@ -158,7 +176,7 @@ Controls the service configuration.
     model_weights_filename = weights.best.hdf5
 ```
 
-Noise, luck, whatever it is.  Here's its control.
+The percentage of noise/luck in the system. (0 - 1) scale
 ```
 [GLOBAL]
     noise = 0.1
@@ -174,7 +192,8 @@ Service configuration for the dicebox client.
 
 The Primordial Pool
 ===================
-Based on the defined hyper-parameters will create successive generations of neural networks.  Evolutional optimization is employs to select for successive generations.
+Based on the defined hyper-parameters evolutionary optimization is employed to select for successive generations of neural networks.  
+
 ```
     python ./primordialpool.py
 ```
@@ -226,7 +245,7 @@ For use in load balanced environments.
     [GET] /health/plain
 ```
 Result:
-`true` or `false`
+`true` or `false` with a `201` status code.
 
 
 Authentication Required End-Points
@@ -234,7 +253,7 @@ Authentication Required End-Points
 
 **Request Header**
 
-The below end-points require several host headers to be present on the request.
+The below end-points require several headers to be present on the request.
 
 ```
     'Content-type': 'application/json',
@@ -242,7 +261,7 @@ The below end-points require several host headers to be present on the request.
     'API-VERSION': 'String'
 ```
 
-* API-ACCESS-KEY: 'Guid used for authorization'
+* API-ACCESS-KEY: 'A unique (secret) guid used for authorization'
 * API-VERSION: 'Version of the API to use'
 
 **Classification**
@@ -251,7 +270,7 @@ Used to classify the image data.  Return the label index for the classification.
 
 
 ```
-    [POST] /classify
+    [POST] /api/classify
 ```
 Post Body: `{ "data": "Base64 encoded PNG image" }`
 
@@ -270,7 +289,7 @@ Example
  Used to turn classification results into human-readable labels.
 
 ```
-    [GET] /categories
+    [GET] /api/categories
 ```
 Result: A list of label to index mappings.
 
@@ -301,6 +320,12 @@ Sample client application.  Useful for supervised training.
     python ./client/dicebox_client.py
 ```
 
+A simple test harness for running the datasets against the dicebox service.
+```
+    python ./client/dicebox_test_client.py
+```
+
+
 Known Limitations
 ----------------
 * Static access token
@@ -322,7 +347,7 @@ Specifically, I want something:
 * That was real-time 
 * Used any camera available, and viewing angle
 * Be easy to use
-* Be usable by more than a single people 
+* Be usable by more than a single person
 * Not force users into specific implementations
 * Not require special/expensive setups
 * Easy to connect to other applications, services, or devices
@@ -336,6 +361,24 @@ Dicebox has come through a number of iterations to get to where it is today.  I 
 
 References
 ----------
+
+Matt Harvey @harvitronix thank you, for without you dicebox would not be.
+Much of the current implementation of dicebox comes from Matt's project below.  I originally forked Matt's work and used it until it outgrew what it was.
+
+* Blog Post | https://blog.coast.ai/lets-evolve-a-neural-network-with-a-genetic-algorithm-code-included-8809bece164
+* Repository | https://github.com/harvitronix/neural-network-genetic-algorithm
+
+**Projects that I worked with heavily during prior implementations of dicebox**
+
+* EasyTensorflow | https://github.com/calvinschmdt/EasyTensorflow
+* Tensorflow & the 'slim' samples | https://github.com/tensorflow/tensorflow
+* Tensorflow models | https://github.com/tensorflow/models
+
+**Additional projects used here, or were reference material for dicebox**
+
+* D20 Roll Fairness Evaluation | http://www.markfickett.com/stuff/artPage.php?id=389 | https://github.com/markfickett/dicehistogram
+* Keras | https://keras.io/ | https://github.com/fchollet/keras
+* JPG-and-PNG-to-MNIST | https://github.com/gskielian/JPG-PNG-to-MNIST-NN-Format
 
 
 Contributing
