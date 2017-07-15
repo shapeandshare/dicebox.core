@@ -3,7 +3,7 @@
 
 Overview
 --------
-An image classification system implemented with a SOA (Service Oriented Architecture).
+An image classification system built with SOA (Service-Oriented Architecture) in mind.
 
 1. Visual Image Classification
 
@@ -21,7 +21,7 @@ An image classification system implemented with a SOA (Service Oriented Architec
   
 Audience
 --------
-Those who need automated dice roll recognition, or wish to use dicebox on another data set.
+Those who need automated dice roll recognition, or wish to use dicebox on another data set or classification problem.
 
 Quick Start
 -----------
@@ -94,7 +94,9 @@ Weights
 [Download](https://s3-us-west-2.amazonaws.com/diceboxweights/weights.epoch_224.final.2017-07-12_16_26_10_253809.hdf5.tar.gz) | 
 Dicebox weights trained on the above dataset.
 
-**dicebox.config settings for the weights file**
+To use the weights file, download and extract into the `./weights` directory.  By default the service will look for a weights file named `weights.best.hdf5`.  You'll want to rename/copy this file or update the relavent setting within the `dicebox.config` file.
+
+**dicebox.config settings for the above sample weights file**
 ```
 [DATASET]
 categories = 11
@@ -109,8 +111,6 @@ layers = 3
 activation = elu
 optimizer = adam
 ```
-To use the weights file, download and extract into the ./weights directory.  By default the service will look for a weights file named weights.best.hdf5.  You'll want to rename/copy this file or update the relavent setting within the dicebox.config file.
-
 
 Configuration
 =============
@@ -346,21 +346,18 @@ Known Limitations
 
 Mission Statement / Why
 -----------------------
-To play Dungeons and Dragons live online and have REAL dice involved.
+I set out on this adventure in the hope that one day I can play Dungeons and Dragons live online and have REAL dice involved.
 
-There are lots of great programs with shared dice rollers in them. There's even VR, and augmented reality.
-
-I know.
+There are lots of great programs with shared dice rollers in them. There's even VR, and augmented reality.  I know.
 
 
 But, what I want is the real deal.  I want to be able grab my die, roll it, and have the experience shared easily.
 
 Specifically, I want something:
-* That was real-time 
-* Used any camera available, and viewing angle
-* Be easy to use
-* Be usable by more than a single person
-* Not force users into specific implementations
+* Real-time 
+* Easy to use
+* Able to use any camera and viewing angle available
+* Usable by more than a single person
 * Not require special/expensive setups
 * Easy to connect to other applications, services, or devices
 * Be beautiful (filled with as much love, art, and beauty that I can)
