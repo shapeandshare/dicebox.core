@@ -207,14 +207,15 @@ while True:
 
     height, width = output_display.shape[:2]
     output_display[height - 50:height, 0:60] = resized_display  # cv2.cvtColor(resized_display, cv2.COLOR_BGR2GRAY)
+    output_display = cv2.cvtColor(output_display, cv2.COLOR_GRAY2RGB)
 
     output_label_1 = "[classified %s/expected %s][match? %r]" % (category, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], not MISCLASSIFIED_CATEGORY_INDEX)
     output_label_2 = "[record? %r][only keep misclassified? %r]" % (KEEP_INPUT, ONLY_KEEP_MISCLASSIFIED_INPUT)
     output_label_3 = "[server error? %r]" % SERVER_ERROR
 
-    cv2.putText(output_display, output_label_1, (5, 15), font, 0.5, (255, 255, 255), 1)
-    cv2.putText(output_display, output_label_2, (5, 35), font, 0.5, (255, 255, 255), 1)
-    cv2.putText(output_display, output_label_3, (5, 55), font, 0.5, (255, 255, 255), 1)
+    cv2.putText(output_display, output_label_1, (5, 20), font, 0.7, (255, 255, 255), 2)
+    cv2.putText(output_display, output_label_2, (5, 50), font, 0.7, (255, 0, 0), 2)
+    cv2.putText(output_display, output_label_3, (5, 80), font, 0.5, (0, 255, 255), 0)
 
     try:
         cv2.imshow('dice box', output_display)
