@@ -83,10 +83,10 @@ Using the below equipment and the supervised training program the images were ge
 
 #### Equipment
 
-* [Logitech C930e USB Desktop or Laptop Webcam, HD 1080p Camera](https://www.amazon.com/gp/product/B00CRJWW2G/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
-* [Polaroid 8" Heavy Duty Mini Tripod With Pan Head With Tilt For Digital Cameras & Camcorders](https://www.amazon.com/gp/product/B004OAFO0I/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
-* [Rotating Display Turntable,Yuanj 3D Photo Display Rotating Turntable 360 Degree Cake Photography Stand Base,110pounds load,Clockwise and anticlockwise-White](https://www.amazon.com/gp/product/B0144DMXEO/ref=oh_aui_detailpage_o02_s00?ie=UTF8&psc=1)
-* [DragonSteel Solid Metal Polyhedral 7 Die D&D Dice Set with Case | For Tabletop d20 RPGs like DnD and Pathfinder Roleplaying Game, Board Games, Math](https://www.amazon.com/gp/product/B01LW6QSFX/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1)
+* [Logitech C930e USB Webcam](https://www.amazon.com/gp/product/B00CRJWW2G/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+* [Polaroid 8" Heavy Duty Mini Tripod](https://www.amazon.com/gp/product/B004OAFO0I/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+* [Rotating Display Turntable](https://www.amazon.com/gp/product/B0144DMXEO/ref=oh_aui_detailpage_o02_s00?ie=UTF8&psc=1)
+* [DragonSteel Solid Metal Polyhedral 7 Die D&D Dice Set](https://www.amazon.com/gp/product/B01LW6QSFX/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1)
 
 
 Weights
@@ -376,20 +376,19 @@ References
 
 [Matt Harvey](https://github.com/harvitronix) thank you, for without you dicebox would not be.  Much of the current implementation of dicebox comes from Matt's project below.  I originally forked Matt's work and used it until it outgrew what it was.
 
-* Blog Post | https://blog.coast.ai/lets-evolve-a-neural-network-with-a-genetic-algorithm-code-included-8809bece164
-* Repository | https://github.com/harvitronix/neural-network-genetic-algorithm
+* [Blog Post](https://blog.coast.ai/lets-evolve-a-neural-network-with-a-genetic-algorithm-code-included-8809bece164) & [Code](https://github.com/harvitronix/neural-network-genetic-algorithm)
 
 **Projects that I worked with heavily during prior implementations of dicebox**
 
-* EasyTensorflow | https://github.com/calvinschmdt/EasyTensorflow
-* Tensorflow & the 'slim' samples | https://github.com/tensorflow/tensorflow
-* Tensorflow models | https://github.com/tensorflow/models
+* [Tensorflow & the 'slim' samples](https://github.com/tensorflow/tensorflow)
+* [Tensorflow models](https://github.com/tensorflow/models)
+* [EasyTensorflow](https://github.com/calvinschmdt/EasyTensorflow)
 
 **Additional projects used here, or were reference material for dicebox**
 
-* D20 Roll Fairness Evaluation | http://www.markfickett.com/stuff/artPage.php?id=389 | https://github.com/markfickett/dicehistogram
-* Keras | https://keras.io/ | https://github.com/fchollet/keras
-* JPG-and-PNG-to-MNIST | https://github.com/gskielian/JPG-PNG-to-MNIST-NN-Format
+* D20 Roll Fairness Evaluation | [Blog Post](http://www.markfickett.com/stuff/artPage.php?id=389) & [Code](https://github.com/markfickett/dicehistogram)
+* Keras | [Site](https://keras.io/) & [Code](https://github.com/fchollet/keras)
+* [JPG-and-PNG-to-MNIST](https://github.com/gskielian/JPG-PNG-to-MNIST-NN-Format)
 
 
 Contributing
