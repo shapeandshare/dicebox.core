@@ -81,7 +81,7 @@ Data Sets
 ###The creation the dataset
 Using the below equipment and the supervised training program the images were generated over successive sessions.
 
-####Equipment
+#### Equipment
 
 * [Logitech C930e USB Desktop or Laptop Webcam, HD 1080p Camera](https://www.amazon.com/gp/product/B00CRJWW2G/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
 * [Polaroid 8" Heavy Duty Mini Tripod With Pan Head With Tilt For Digital Cameras & Camcorders](https://www.amazon.com/gp/product/B004OAFO0I/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
@@ -374,8 +374,7 @@ Dicebox has come through a number of iterations to get to where it is today.  I 
 References
 ----------
 
-Matt Harvey @harvitronix thank you, for without you dicebox would not be.
-Much of the current implementation of dicebox comes from Matt's project below.  I originally forked Matt's work and used it until it outgrew what it was.
+[Matt Harvey](https://github.com/harvitronix) thank you, for without you dicebox would not be.  Much of the current implementation of dicebox comes from Matt's project below.  I originally forked Matt's work and used it until it outgrew what it was.
 
 * Blog Post | https://blog.coast.ai/lets-evolve-a-neural-network-with-a-genetic-algorithm-code-included-8809bece164
 * Repository | https://github.com/harvitronix/neural-network-genetic-algorithm
