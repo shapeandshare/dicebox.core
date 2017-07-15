@@ -112,6 +112,9 @@ activation = elu
 optimizer = adam
 ```
 
+#### Equipment
+Training was done with Tensorflow configured to use a GeForce 1080.
+
 Configuration
 =============
 `dicebox.config` contains the configurable parameters for dicebox.
