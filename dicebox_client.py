@@ -12,6 +12,16 @@ import math
 from lib import dicebox_config as config  # import our high level configuration
 # from PIL import Image
 # import sys
+import os
+import errno
+
+# https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
+def make_sure_path_exists(path):
+    try:
+        os.makedirs(path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
 
 ###############################################################################
 # configure our camera, and begin our capture and prediction loop
@@ -26,21 +36,52 @@ ramp_frames = 3
 # All it needs is the index to a camera port.
 
 camera = cv2.VideoCapture(camera_port)
-camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, config.IMAGE_WIDTH)
-camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, config.IMAGE_HEIGHT)
+camera.set(cv.CV_CAP_PROP_FRAME_WIDTH, 1024)
+camera.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 768)
 
 font = cv.CV_FONT_HERSHEY_SIMPLEX
 
 def get_image():
+    im = None
     try:
         retval, im = camera.read()
-        im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     except:
         print('Unable to read from camera!')
 
-    #im = im.resize((config.IMAGE_WIDTH, config.IMAGE_HEIGHT), Image.ANTIALIAS)
+    im = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     return im
 
+
+def crop_image(im):
+    # Crop Image If Required
+    # Now ensure we are the same dimensions as when we started
+    cropped_image = None
+    marked_capture = None
+
+    #original_width, original_height = im.size
+    original_height, original_width = im.shape[:2]
+
+    new_width = config.IMAGE_WIDTH
+    new_height = config.IMAGE_HEIGHT
+
+    new_middle_x = float(new_width) / 2
+    new_middle_y = float(new_height) / 2
+
+    left =  int((float(original_width) / 2) - new_middle_x)
+    upper = int((float(original_height) / 2)- new_middle_y)
+    right = int(new_middle_x + float(original_width) / 2)
+    lower = int(new_middle_y + float(original_height) / 2)
+
+    # NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
+
+    cropped_image = im[upper:lower, left:right]
+    #cropped_im = im.crop((left, upper, right, lower))
+    #im = im.resize((config.IMAGE_WIDTH, config.IMAGE_HEIGHT), Image.ANTIALIAS)
+    #cropped_im = cv2.cvtColor(cropped_im, cv2.COLOR_BGR2GRAY)
+
+    marked_capture = cv.Rectangle(cv.fromarray(im), (left-1, upper-1), (right+1,lower+1), (255,0,0), thickness=1, lineType=8, shift=0)
+
+    return cropped_image, marked_capture
 
 def resize_keep_aspect_ratio(input_image, desired_size):
     height, width = input_image.shape[:2]
@@ -159,12 +200,13 @@ while True:
     # Take the actual image we want to keep
     # camera_capture, resized_image  = get_image()
     camera_capture = get_image()
+    cropped_image, marked_capture = crop_image(camera_capture)
     filename = datetime.now().strftime('capture_%Y-%m-%d_%H_%M_%S_%f.png')
     tmp_file_path = "%s/%s" % (config.TMP_DIR, filename)
 
     # A nice feature of the imwrite method is that it will automatically choose the
     # correct format based on the file extension you provide. Convenient!
-    cv2.imwrite(tmp_file_path, camera_capture)
+    cv2.imwrite(tmp_file_path, cropped_image)
 
     with open(tmp_file_path, 'rb') as tmp_file:
         file_content = tmp_file.read()
@@ -173,7 +215,10 @@ while True:
         if not MISCLASSIFIED_CATEGORY_INDEX and ONLY_KEEP_MISCLASSIFIED_INPUT:
             os.remove(tmp_file_path)
         else:
-            os.rename(tmp_file_path, '%s/%s/%s' % (config.TMP_DIR, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], filename))
+            new_path = "%s/%s" % (config.TMP_DIR, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)])
+            make_sure_path_exists(new_path)
+            new_full_path = "%s/%s/%s" % (config.TMP_DIR, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], filename)
+            os.rename(tmp_file_path, new_full_path)
     else:
         os.remove(tmp_file_path)
 
@@ -203,10 +248,11 @@ while True:
     cv2.namedWindow('dice box', cv2.WINDOW_NORMAL)
 
     output_display = camera_capture
-    resized_display = cv2.resize(output_display, (config.IMAGE_WIDTH, config.IMAGE_HEIGHT))
+    #resized_display = cv2.resize(output_display, (config.IMAGE_WIDTH, config.IMAGE_HEIGHT))
+    resized_display = cropped_image
 
     height, width = output_display.shape[:2]
-    output_display[height - 50:height, 0:60] = resized_display  # cv2.cvtColor(resized_display, cv2.COLOR_BGR2GRAY)
+    output_display[height - config.IMAGE_HEIGHT:height, 0:config.IMAGE_WIDTH] = resized_display  # cv2.cvtColor(resized_display, cv2.COLOR_BGR2GRAY)
     output_display = cv2.cvtColor(output_display, cv2.COLOR_GRAY2RGB)
 
     output_label_1 = "[classified %s/expected %s][match? %r]" % (category, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], not MISCLASSIFIED_CATEGORY_INDEX)
