@@ -77,6 +77,18 @@ Data Sets
 [Download](https://s3-us-west-2.amazonaws.com/diceboximages/dist/dicebox_60x50.070817.tar.gz)
  | Dicebox Dataset 60x50 | approx 265k  gray scale png images of 1d4 and 1d6 dices.
 
+
+###The creation the dataset
+Using the below equipment and the supervised training program the images were generated over successive sessions.
+
+####Equipment
+
+* [Logitech C930e USB Desktop or Laptop Webcam, HD 1080p Camera](https://www.amazon.com/gp/product/B00CRJWW2G/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+* [Polaroid 8" Heavy Duty Mini Tripod With Pan Head With Tilt For Digital Cameras & Camcorders](https://www.amazon.com/gp/product/B004OAFO0I/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+* [Rotating Display Turntable,Yuanj 3D Photo Display Rotating Turntable 360 Degree Cake Photography Stand Base,110pounds load,Clockwise and anticlockwise-White](https://www.amazon.com/gp/product/B0144DMXEO/ref=oh_aui_detailpage_o02_s00?ie=UTF8&psc=1)
+* [DragonSteel Solid Metal Polyhedral 7 Die D&D Dice Set with Case | For Tabletop d20 RPGs like DnD and Pathfinder Roleplaying Game, Board Games, Math](https://www.amazon.com/gp/product/B01LW6QSFX/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1)
+
+
 Weights
 -------
 [Download](https://s3-us-west-2.amazonaws.com/diceboxweights/weights.epoch_224.final.2017-07-12_16_26_10_253809.hdf5.tar.gz) | 
