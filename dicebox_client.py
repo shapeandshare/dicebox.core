@@ -125,10 +125,6 @@ def resize_keep_aspect_ratio(input_image, desired_size):
 
 def get_category_map():
     jdata = {}
-    response = make_api_call('api/categories', None, 'GET')
-    if 'category_map' in response:
-        jdata = response['category_map']
-        print('loaded category map from server.')
 
     if len(jdata) == 0:
         with open('./category_map.json') as data_file:
@@ -136,6 +132,12 @@ def get_category_map():
         for d in raw_cat_data:
             jdata[str(raw_cat_data[d])] = str(d)
         print('loaded category map from file.')
+
+    if len(jdata) == 0:
+        response = make_api_call('api/categories', None, 'GET')
+        if 'category_map' in response:
+            jdata = response['category_map']
+            print('loaded category map from server.')
 
     # print(jdata)
     return jdata
@@ -217,7 +219,7 @@ while True:
         else:
             new_path = "%s/%s" % (config.TMP_DIR, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)])
             make_sure_path_exists(new_path)
-            new_full_path = "%s/%s/%s" % (config.TMP_DIR, server_category_map[str(CURRENT_EXPECTED_CATEGORY_INDEX-1)], filename)
+            new_full_path = "%s/%s" % (new_path, filename)
             os.rename(tmp_file_path, new_full_path)
     else:
         os.remove(tmp_file_path)
