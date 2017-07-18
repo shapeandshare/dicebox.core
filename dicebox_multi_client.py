@@ -247,6 +247,8 @@ while True:
             make_sure_path_exists(new_path)
             new_full_path = "%s/%s" % (new_path, middle_filename)
             os.rename(middle_tmp_file_path, new_full_path)
+            os.remove(left_tmp_file_path)
+            os.remove(right_tmp_file_path)
     else:
         os.remove(left_tmp_file_path)
         os.remove(middle_tmp_file_path)
