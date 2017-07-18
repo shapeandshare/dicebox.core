@@ -287,6 +287,7 @@ while True:
             # MISCLASSIFIED_CATEGORY_INDEX = True
             category_result.append(True)
 
+    MISCLASSIFIED_CATEGORY_INDEX = category_result[1]
     cv2.namedWindow('dice box', cv2.WINDOW_NORMAL)
 
     output_display = camera_capture
