@@ -100,7 +100,7 @@ class FileSystemConnector:
         # See if there is noise
         if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
             #  # then we introduce noise
-            rotation_angle = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255 * 25
+            rotation_angle = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255 * 10
             if float(ord(struct.unpack('c', os.urandom(1))[0])) / 255 > 0.5:
                 rotation_angle = rotation_angle * -1
             logging.debug("Rotating image %f" % rotation_angle)
@@ -110,9 +110,9 @@ class FileSystemConnector:
         # Perform a random scale
         if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
             # random_scale = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
-            random_scale = 2 * float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
-            while random_scale < 0.9:
-                random_scale = 2 * float(ord(struct.unpack('c', os.urandom(1))[0])) / 500
+            random_scale = 1.5 * float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
+            while random_scale < 0.7:
+                random_scale = 1.5 * float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
 
             logging.debug("Scaling image %f" % random_scale)
             width, height = im.size
@@ -151,7 +151,7 @@ class FileSystemConnector:
 
         # dump to file for manual review
         # filename = datetime.now().strftime('transform_%Y-%m-%d_%H_%M_%S_%f.png')
-        # im.save("./tmp/%s" % filename)
+        #im.save("./tmp/%s" % filename)
 
         pixel = im.load()
 
