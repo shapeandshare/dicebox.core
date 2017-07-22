@@ -13,7 +13,7 @@ import lib.dicebox_config as config
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
-    level=logging.DEBUG,
+    level=logging.INFO,
     filemode='w',
     filename="%s/primordialpool.log" % config.LOGS_DIR
 )
