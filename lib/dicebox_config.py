@@ -62,7 +62,7 @@ NOISE = my_config.getfloat('GLOBAL', 'noise')
 BATCH_SIZE = my_config.getint('TRAINING', 'batch_size')
 TRAIN_BATCH_SIZE = my_config.getint('TRAINING', 'train_batch_size')
 TEST_BATCH_SIZE = my_config.getint('TRAINING', 'test_batch_size')
-
+LOAD_BEST_WEIGHTS_ON_START = my_config.getboolean('TRAINING', 'load_best_weights_on_start')
 
 ###############################################################################
 # Direcrtory Options

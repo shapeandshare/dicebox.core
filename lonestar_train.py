@@ -16,7 +16,12 @@ logging.basicConfig(
 
 def main():
     network = Network(config.NN_PARAM_CHOICES)
-    network.create_lonestar()
+    if config.LOAD_BEST_WEIGHTS_ON_START is True:
+        logging.info('attempting to restart training from previous session..')
+        network.create_lonestar(create_model=True,
+                                weights_filename="%s/%s" % (config.WEIGHTS_DIR, config.MODEL_WEIGHTS_FILENAME))
+    else:
+        network.create_lonestar(create_model=True)
 
     with open('./category_map.json', 'w') as category_mapping_file:
         category_mapping_file.write(json.dumps(network.fsc.CATEGORY_MAP))
