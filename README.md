@@ -331,6 +331,7 @@ Example
 Client Consumption
 ==================
 Sample client application.  Useful for supervised training.
+
 [![Dicebox 60x50 Dataset Real-Time Image Classification Demo](http://img.youtube.com/vi/01MML66v4-U/0.jpg)](http://www.youtube.com/watch?v=01MML66v4-U)
 
 ```
