@@ -42,7 +42,17 @@
             var json_packet={"data":encoded_data};
             var json_out = JSON.stringify(json_packet);
             console.log(json_out);
-
+/*
+            $.post('http://localhost:5000/api/classify', {
+                'Content-type': 'application/json',
+                'API-ACCESS-KEY': '6e249b5f-b483-4e0d-b50b-81d95e3d9a59',
+                'API-VERSION': '0.2.2',
+                'body': json_out,
+            }, function(serverResponse){
+                console.log(json_out);
+                //do what you want with server response
+            });
+*/
         }
 
         // Wait for the next frame.
