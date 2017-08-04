@@ -1,6 +1,7 @@
 requests==2.13.0
 numpy==1.11.0
 Flask==0.12.1
+flask-cors==3.0.3
 tqdm==4.14.0
 tensorflow==1.1.0
 Keras==2.0.4

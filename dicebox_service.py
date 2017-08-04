@@ -1,6 +1,7 @@
 #!flask/bin/python
 from lib import dicebox_config as config
 from flask import Flask, jsonify, request, make_response, abort
+from flask_cors import CORS, cross_origin
 import base64
 from lib.network import Network
 import logging
@@ -37,7 +38,7 @@ def get_classification(image_data):
 
 
 app = Flask(__name__)
-
+cors = CORS(app, resources={r"/api/*": {"origins": "localhost"}})
 
 @app.route('/api/categories', methods=['GET'])
 def make_api_categorymap_public():
@@ -73,6 +74,7 @@ def make_api_version_public():
 
 
 @app.route('/health/plain', methods=['GET'])
+@cross_origin()
 def make_health_plain_public():
     return make_response('true', 201)
 
