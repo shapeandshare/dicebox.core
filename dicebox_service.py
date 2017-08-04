@@ -38,7 +38,7 @@ def get_classification(image_data):
 
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/api/*": {"origins": "localhost"}})
+cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:*"}})
 
 @app.route('/api/categories', methods=['GET'])
 def make_api_categorymap_public():
