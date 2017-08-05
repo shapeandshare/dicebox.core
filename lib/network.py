@@ -237,7 +237,12 @@ class Network:
         with open(filename, 'wb') as f:
             f.write(raw_image_data)
 
-        test_image_data = self.fsc.process_image(filename)
+        try:
+            test_image_data = self.fsc.process_image(filename)
+        except:
+            os.remove(filename)
+            logging.error('Exception caught processing image data.')
+            raise
 
         os.remove(filename)
 
