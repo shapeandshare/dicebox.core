@@ -91,7 +91,7 @@ class FileSystemConnector:
     def process_image(self, filename, noise=0):
         pixel_data = array('B')
 
-        im = Image.open(filename)
+        im = Image.open(filename).convert('L') # Load as gray
 
         original_width, original_height = im.size
         # original_size = original_width, original_height
@@ -171,6 +171,7 @@ class FileSystemConnector:
         data = numpy.frombuffer(pixel_data, dtype=numpy.uint8)
         return data
 
+
     def get_data_set_categories(self):
         natural_categories = []
         category_map = {}
@@ -201,3 +202,4 @@ class FileSystemConnector:
                 data_set[new_entry] = [filename, category]
         # logging.info(data_set)
         return data_set
+
