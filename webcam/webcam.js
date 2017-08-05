@@ -107,6 +107,12 @@
                     //console.log(data);
                     //results.innerHTML = data.classification.toString() + ":" + categories[data.classification];
                     results.innerHTML = 'classification: ' + categories[data.classification];
+
+                    if (get_record_flag() == true)
+                    {
+                        console.log('save to file...')
+
+                    }
                 }
             });
 
