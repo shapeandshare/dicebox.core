@@ -3,6 +3,7 @@
 
     var video, width, height, context;
     var encoded_data;
+    var categories;
 
     function initialize() {
         // The source video.
@@ -13,6 +14,12 @@
         // The target canvas.
         var canvas = doc.getElementById("canvas");
         context = canvas.getContext("2d");
+
+        // results info panel
+        var results = doc.getElementById("results");
+
+        // set server categories (async i believe..)
+        get_server_categories();
 
         // Get the webcam's stream.
         nav.getUserMedia({video: true}, startStream, function () {});
@@ -53,9 +60,10 @@
                         'API-VERSION': '0.2.2'
                     },
                 data: json_out,
-                success: function(html) {
-                    console.log(html);
-                    //$("#results").append(html);
+                success: function(data) {
+                    //console.log(data);
+                    //results.innerHTML = data.classification.toString() + ":" + categories[data.classification];
+                    results.innerHTML = categories[data.classification];
                 }
             });
 
@@ -97,16 +105,28 @@
         for (var i = 0; i < len; i += 4) {
             luma = data[i] * 0.2126 + data[i+1] * 0.7152 + data[i+2] * 0.0722;
             data[i] = data[i+1] = data[i+2] = luma;
-            //data[i+3] = data[i+3];
-//            // Convert from RGB to HSL...
-//            var hsl = rgb2hsl(data[j], data[j + 1], data[j + 2]);
-//            var h = hsl[0], s = hsl[1], l = hsl[2];
-//
-//            // ... and check if we have a somewhat green pixel.
-//            if (h >= 90 && h <= 160 && s >= 25 && s <= 90 && l >= 20 && l <= 75) {
-//                data[j + 3] = 0;
-//            }
         }
+    }
+
+    function get_server_categories() {
+        $.ajax({
+            url: 'http://localhost:5000/api/categories',
+            type: 'GET',
+            headers:
+                {
+                    'Content-type': 'application/json',
+                    'API-ACCESS-KEY': '6e249b5f-b483-4e0d-b50b-81d95e3d9a59',
+                    'API-VERSION': '0.2.2'
+                },
+            success: function(data) {
+                set_categories(data.category_map);
+            }
+        });
+    }
+
+    function set_categories(category_map) {
+     categories = category_map;
+     //console.log(categories);
     }
 
     addEventListener("DOMContentLoaded", initialize);
