@@ -4,6 +4,38 @@
     var video, width, height, context;
     var encoded_data;
     var categories;
+    var results;
+
+    var recordButton;
+    var flag_record = false;
+
+    var statusString = '';
+    var statusPanel;
+
+    function get_record_flag() {
+        return flag_record;
+    }
+
+    function set_record_flag(state) {
+        flag_record = state;
+        //console.log(flag_record);
+    }
+
+    function recordButtonClick() {
+        set_record_flag(!get_record_flag());
+    }
+
+    function buildStatus() {
+        statusString = '';
+        statusString = statusString + 'capturing: ';
+        statusString = statusString + flag_record;
+        //console.log(statusString);
+        return statusString;
+    }
+
+    function updateStatus() {
+        statusPanel.innerHTML = buildStatus();
+    }
 
     function initialize() {
         // The source video.
@@ -16,13 +48,24 @@
         context = canvas.getContext("2d");
 
         // results info panel
-        var results = doc.getElementById("results");
+        results = doc.getElementById("results");
+
+        statusPanel = doc.getElementById("statuspanel");
 
         // set server categories (async i believe..)
-        get_server_categories();
+        init_server_categories();
+
+        // build the initial status panel
+        updateStatus();
 
         // Get the webcam's stream.
         nav.getUserMedia({video: true}, startStream, function () {});
+
+        recordButton = doc.getElementById("recordButton");
+        recordButton.addEventListener("click", function(){
+            recordButtonClick();
+            updateStatus();
+        });
     }
 
     function startStream(stream) {
@@ -63,7 +106,7 @@
                 success: function(data) {
                     //console.log(data);
                     //results.innerHTML = data.classification.toString() + ":" + categories[data.classification];
-                    results.innerHTML = categories[data.classification];
+                    results.innerHTML = 'classification: ' + categories[data.classification];
                 }
             });
 
@@ -108,7 +151,7 @@
         }
     }
 
-    function get_server_categories() {
+    function init_server_categories() {
         $.ajax({
             url: 'http://localhost:5000/api/categories',
             type: 'GET',
