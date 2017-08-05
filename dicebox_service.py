@@ -26,7 +26,13 @@ for d in jdata:
 
 
 def get_classification(image_data):
-    network.create_lonestar(create_model=True, weights_filename="%s/%s" % (config.WEIGHTS_DIR, config.MODEL_WEIGHTS_FILENAME))
+    try:
+        network.create_lonestar(create_model=True,
+                                weights_filename="%s/%s" % (config.WEIGHTS_DIR, config.MODEL_WEIGHTS_FILENAME))
+    except:
+        logging.error('Error summoning lonestar')
+        return -1
+
     try:
         classification = network.classify('dicebox_raw', image_data)
         logging.info("classification: (%s)" % classification)
