@@ -1,6 +1,11 @@
 (function (doc, nav) {
     "use strict";
 
+    var accessKeyGuid = '6e249b5f-b483-4e0d-b50b-81d95e3d9a59';
+    var apiVersion = '0.2.2';
+    var dicebox_service_url = 'http://localhost:5000';
+    var sensory_service_url = 'http://localhost:5000';
+
     var video, width, height, context;
     var encoded_data;
     var categories;
@@ -52,7 +57,7 @@
 
         statusPanel = doc.getElementById("statuspanel");
 
-        // set server categories (async i believe..)
+        // set server categories
         init_server_categories();
 
         // build the initial status panel
@@ -94,13 +99,13 @@
             //console.log(json_out);
 
             $.ajax({
-                url: 'http://localhost:5000/api/classify',
+                url: dicebox_service_url + '/api/classify',
                 type: 'POST',
                 headers:
                     {
                         'Content-type': 'application/json',
-                        'API-ACCESS-KEY': '6e249b5f-b483-4e0d-b50b-81d95e3d9a59',
-                        'API-VERSION': '0.2.2'
+                        'API-ACCESS-KEY': accessKeyGuid,
+                        'API-VERSION': apiVersion
                     },
                 data: json_out,
                 success: function(data) {
@@ -145,13 +150,13 @@
         };
         var json_out = JSON.stringify(json_packet);
         $.ajax({
-            url: 'http://localhost:5000/api/sensory/store',
+            url: sensory_service_url + '/api/sensory/store',
             type: 'POST',
             headers:
                 {
                     'Content-type': 'application/json',
-                    'API-ACCESS-KEY': '6e249b5f-b483-4e0d-b50b-81d95e3d9a59',
-                    'API-VERSION': '0.2.2'
+                    'API-ACCESS-KEY': accessKeyGuid,
+                    'API-VERSION': apiVersion
                 },
             data: json_out,
             success: function(data) {
@@ -197,23 +202,28 @@
 
     function init_server_categories() {
         $.ajax({
-            url: 'http://localhost:5000/api/categories',
+            url: dicebox_service_url + '/api/categories',
             type: 'GET',
             headers:
                 {
                     'Content-type': 'application/json',
-                    'API-ACCESS-KEY': '6e249b5f-b483-4e0d-b50b-81d95e3d9a59',
-                    'API-VERSION': '0.2.2'
+                    'API-ACCESS-KEY': accessKeyGuid,
+                    'API-VERSION': apiVersion
                 },
             success: function(data) {
                 set_categories(data.category_map);
             }
         });
+
     }
 
     function set_categories(category_map) {
      categories = category_map;
      //console.log(categories);
+    }
+
+    function get_categories() {
+        return categories
     }
 
     addEventListener("DOMContentLoaded", initialize);
