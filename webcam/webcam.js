@@ -115,11 +115,11 @@
 
                     if (get_record_flag() == true)
                     {
-                        console.log('save to sensory store...')
+                        //console.log('save to sensory store...')
                         sensory_store('dicebox', 100, 100, categories[data.classification], encoded_data);
                     }
                 },
-                error: function(jqXHR, textStatus, errorThrown, ) {
+                error: function(jqXHR, textStatus, errorThrown) {
                     //console.log(jqXHR);
                     //console.log(textStatus);
                     //console.log(errorThrown);
@@ -219,7 +219,6 @@
 
     function set_categories(category_map) {
      categories = category_map;
-     //console.log(categories);
     }
 
     function get_categories() {
