@@ -213,7 +213,12 @@ class Network:
             logging.error('no model! :(  compile the model first.')
             raise
         logging.debug('loading weights file..')
-        self.model.load_weights(filename)
+        try:
+            self.model.load_weights(filename)
+        except Exception as e:
+            logging.error('Unable to load weights file.')
+            logging.error(e)
+            raise
 
     def classify(self, dataset, network_input):
         if dataset == 'dicebox_raw':
