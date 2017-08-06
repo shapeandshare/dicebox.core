@@ -110,16 +110,54 @@
 
                     if (get_record_flag() == true)
                     {
-                        console.log('save to file...')
-
+                        console.log('save to sensory store...')
+                        sensory_store('dicebox', 100, 100, categories[data.classification], encoded_data);
                     }
-                }
+                },
+                error: function(jqXHR, textStatus, errorThrown, ) {
+                    //console.log(jqXHR);
+                    //console.log(textStatus);
+                    //console.log(errorThrown);
+
+                    results.innerHTML = 'classification: ERROR ' + textStatus + ", " + errorThrown;
+
+                    if (get_record_flag() == true)
+                    {
+                        //console.log('save to sensory store...')
+                        sensory_store('dicebox', 100, 100, 'unclassified', encoded_data);
+                    }
+            }
             });
 
         }
 
         // Wait for the next frame.
         requestAnimationFrame(draw);
+    }
+
+    function sensory_store(name, width, height, category, encoced_data) {
+        var json_packet={
+            "name":name,
+            "width": width,
+            "height": height,
+            "category": category,
+            "data": encoded_data
+        };
+        var json_out = JSON.stringify(json_packet);
+        $.ajax({
+            url: 'http://localhost:5000/api/sensory/store',
+            type: 'POST',
+            headers:
+                {
+                    'Content-type': 'application/json',
+                    'API-ACCESS-KEY': '6e249b5f-b483-4e0d-b50b-81d95e3d9a59',
+                    'API-VERSION': '0.2.2'
+                },
+            data: json_out,
+            success: function(data) {
+                console.log('success!')
+            }
+        });
     }
 
     function readFrame() {
