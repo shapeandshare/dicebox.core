@@ -8,6 +8,7 @@
 
     var video, width, height, context;
     var encoded_data;
+    var classification;
     var categories;
     var results;
 
