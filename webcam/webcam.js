@@ -109,26 +109,19 @@
                     },
                 data: json_out,
                 success: function(data) {
-                    //console.log(data);
-                    //results.innerHTML = data.classification.toString() + ":" + categories[data.classification];
-                    results.innerHTML = 'classification: ' + categories[data.classification];
+                    set_classification(categories[data.classification]);
+                    results.innerHTML = 'classification: ' + get_classification();
 
                     if (get_record_flag() == true)
                     {
-                        //console.log('save to sensory store...')
-                        sensory_store('dicebox', 100, 100, categories[data.classification], encoded_data);
+                        sensory_store('dicebox', 100, 100, get_classification(), encoded_data);
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    //console.log(jqXHR);
-                    //console.log(textStatus);
-                    //console.log(errorThrown);
-
                     results.innerHTML = 'classification: ERROR ' + textStatus + ", " + errorThrown;
 
                     if (get_record_flag() == true)
                     {
-                        //console.log('save to sensory store...')
                         sensory_store('dicebox', 100, 100, 'unclassified', encoded_data);
                     }
             }
@@ -218,11 +211,19 @@
     }
 
     function set_categories(category_map) {
-     categories = category_map;
+        categories = category_map;
     }
 
     function get_categories() {
         return categories
+    }
+
+    function get_classification() {
+        return classification;
+    }
+
+    function set_classification(returned_classification) {
+        classification = returned_classification;
     }
 
     addEventListener("DOMContentLoaded", initialize);
