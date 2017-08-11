@@ -21,22 +21,29 @@ canvas {
     clear: both;
 }
 
-#statuspanel {
-    float: left;
+#categoriespanel {
+    float: right;
     margin: 10px;
     background-color: #FFFFFF;
     border: 1px solid #444;
-    clear: both;
+}
+
+#statuspanel {
+    float: right;
+    margin: 10px;
+    background-color: #FFFFFF;
+    border: 1px solid #444;
+    clear: left;
+}
+
+#recordButton {
+    float:right;
+    bottom:0;
+    margin: 10px;
 }
 
 body {
     background-color: #8c8c8c;
-}
-
-#recordButton {
-    float: left;
-    margin: 10px;
-    clear: left;
 }
 
 #footer {

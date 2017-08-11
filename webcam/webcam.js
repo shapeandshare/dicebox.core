@@ -8,11 +8,16 @@
 
     var video, width, height, context;
     var encoded_data;
+
     var classification;
-    var categories;
     var results;
 
+    var categories;
+    var categoriesPanel;
+    var categoriesString = '';
+
     var recordButton;
+    var recordCategory;
     var flag_record = false;
 
     var statusString = '';
@@ -39,8 +44,23 @@
         return statusString;
     }
 
+    function buildCategories() {
+        var categoriesString = '<form>';
+        for (var p in categories) {
+            if (categories.hasOwnProperty(p)) {
+                categoriesString += '<input type="radio" name="' + 'categoriesRadioBtn' + '" id="' + categories[p] + '">' + categories[p] + '<br>';
+            }
+        }
+        categoriesString += '</form>';
+        return categoriesString;
+    }
+
     function updateStatus() {
         statusPanel.innerHTML = buildStatus();
+    }
+
+    function updateCategories() {
+        categoriesPanel.innerHTML = buildCategories();
     }
 
     function initialize() {
@@ -57,6 +77,8 @@
         results = doc.getElementById("results");
 
         statusPanel = doc.getElementById("statuspanel");
+
+        categoriesPanel = doc.getElementById("categoriespanel");
 
         // set server categories
         init_server_categories();
@@ -115,7 +137,10 @@
 
                     if (get_record_flag() == true)
                     {
-                        sensory_store('dicebox', 100, 100, get_classification(), encoded_data);
+                        // we only care to captur training data when we don't match the expected outcome
+                        if (get_training_category() != categories[data.classification]) {
+                            sensory_store('dicebox', 100, 100, get_training_category(), encoded_data);
+                        }
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -206,6 +231,7 @@
                 },
             success: function(data) {
                 set_categories(data.category_map);
+                updateCategories();
             }
         });
 
@@ -215,8 +241,19 @@
         categories = category_map;
     }
 
-    function get_categories() {
-        return categories
+    function get_training_category() {
+        var trainingCategoryForm = doc.forms[0];
+        var selectedCategory = '';
+        var i;
+        for (i = 0; i < trainingCategoryForm.length; i++) {
+            //console.log('josh');
+            if (trainingCategoryForm[i].checked) {
+                //selectedCategory = trainingCategoryForm[i].value;
+                selectedCategory = trainingCategoryForm[i].id;
+            }
+        }
+        //console.log(selectedCategory);
+        return selectedCategory;
     }
 
     function get_classification() {
