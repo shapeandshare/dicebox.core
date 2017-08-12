@@ -40,13 +40,16 @@ class SensoryInterface:
             outjson['noise'] = noise
 
             json_data = json.dumps(outjson)
-            batch_request_id = self.make_api_call('api/sensory/batch', json_data, 'POST')
+            batch_request_id = self.make_sensory_api_call('api/sensory/batch', json_data, 'POST')
             batch_id = batch_request_id['batch_id']
 
             logging.debug(batch_id)
 
+            # the queue will stop existing if we take too long, or we clear all the messages.
+            # call the sensory service to poll and pop our messages off, it will interface with rabbitmq for us
+
             # small batch approach
-            response = self.make_api_call('api/sensory/request', json_data, 'POST')
+            response = self.make_sensory_api_call('api/sensory/request', json_data, 'POST')
             image_labels = response['labels']
             image_data = response['data']
             return image_data, image_labels
@@ -57,14 +60,14 @@ class SensoryInterface:
 
 
 
-    def make_api_call(self, end_point, json_data, call_type):
+    def make_sensory_api_call(self, end_point, json_data, call_type):
         headers = {
             'Content-type': 'application/json',
             'API-ACCESS-KEY': config.API_ACCESS_KEY,
             'API-VERSION': config.API_VERSION
         }
         try:
-            url = "%s%s:%i/%s" % (config.SERVER_URI, config.CLASSIFICATION_SERVER, config.SERVER_PORT, end_point)
+            url = "%s%s:%i/%s" % (config.SERVER_URI, config.SENSORY_SERVER, config.SERVER_PORT, end_point)
             response = None
             if call_type == 'GET':
                 response = requests.get(url, data=json_data, headers=headers)

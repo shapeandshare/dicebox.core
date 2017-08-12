@@ -86,7 +86,7 @@ MODEL_WEIGHTS_FILENAME = my_config.get('SERVER', 'model_weights_filename')
 ###############################################################################
 # Sensory Service Options
 ###############################################################################
-SENSORY_SEVER = my_config.get('SENSORY_SERVICE', 'sensory_server')
+SENSORY_SERVER = my_config.get('SENSORY_SERVICE', 'sensory_server')
 SENSORY_PORT = my_config.get('SENSORY_SERVICE', 'sensory_port')
 SENSORY_URI = my_config.get('SENSORY_SERVICE', 'sensory_uri')
 
