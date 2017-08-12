@@ -56,7 +56,7 @@ def sensory_batch_request(batch_size, noise=0):
 
     ## Submit our message
     url = config.SENSORY_SERVICE_RABBITMQ_URL
-    logging.debug(url)
+    # logging.debug(url)
     parameters = pika.URLParameters(url)
     connection = pika.BlockingConnection(parameters=parameters)
 
