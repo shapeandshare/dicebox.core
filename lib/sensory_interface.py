@@ -40,6 +40,12 @@ class SensoryInterface:
             outjson['noise'] = noise
 
             json_data = json.dumps(outjson)
+            batch_request_id = self.make_api_call('api/sensory/batch', json_data, 'POST')
+            batch_id = batch_request_id['batch_id']
+
+            logging.debug(batch_id)
+
+            # small batch approach
             response = self.make_api_call('api/sensory/request', json_data, 'POST')
             image_labels = response['labels']
             image_data = response['data']
