@@ -1,5 +1,6 @@
 #!flask/bin/python
 from lib import dicebox_config as config
+from lib import sensory_interface
 from flask import Flask, jsonify, request, make_response, abort
 from flask_cors import CORS, cross_origin
 import base64
@@ -8,6 +9,10 @@ import json
 from datetime import datetime
 import os
 import errno
+import uuid
+import numpy
+
+# import pika
 
 # Setup logging.
 logging.basicConfig(
@@ -18,6 +23,8 @@ logging.basicConfig(
     filename="%s/sensory_service.log" % config.LOGS_DIR
 )
 
+# Generate our Sensory Service Interface
+ssc = sensory_interface.SensoryInterface('server')
 
 # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
 def make_sure_path_exists(path):
@@ -37,6 +44,15 @@ def sensory_store(tmp_dir, data_dir, data_category, raw_image_data):
     with open(full_filename, 'wb') as f:
         f.write(raw_image_data)
     return True
+
+def sensory_request(batch_size, noise=0):
+    #sensory_batch_request_id = uuid.uuid4()
+
+    # TODO: dynamicly use the values coming in. :P
+    data, labels = ssc.get_batch(batch_size, noise)
+
+    #return sensory_batch_request_id
+    return data, labels
 
 
 app = Flask(__name__)
@@ -76,6 +92,36 @@ def make_api_sensory_store_public():
 
     return_code = sensory_store(config.TMP_DIR, data_directory, category, decoded_image_data)
     return make_response(jsonify({'sensory_store': return_code}), 201)
+
+# for small batches..
+@app.route('/api/sensory/request', methods=['POST'])
+def make_api_sensory_request():
+    if request.headers['API-ACCESS-KEY'] != config.API_ACCESS_KEY:
+        logging.debug('bad access key')
+        abort(401)
+    if request.headers['API-VERSION'] != config.API_VERSION:
+        logging.debug('bad access version')
+        abort(400)
+    if not request.json:
+        logging.debug('request not json')
+        abort(400)
+
+    if 'batch_size' not in request.json:
+        logging.debug('batch size not in request')
+        abort(400)
+    if 'noise' not in request.json:
+        logging.debug('noise not in request')
+        abort(400)
+
+    batch_size = request.json.get('batch_size')
+    noise = request.json.get('noise')
+
+    # sensory_batch_request_id = sensory_request(dataset_name, image_width, image_height, batch_size)
+    data, labels = sensory_request(batch_size, noise)
+    return make_response(jsonify({
+                                  'labels': numpy.array(labels).tolist(),
+        'data': numpy.array(data).tolist()
+                                  }), 201)
 
 
 @app.route('/api/version', methods=['GET'])

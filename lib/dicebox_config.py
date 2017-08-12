@@ -86,4 +86,8 @@ MODEL_WEIGHTS_FILENAME = my_config.get('SERVER', 'model_weights_filename')
 ###############################################################################
 CLASSIFICATION_SERVER = my_config.get('CLIENT', 'classification_server')
 SERVER_PORT = my_config.getint('CLIENT', 'classification_port')
-SERVER_URI = my_config.get('CLIENT', 'uri')
+SERVER_URI = my_config.get('CLIENT', 'classification_uri')
+
+SENSORY_SEVER = my_config.get('CLIENT', 'sensory_server')
+SENSORY_PORT = my_config.get('CLIENT', 'sensory_port')
+SENSORY_URI = my_config.get('CLIENT', 'sensory_uri')
