@@ -11,8 +11,8 @@ import os
 import errno
 import uuid
 import numpy
+import pika
 
-# import pika
 
 # Setup logging.
 logging.basicConfig(
@@ -45,18 +45,45 @@ def sensory_store(tmp_dir, data_dir, data_category, raw_image_data):
         f.write(raw_image_data)
     return True
 
+
 def sensory_request(batch_size, noise=0):
-    #sensory_batch_request_id = uuid.uuid4()
-
-    # TODO: dynamicly use the values coming in. :P
     data, labels = ssc.get_batch(batch_size, noise)
-
-    #return sensory_batch_request_id
     return data, labels
+
+
+def sensory_batch_request(batch_size, noise=0):
+    sensory_batch_request_id = uuid.uuid4()
+
+    ## Submit our message
+    url = config.SENSORY_SERVICE_RABBITMQ_URL
+    logging.debug(url)
+    parameters = pika.URLParameters(url)
+    connection = pika.BlockingConnection(parameters=parameters)
+
+    channel = connection.channel()
+
+    channel.queue_declare(queue=config.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE, durable=True)
+
+    sensory_request = {}
+    sensory_request['sensory_batch_request_id'] = str(sensory_batch_request_id)
+    sensory_request['batch_size'] = batch_size
+    sensory_request['noise'] = noise
+
+    channel.basic_publish(exchange=config.SENSORY_SERVICE_RABBITMQ_EXCHANGE,
+                          routing_key=config.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY,
+                          body=json.dumps(sensory_request),
+                          properties=pika.BasicProperties(
+                              delivery_mode=2,  # make message persistent
+                          ))
+    logging.debug(" [x] Sent %r" % json.dumps(sensory_request))
+    connection.close()
+
+    return sensory_batch_request_id
 
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:*"}})
+
 
 @app.route('/api/sensory/store', methods=['POST'])
 def make_api_sensory_store_public():
@@ -93,9 +120,10 @@ def make_api_sensory_store_public():
     return_code = sensory_store(config.TMP_DIR, data_directory, category, decoded_image_data)
     return make_response(jsonify({'sensory_store': return_code}), 201)
 
-# for small batches..
-@app.route('/api/sensory/request', methods=['POST'])
-def make_api_sensory_request():
+
+# for big batches
+@app.route('/api/sensory/batch', methods=['POST'])
+def make_api_sensory_batch_request_public():
     if request.headers['API-ACCESS-KEY'] != config.API_ACCESS_KEY:
         logging.debug('bad access key')
         abort(401)
@@ -116,7 +144,33 @@ def make_api_sensory_request():
     batch_size = request.json.get('batch_size')
     noise = request.json.get('noise')
 
-    # sensory_batch_request_id = sensory_request(dataset_name, image_width, image_height, batch_size)
+    sensory_batch_request_id = sensory_batch_request(batch_size, noise)
+    return make_response(jsonify({'batch_id': sensory_batch_request_id}), 201)
+
+
+# for small batches..
+@app.route('/api/sensory/request', methods=['POST'])
+def make_api_sensory_request_public():
+    if request.headers['API-ACCESS-KEY'] != config.API_ACCESS_KEY:
+        logging.debug('bad access key')
+        abort(401)
+    if request.headers['API-VERSION'] != config.API_VERSION:
+        logging.debug('bad access version')
+        abort(400)
+    if not request.json:
+        logging.debug('request not json')
+        abort(400)
+
+    if 'batch_size' not in request.json:
+        logging.debug('batch size not in request')
+        abort(400)
+    if 'noise' not in request.json:
+        logging.debug('noise not in request')
+        abort(400)
+
+    batch_size = request.json.get('batch_size')
+    noise = request.json.get('noise')
+
     data, labels = sensory_request(batch_size, noise)
     return make_response(jsonify({
                                   'labels': numpy.array(labels).tolist(),

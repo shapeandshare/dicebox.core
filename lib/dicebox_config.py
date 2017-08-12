@@ -1,5 +1,6 @@
 import ConfigParser
 import json
+import urllib
 
 my_config = ConfigParser.ConfigParser()
 configFilePath = r'./dicebox.config'
@@ -81,6 +82,35 @@ LISTENING_HOST = my_config.get('SERVER', 'listening_host')
 FLASK_DEBUG = my_config.getboolean('SERVER', 'flask_debug')
 MODEL_WEIGHTS_FILENAME = my_config.get('SERVER', 'model_weights_filename')
 
+
+###############################################################################
+# Sensory Service Options
+###############################################################################
+SENSORY_SEVER = my_config.get('SENSORY_SERVICE', 'sensory_server')
+SENSORY_PORT = my_config.get('SENSORY_SERVICE', 'sensory_port')
+SENSORY_URI = my_config.get('SENSORY_SERVICE', 'sensory_uri')
+
+SENSORY_SERVICE_RABBITMQ_EXCHANGE = my_config.get('SENSORY_SERVICE', 'rabbitmq_exchange')
+SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY = my_config.get('SENSORY_SERVICE', 'rabbitmq_batch_request_routing_key')
+SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE = my_config.get('SENSORY_SERVICE', 'rabbitmq_batch_request_task_queue')
+
+SENSORY_SERVICE_RABBITMQ_URI = my_config.get('SENSORY_SERVICE', 'rabbitmq_uri')
+SENSORY_SERVICE_RABBITMQ_USERNAME = my_config.get('SENSORY_SERVICE', 'rabbitmq_username')
+SENSORY_SERVICE_RABBITMQ_PASSWORD = my_config.get('SENSORY_SERVICE', 'rabbitmq_password')
+SENSORY_SERVICE_RABBITMQ_SERVER = my_config.get('SENSORY_SERVICE', 'rabbitmq_server')
+SENSORY_SERVICE_RABBITMQ_PORT = my_config.get('SENSORY_SERVICE', 'rabbitmq_port')
+SENSORY_SERVICE_RABBITMQ_VHOST = urllib.quote_plus(my_config.get('SENSORY_SERVICE', 'rabbitmq_vhost'))
+
+SENSORY_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
+    SENSORY_SERVICE_RABBITMQ_URI,
+    SENSORY_SERVICE_RABBITMQ_USERNAME,
+    SENSORY_SERVICE_RABBITMQ_PASSWORD,
+    SENSORY_SERVICE_RABBITMQ_SERVER,
+    SENSORY_SERVICE_RABBITMQ_PORT,
+    SENSORY_SERVICE_RABBITMQ_VHOST
+)
+
+
 ###############################################################################
 # Client Options
 ###############################################################################
@@ -88,6 +118,4 @@ CLASSIFICATION_SERVER = my_config.get('CLIENT', 'classification_server')
 SERVER_PORT = my_config.getint('CLIENT', 'classification_port')
 SERVER_URI = my_config.get('CLIENT', 'classification_uri')
 
-SENSORY_SEVER = my_config.get('CLIENT', 'sensory_server')
-SENSORY_PORT = my_config.get('CLIENT', 'sensory_port')
-SENSORY_URI = my_config.get('CLIENT', 'sensory_uri')
+
