@@ -21,7 +21,8 @@ An image classification and training system built with SOA (Service-Oriented Arc
 
 
 
-###High Level Components Diagram
+High Level Components
+---------------------
 
 ![Dicebox Services Diagram](https://github.com/joshburt/com.shapeandshare.dicebox/raw/master/assets/Dicebox%20Services%20Diagram.png)
 
@@ -159,9 +160,9 @@ The below section controls the parameters for the network input.
 ```
 [DATASET]
     name = dicebox
-    categories = 11
-    image_width = 480
-    image_height = 270
+    image_width = 100
+    image_height = 100
+    categories = 19
 ```
 
 Images are expected to be in the below directory structure.
@@ -179,7 +180,7 @@ The genotypes for the networks (individuals) are defined below; and can be chang
 [TAXONOMY]
     neurons: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597]
     layers: [1, 2, 3, 5, 8, 13, 21]
-    activation: ["relu", "elu", "tanh", "sigmoid"]
+    activation: ["softmax", "elu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid", "linear"]
     optimizer: ["rmsprop", "adam", "sgd", "adagrad", "adadelta", "adamax", "nadam"]
 ```
 
@@ -187,8 +188,8 @@ Individual networks can be defined and trained.  This controls the network that 
 ```
 [LONESTAR]
     neurons = 987
-    layers = 2
-    activation = sigmoid
+    layers = 5
+    activation = elu
     optimizer = adamax
 ```
 
@@ -203,9 +204,10 @@ The number of epochs, individuals, and generations used during evolution are def
 When training the lonestar network, the below options control the training regiment.
 ```
 [TRAINING]
-    batch_size = 500
-    train_batch_size = 5000
-    test_batch_size = 500
+    batch_size = 15000
+    train_batch_size = 223000
+    test_batch_size = 15000
+    load_best_weights_on_start = False
 ```
 
 Defines the directories used for the various file system operations.
@@ -221,16 +223,33 @@ Controls the service configuration.
 ```
 [SERVER]
     api_access_key = 6e249b5f-b483-4e0d-b50b-81d95e3d9a59
-    api_version = 0.2.1
+    api_version = 0.3.0
     listening_host = 0.0.0.0
     flask_debug = False
     model_weights_filename = weights.best.hdf5
 ```
 
+Controls the sernsory service configuration.
+```
+[SENSORY_SERVICE]
+    sensory_server = localhost
+    sensory_port = 5000
+    sensory_uri = http://
+    rabbitmq_exchange = sensory.exchange
+    rabbitmq_batch_request_routing_key = task_queue
+    rabbitmq_batch_request_task_queue = sensory.batch.request.task.queue
+    rabbitmq_uri = amqp://
+    rabbitmq_username = guest
+    rabbitmq_password = guest
+    rabbitmq_server = lcalhost
+    rabbitmq_port = 5672
+    rabbitmq_vhost = sensory
+```
+
 The percentage of noise/luck in the system. (0 - 1) scale
 ```
 [GLOBAL]
-    noise = 0.1
+    noise = 0.5
 ```
 
 Service configuration for the dicebox client.
@@ -238,7 +257,7 @@ Service configuration for the dicebox client.
 [CLIENT]
     classification_server = localhost
     classification_port = 5000
-    uri = http://
+    classification_uri = http://
 ```
 
 The Primordial Pool
@@ -256,24 +275,33 @@ Allows for the saving of specific networks pulled from the pool.  The trained we
     python ./lonestar_train.py
 ```
 
-Classification via REST API
-===========================
+Dicebox Service
+===============
 Provides an end-point that performs classifications via REST API calls.
 
-Start the service:
+**Start the service (development only):**
 ```
     python ./dicebox_service.py
 ```
 
-Dicebox API
+**Production Deployment**
+
+I've tested running dicebox with uwsgi, and proxied through nginx.  Nginx configurations can be found within ./nginx of this repository.
+```
+uwsgi --http-socket 127.0.0.1:5000 --manage-script-name --mount /=dicebox_service.py --plugin python,http --enable-threads --callable app —master
+```
+
+
+Dicebox Service API
 ===========
 
 Default URL for API: `http(s)://{hostname}:5000/`
 
-Anonymous End-Points
--------------------
 
-**Get Service API Version**
+### Anonymous End-Points
+
+
+* **Get Service API Version**
 
 For verification of service API version.
 
@@ -288,7 +316,7 @@ Result:
 }
 `
 
-**Get Service Health**
+* **Get Service Health**
  
 For use in load balanced environments.
 
@@ -299,8 +327,8 @@ Result:
 `true` or `false` with a `201` status code.
 
 
-Authentication Required End-Points
------------------------
+### Authentication Required End-Points
+
 
 **Request Header**
 
@@ -315,7 +343,7 @@ The below end-points require several headers to be present on the request.
 * API-ACCESS-KEY: 'A unique (secret) guid used for authorization'
 * API-VERSION: 'Version of the API to use'
 
-**Classification**
+* **Classification**
 
 Used to classify the image data.  Return the label index for the classification.
 
@@ -335,7 +363,7 @@ Example
     }
 
 ```
-**Get Categories**
+* **Get Categories**
 
  Used to turn classification results into human-readable labels.
 
@@ -364,6 +392,42 @@ Example
     }
 ```
 
+
+
+Sensory Service
+===============
+Provides an end-point that performs input data storage and retrieval via REST API calls.
+
+**Start the service (development only):**
+```
+    python ./sensory_service.py
+```
+
+**Production Deployment**
+
+I've tested running the sensory service with uwsgi, and proxied through nginx.  Nginx configurations can be found within ./nginx of this repository.
+```
+uwsgi --http-socket 127.0.0.1:5000 --manage-script-name --mount /=sensory_service.py --plugin python,http --enable-threads --callable app —master
+```
+
+* Stores data with classifications that are sent to it from the client/supervisored trainer.
+* Provides data sets for the stand-alone trainer while building the weights.
+    * For small batches of the data a single API call can be used.  
+    * For large batches a batch order is created and the trainer polls the sensory service to get all the training data. (The sensory service pulls the data off a RabbitMQ queue with a matching batch order id.)
+
+
+Sensory Service Batch Processor
+===============================
+
+A worker service that processes batch orders from a RabbitMQ task queue, and publishes back for a consumer.
+
+**Start the service:**
+```
+    python ./sensory_service_batch_processor.py
+```
+The service reads data for the datasets off an AWS EFS which can be shared amoungst a large number of workers.
+
+
 Client Consumption
 ==================
 Sample client application.  Useful for supervised training.
@@ -371,19 +435,13 @@ Sample client application.  Useful for supervised training.
 [![Dicebox 60x50 Dataset Real-Time Image Classification Demo](http://img.youtube.com/vi/01MML66v4-U/0.jpg)](http://www.youtube.com/watch?v=01MML66v4-U)
 
 ```
-    python ./client/dicebox_client.py
+    python ./legacy/dicebox_client.py
 ```
 
 A simple test harness for running the datasets against the dicebox service.
 ```
-    python ./client/dicebox_test_client.py
+    python ./dicebox_test_client.py
 ```
-
-
-Known Limitations
-----------------
-* Static access token
-* Supports only gray-scale images
 
 
 Mission Statement / Why
