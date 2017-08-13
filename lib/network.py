@@ -12,6 +12,7 @@ import logging
 import numpy
 import dicebox_config as config
 import filesystem_connecter
+import sensory_interface
 from datetime import datetime
 import os
 
@@ -30,7 +31,8 @@ class Network:
 
     Currently only works for an MLP.
     """
-    fsc = None
+    fsc = None  # file system connector
+    ssc = None  # sensory service connector
 
     def __init__(self, nn_param_choices=None):
         """Initialize our network.
@@ -50,6 +52,10 @@ class Network:
         if Network.fsc is None:
             # logging.debug('creating a new fsc..')
             Network.fsc = filesystem_connecter.FileSystemConnector(config.DATA_DIRECTORY)
+
+        if Network.ssc is None:
+            logging.debug('creating a new ssc..')
+            Network.ssc = sensory_interface.SensoryInterface('client')
 
     def create_random(self):
         """Create a random network."""
@@ -161,12 +167,46 @@ class Network:
         test_batch_size = config.TEST_BATCH_SIZE
 
         train_image_data, train_image_labels = Network.fsc.get_batch(train_batch_size, noise=noise)
+        # train_image_data, train_image_labels = Network.ssc.get_batch(train_batch_size, noise=noise)
         train_image_data = numpy.array(train_image_data)
         train_image_data = train_image_data.astype('float32')
         train_image_data /= 255
         train_image_labels = numpy.array(train_image_labels)
 
         test_image_data, test_image_labels = Network.fsc.get_batch(test_batch_size, noise=noise)
+        # test_image_data, test_image_labels = Network.ssc.get_batch(test_batch_size, noise=noise)
+        test_image_data = numpy.array(test_image_data)
+        test_image_data = test_image_data.astype('float32')
+        test_image_data /= 255
+        test_image_labels = numpy.array(test_image_labels)
+
+        logging.debug("nb_classes: (%i)" % nb_classes)
+        logging.debug("batch_size: (%i)" % batch_size)
+        logging.debug("input_shape: (%s)" % input_shape)
+
+        x_train = train_image_data
+        x_test = test_image_data
+        y_train = train_image_labels
+        y_test = test_image_labels
+        return nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test
+
+    def get_dicebox_sensory_data(self):
+        nb_classes = config.NB_CLASSES
+        batch_size = config.BATCH_SIZE
+        input_shape = config.INPUT_SHAPE
+        noise = config.NOISE
+        train_batch_size = config.TRAIN_BATCH_SIZE
+        test_batch_size = config.TEST_BATCH_SIZE
+
+        # train_image_data, train_image_labels = Network.fsc.get_batch(train_batch_size, noise=noise)
+        train_image_data, train_image_labels = Network.ssc.get_batch(train_batch_size, noise=noise)
+        train_image_data = numpy.array(train_image_data)
+        train_image_data = train_image_data.astype('float32')
+        train_image_data /= 255
+        train_image_labels = numpy.array(train_image_labels)
+
+        # test_image_data, test_image_labels = Network.fsc.get_batch(test_batch_size, noise=noise)
+        test_image_data, test_image_labels = Network.ssc.get_batch(test_batch_size, noise=noise)
         test_image_data = numpy.array(test_image_data)
         test_image_data = test_image_data.astype('float32')
         test_image_data /= 255
@@ -184,7 +224,8 @@ class Network:
 
     def train_and_score_and_save(self, dataset):
         if dataset == 'dicebox':
-            nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_filesystem()
+            # nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_filesystem()
+            nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_sensory_data()
         else:
             # no support yet!
             logging.error('UNSUPPORTED dataset supplied to train_and_score_and_save')

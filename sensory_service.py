@@ -1,5 +1,6 @@
 #!flask/bin/python
 from lib import dicebox_config as config
+from lib import sensory_interface
 from flask import Flask, jsonify, request, make_response, abort
 from flask_cors import CORS, cross_origin
 import base64
@@ -8,6 +9,10 @@ import json
 from datetime import datetime
 import os
 import errno
+import uuid
+import numpy
+import pika
+
 
 # Setup logging.
 logging.basicConfig(
@@ -18,6 +23,8 @@ logging.basicConfig(
     filename="%s/sensory_service.log" % config.LOGS_DIR
 )
 
+# Generate our Sensory Service Interface
+ssc = sensory_interface.SensoryInterface('server')
 
 # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
 def make_sure_path_exists(path):
@@ -39,8 +46,74 @@ def sensory_store(tmp_dir, data_dir, data_category, raw_image_data):
     return True
 
 
+def sensory_request(batch_size, noise=0):
+    data, labels = ssc.get_batch(batch_size, noise)
+    return data, labels
+
+
+def sensory_batch_request(batch_size, noise=0):
+    sensory_batch_request_id = uuid.uuid4()
+
+    ## Submit our message
+    url = config.SENSORY_SERVICE_RABBITMQ_URL
+    # logging.debug(url)
+    parameters = pika.URLParameters(url)
+    connection = pika.BlockingConnection(parameters=parameters)
+
+    channel = connection.channel()
+
+    channel.queue_declare(queue=config.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE, durable=True)
+
+    sensory_request = {}
+    sensory_request['sensory_batch_request_id'] = str(sensory_batch_request_id)
+    sensory_request['batch_size'] = batch_size
+    sensory_request['noise'] = noise
+
+    channel.basic_publish(exchange=config.SENSORY_SERVICE_RABBITMQ_EXCHANGE,
+                          routing_key=config.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY,
+                          body=json.dumps(sensory_request),
+                          properties=pika.BasicProperties(
+                              delivery_mode=2,  # make message persistent
+                          ))
+    logging.debug(" [x] Sent %r" % json.dumps(sensory_request))
+    connection.close()
+
+    return sensory_batch_request_id
+
+
+# return a queued batch order message for the supplied request id if possible
+def sensory_batch_poll(batch_id):
+    # lets try to grab more than one at a time // combine and return
+    # since this is going to clients lets reduce chatter
+
+    data = None
+    label = None
+
+    url = config.SENSORY_SERVICE_RABBITMQ_URL
+    # logging.debug(url)
+    parameters = pika.URLParameters(url)
+    connection = pika.BlockingConnection(parameters=parameters)
+
+    channel = connection.channel()
+
+    method_frame, header_frame, body = channel.basic_get(batch_id)
+    if method_frame:
+        logging.debug("%s %s %s" % (method_frame, header_frame, body))
+        message = json.loads(body)
+        label = message['label']
+        data = message['data']
+        logging.debug(label)
+        logging.debug(data)
+        channel.basic_ack(method_frame.delivery_tag)
+    else:
+        logging.debug('no message returned')
+    connection.close()
+    return data, label
+
+
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:*"}})
+
 
 @app.route('/api/sensory/store', methods=['POST'])
 def make_api_sensory_store_public():
@@ -76,6 +149,89 @@ def make_api_sensory_store_public():
 
     return_code = sensory_store(config.TMP_DIR, data_directory, category, decoded_image_data)
     return make_response(jsonify({'sensory_store': return_code}), 201)
+
+
+# for big batches
+@app.route('/api/sensory/batch', methods=['POST'])
+def make_api_sensory_batch_request_public():
+    if request.headers['API-ACCESS-KEY'] != config.API_ACCESS_KEY:
+        logging.debug('bad access key')
+        abort(401)
+    if request.headers['API-VERSION'] != config.API_VERSION:
+        logging.debug('bad access version')
+        abort(400)
+    if not request.json:
+        logging.debug('request not json')
+        abort(400)
+
+    if 'batch_size' not in request.json:
+        logging.debug('batch size not in request')
+        abort(400)
+    if 'noise' not in request.json:
+        logging.debug('noise not in request')
+        abort(400)
+
+    batch_size = request.json.get('batch_size')
+    noise = request.json.get('noise')
+
+    sensory_batch_request_id = sensory_batch_request(batch_size, noise)
+    return make_response(jsonify({'batch_id': sensory_batch_request_id}), 201)
+
+
+@app.route('/api/sensory/poll', methods=['POST'])
+def make_api_sensory_poll_public():
+    if request.headers['API-ACCESS-KEY'] != config.API_ACCESS_KEY:
+        logging.debug('bad access key')
+        abort(401)
+    if request.headers['API-VERSION'] != config.API_VERSION:
+        logging.debug('bad access version')
+        abort(400)
+    if not request.json:
+        logging.debug('request not json')
+        abort(400)
+
+    if 'batch_id' not in request.json:
+        logging.debug('batch id not in request')
+        abort(400)
+
+    batch_id = request.json.get('batch_id')
+
+    data, label = sensory_batch_poll(batch_id)
+    return make_response(jsonify({
+        'label': numpy.array(label).tolist(),
+        'data': numpy.array(data).tolist()
+    }), 201)
+
+
+# for small batches..
+@app.route('/api/sensory/request', methods=['POST'])
+def make_api_sensory_request_public():
+    if request.headers['API-ACCESS-KEY'] != config.API_ACCESS_KEY:
+        logging.debug('bad access key')
+        abort(401)
+    if request.headers['API-VERSION'] != config.API_VERSION:
+        logging.debug('bad access version')
+        abort(400)
+    if not request.json:
+        logging.debug('request not json')
+        abort(400)
+
+    if 'batch_size' not in request.json:
+        logging.debug('batch size not in request')
+        abort(400)
+    if 'noise' not in request.json:
+        logging.debug('noise not in request')
+        abort(400)
+
+    batch_size = request.json.get('batch_size')
+    noise = request.json.get('noise')
+
+    data, labels = sensory_request(batch_size, noise)
+    return make_response(jsonify({
+                                  'labels': numpy.array(labels).tolist(),
+        'data': numpy.array(data).tolist()
+                                  }), 201)
+
 
 
 @app.route('/api/version', methods=['GET'])

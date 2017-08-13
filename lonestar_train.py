@@ -8,7 +8,7 @@ import json
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%m/%d/%Y %I:%M:%S %p',
-    level=logging.INFO,
+    level=logging.DEBUG,
     filemode='w',
     filename="%s/lonestar_train.log" % config.LOGS_DIR
 )
