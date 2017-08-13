@@ -3,22 +3,54 @@
 
 Overview
 --------
-An image classification system built with SOA (Service-Oriented Architecture) in mind.
+An image classification and training system built with SOA (Service-Oriented Architecture) in mind.  The project includes several client implementations, and future enhancements will continue to expand the API capabilities.
 
-1. Visual Image Classification
+1. **Visual Image Classification**
 
     Dicebox is a visual classification system.  It can be reconfigured for different image sizes and categories.
 
-2. Evolutionary Neural Network
+2. **Evolutionary Neural Network**
 
     Dicebox is capable of being applied to a large variety of classification problems.  Sometimes unique or novel problems need to be solved and a neural network structure is unknown.  In this case dicebox provides a means to evolve a network tailored to the particular problem.
 
-3. Service-Oriented Architecture
+3. **Service-Oriented Architecture**
    
-   The finalized & trained classification system is accessed through a REST API.  The project includes several client implementations.
-   Future enhancements will continue to expand the API capabilities.
-  
-  
+*   The trained neural network is accessed through a REST API.  
+*   The Web Client (and supervised trainer) stores data to an AWS EFS via the REST API.
+*   The Trainer uses the REST API for training data
+
+
+
+###High Level Components Diagram
+
+![Dicebox Services Diagram](https://github.com/joshburt/com.shapeandshare.dicebox/raw/master/assets/Dicebox%20Services%20Diagram.png)
+
+* **Client**
+
+    There are several client implementations included with dicebox.
+    * [webcam](https://github.com/joshburt/com.shapeandshare.dicebox/tree/master/webcam) is the recommend client for most use cases.  It is a simple html5/css/javascript client and supervised training program.
+    * dicebox_test_client.py - meant for bulk image classification and trained network validation.
+    * (_legacy_) dicebox_client.py - a python opencv thick client and supervised training program
+    * (_legacy_) dicebox_multi_client.py - like the dicebox_client.py but classifies several portions of the screen.
+
+* **Lonestar Trainer**
+
+    The stand-alone training application for a selected network genotype.  It will generate weights files for use by the dicebox service.
+    
+* **Dicebox Service**
+    
+    A REST API that performs classification using the designated network structure and weights.
+    
+* **Sensory Service**
+
+    The sensory service is a REST API that will store data that needs to be added to training set for a given classification.  It is primary consumed by the stand-alone trainer.
+
+    Provides input data directly for small batch sizes, or can queue up large batch orders for creation by the batch processor.
+ 
+* **Sensory Batch Processor**
+
+    A back-end service for batch order processing.  Will take requests from the message queue, and then create a corresponding queue with data for a consumer.
+
 Audience
 --------
 Those who need automated dice roll recognition, or wish to use dicebox on another data set or classification problem.
@@ -63,13 +95,17 @@ The requirements can be automatically installed using the below command:
 These are the individual modules required by this project:
 
 ```
-    requests==2.13.0
-    numpy==1.11.0
     Flask==0.12.1
+    Flask_Cors==3.0.3
+    flask-cors==3.0.3
+    pika==0.10.0
+    requests==2.13.0
     tqdm==4.14.0
+    Pillow==4.2.1
+    keras==2.0.6
+    numpy==1.13.1
     tensorflow==1.1.0
-    Keras==2.0.4
-    Pillow==4.2.0
+    h5py
 ```
 
 Data Sets
