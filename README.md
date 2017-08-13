@@ -241,7 +241,7 @@ Controls the sernsory service configuration.
     rabbitmq_uri = amqp://
     rabbitmq_username = guest
     rabbitmq_password = guest
-    rabbitmq_server = lcalhost
+    rabbitmq_server = localhost
     rabbitmq_port = 5672
     rabbitmq_vhost = sensory
 ```
