@@ -3,22 +3,55 @@
 
 Overview
 --------
-An image classification system built with SOA (Service-Oriented Architecture) in mind.
+An image classification and training system built with SOA (Service-Oriented Architecture) in mind.  The project includes several client implementations, and future enhancements will continue to expand the API capabilities.
 
-1. Visual Image Classification
+1. **Visual Image Classification**
 
     Dicebox is a visual classification system.  It can be reconfigured for different image sizes and categories.
 
-2. Evolutionary Neural Network
+2. **Evolutionary Neural Network**
 
     Dicebox is capable of being applied to a large variety of classification problems.  Sometimes unique or novel problems need to be solved and a neural network structure is unknown.  In this case dicebox provides a means to evolve a network tailored to the particular problem.
 
-3. Service-Oriented Architecture
+3. **Service-Oriented Architecture**
    
-   The finalized & trained classification system is accessed through a REST API.  The project includes several client implementations.
-   Future enhancements will continue to expand the API capabilities.
-  
-  
+*   The trained neural network is accessed through a REST API.  
+*   The Web Client (and supervised trainer) stores data to an AWS EFS via the REST API.
+*   The Trainer uses the REST API for training data
+
+
+
+High Level Components
+---------------------
+
+![Dicebox Services Diagram](https://github.com/joshburt/com.shapeandshare.dicebox/raw/master/assets/Dicebox%20Services%20Diagram.png)
+
+* **Client**
+
+    There are several client implementations included with dicebox.
+    * [webcam](https://github.com/joshburt/com.shapeandshare.dicebox/tree/master/webcam) is the recommend client for most use cases.  It is a simple html5/css/javascript client and supervised training program.
+    * dicebox_test_client.py - meant for bulk image classification and trained network validation.
+    * (_legacy_) dicebox_client.py - a python opencv thick client and supervised training program
+    * (_legacy_) dicebox_multi_client.py - like the dicebox_client.py but classifies several portions of the screen.
+
+* **Lonestar Trainer**
+
+    The stand-alone training application for a selected network genotype.  It will generate weights files for use by the dicebox service.
+    
+* **Dicebox Service**
+    
+    A REST API that performs classification using the designated network structure and weights.
+    
+* **Sensory Service**
+
+    The sensory service is a REST API that will store data that needs to be added to training set for a given classification.  It is primary consumed by the stand-alone trainer.
+
+    Provides input data directly for small batch sizes, or can queue up large batch orders for creation by the batch processor.
+ 
+* **Sensory Batch Processor**
+
+    A back-end service for batch order processing.  Will take requests from the message queue, and then create a corresponding queue with data for a consumer.
+
 Audience
 --------
 Those who need automated dice roll recognition, or wish to use dicebox on another data set or classification problem.
@@ -63,13 +96,17 @@ The requirements can be automatically installed using the below command:
 These are the individual modules required by this project:
 
 ```
-    requests==2.13.0
-    numpy==1.11.0
     Flask==0.12.1
+    Flask_Cors==3.0.3
+    flask-cors==3.0.3
+    pika==0.10.0
+    requests==2.13.0
     tqdm==4.14.0
+    Pillow==4.2.1
+    keras==2.0.6
+    numpy==1.13.1
     tensorflow==1.1.0
-    Keras==2.0.4
-    Pillow==4.2.0
+    h5py
 ```
 
 Data Sets
@@ -123,9 +160,9 @@ The below section controls the parameters for the network input.
 ```
 [DATASET]
     name = dicebox
-    categories = 11
-    image_width = 480
-    image_height = 270
+    image_width = 100
+    image_height = 100
+    categories = 19
 ```
 
 Images are expected to be in the below directory structure.
@@ -143,7 +180,7 @@ The genotypes for the networks (individuals) are defined below; and can be chang
 [TAXONOMY]
     neurons: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597]
     layers: [1, 2, 3, 5, 8, 13, 21]
-    activation: ["relu", "elu", "tanh", "sigmoid"]
+    activation: ["softmax", "elu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid", "linear"]
     optimizer: ["rmsprop", "adam", "sgd", "adagrad", "adadelta", "adamax", "nadam"]
 ```
 
@@ -151,8 +188,8 @@ Individual networks can be defined and trained.  This controls the network that 
 ```
 [LONESTAR]
     neurons = 987
-    layers = 2
-    activation = sigmoid
+    layers = 5
+    activation = elu
     optimizer = adamax
 ```
 
@@ -167,9 +204,10 @@ The number of epochs, individuals, and generations used during evolution are def
 When training the lonestar network, the below options control the training regiment.
 ```
 [TRAINING]
-    batch_size = 500
-    train_batch_size = 5000
-    test_batch_size = 500
+    batch_size = 15000
+    train_batch_size = 223000
+    test_batch_size = 15000
+    load_best_weights_on_start = False
 ```
 
 Defines the directories used for the various file system operations.
@@ -185,16 +223,33 @@ Controls the service configuration.
 ```
 [SERVER]
     api_access_key = 6e249b5f-b483-4e0d-b50b-81d95e3d9a59
-    api_version = 0.2.1
+    api_version = 0.3.0
     listening_host = 0.0.0.0
     flask_debug = False
     model_weights_filename = weights.best.hdf5
 ```
 
+Controls the sernsory service configuration.
+```
+[SENSORY_SERVICE]
+    sensory_server = localhost
+    sensory_port = 5000
+    sensory_uri = http://
+    rabbitmq_exchange = sensory.exchange
+    rabbitmq_batch_request_routing_key = task_queue
+    rabbitmq_batch_request_task_queue = sensory.batch.request.task.queue
+    rabbitmq_uri = amqp://
+    rabbitmq_username = guest
+    rabbitmq_password = guest
+    rabbitmq_server = lcalhost
+    rabbitmq_port = 5672
+    rabbitmq_vhost = sensory
+```
+
 The percentage of noise/luck in the system. (0 - 1) scale
 ```
 [GLOBAL]
-    noise = 0.1
+    noise = 0.5
 ```
 
 Service configuration for the dicebox client.
@@ -202,7 +257,7 @@ Service configuration for the dicebox client.
 [CLIENT]
     classification_server = localhost
     classification_port = 5000
-    uri = http://
+    classification_uri = http://
 ```
 
 The Primordial Pool
@@ -220,24 +275,33 @@ Allows for the saving of specific networks pulled from the pool.  The trained we
     python ./lonestar_train.py
 ```
 
-Classification via REST API
-===========================
+Dicebox Service
+===============
 Provides an end-point that performs classifications via REST API calls.
 
-Start the service:
+**Start the service (development only):**
 ```
     python ./dicebox_service.py
 ```
 
-Dicebox API
+**Production Deployment**
+
+I've tested running dicebox with uwsgi, and proxied through nginx.  Nginx configurations can be found within ./nginx of this repository.
+```
+uwsgi --http-socket 127.0.0.1:5000 --manage-script-name --mount /=dicebox_service.py --plugin python,http --enable-threads --callable app —master
+```
+
+
+Dicebox Service API
 ===========
 
 Default URL for API: `http(s)://{hostname}:5000/`
 
-Anonymous End-Points
--------------------
 
-**Get Service API Version**
+### Anonymous End-Points
+
+
+* **Get Service API Version**
 
 For verification of service API version.
 
@@ -252,7 +316,7 @@ Result:
 }
 `
 
-**Get Service Health**
+* **Get Service Health**
  
 For use in load balanced environments.
 
@@ -263,8 +327,8 @@ Result:
 `true` or `false` with a `201` status code.
 
 
-Authentication Required End-Points
------------------------
+### Authentication Required End-Points
+
 
 **Request Header**
 
@@ -279,7 +343,7 @@ The below end-points require several headers to be present on the request.
 * API-ACCESS-KEY: 'A unique (secret) guid used for authorization'
 * API-VERSION: 'Version of the API to use'
 
-**Classification**
+* **Classification**
 
 Used to classify the image data.  Return the label index for the classification.
 
@@ -299,7 +363,7 @@ Example
     }
 
 ```
-**Get Categories**
+* **Get Categories**
 
  Used to turn classification results into human-readable labels.
 
@@ -328,6 +392,42 @@ Example
     }
 ```
 
+
+
+Sensory Service
+===============
+Provides an end-point that performs input data storage and retrieval via REST API calls.
+
+**Start the service (development only):**
+```
+    python ./sensory_service.py
+```
+
+**Production Deployment**
+
+I've tested running the sensory service with uwsgi, and proxied through nginx.  Nginx configurations can be found within ./nginx of this repository.
+```
+uwsgi --http-socket 127.0.0.1:5000 --manage-script-name --mount /=sensory_service.py --plugin python,http --enable-threads --callable app —master
+```
+
+* Stores data with classifications that are sent to it from the client/supervisored trainer.
+* Provides data sets for the stand-alone trainer while building the weights.
+    * For small batches of the data a single API call can be used.  
+    * For large batches a batch order is created and the trainer polls the sensory service to get all the training data. (The sensory service pulls the data off a RabbitMQ queue with a matching batch order id.)
+
+
+Sensory Service Batch Processor
+===============================
+
+A worker service that processes batch orders from a RabbitMQ task queue, and publishes back for a consumer.
+
+**Start the service:**
+```
+    python ./sensory_service_batch_processor.py
+```
+The service reads data for the datasets off an AWS EFS which can be shared amoungst a large number of workers.
+
+
 Client Consumption
 ==================
 Sample client application.  Useful for supervised training.
@@ -335,19 +435,13 @@ Sample client application.  Useful for supervised training.
 [![Dicebox 60x50 Dataset Real-Time Image Classification Demo](http://img.youtube.com/vi/01MML66v4-U/0.jpg)](http://www.youtube.com/watch?v=01MML66v4-U)
 
 ```
-    python ./client/dicebox_client.py
+    python ./legacy/dicebox_client.py
 ```
 
 A simple test harness for running the datasets against the dicebox service.
 ```
-    python ./client/dicebox_test_client.py
+    python ./dicebox_test_client.py
 ```
-
-
-Known Limitations
-----------------
-* Static access token
-* Supports only gray-scale images
 
 
 Mission Statement / Why
