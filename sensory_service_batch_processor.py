@@ -51,7 +51,7 @@ def process_batch_order(batch_order):
     uuid_channel.queue_bind(sensory_batch_request_id, config.SENSORY_SERVICE_RABBITMQ_EXCHANGE, routing_key=sensory_batch_request_id, arguments=None)
 
     for index in range(0, len(image_labels)):
-        outbound_message = json.dumps({'labels': numpy.array(image_labels[index]).tolist(), 'data': numpy.array(image_data[index]).tolist()})
+        outbound_message = json.dumps({'label': numpy.array(image_labels[index]).tolist(), 'data': numpy.array(image_data[index]).tolist()})
         uuid_channel.basic_publish(exchange=config.SENSORY_SERVICE_RABBITMQ_EXCHANGE,
                                    routing_key=sensory_batch_request_id,
                                    body=outbound_message

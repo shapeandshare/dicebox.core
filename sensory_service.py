@@ -81,6 +81,36 @@ def sensory_batch_request(batch_size, noise=0):
     return sensory_batch_request_id
 
 
+# return a queued batch order message for the supplied request id if possible
+def sensory_batch_poll(batch_id):
+    # lets try to grab more than one at a time // combine and return
+    # since this is going to clients lets reduce chatter
+
+    data = None
+    label = None
+
+    url = config.SENSORY_SERVICE_RABBITMQ_URL
+    # logging.debug(url)
+    parameters = pika.URLParameters(url)
+    connection = pika.BlockingConnection(parameters=parameters)
+
+    channel = connection.channel()
+
+    method_frame, header_frame, body = channel.basic_get(batch_id)
+    if method_frame:
+        logging.debug("%s %s %s" % (method_frame, header_frame, body))
+        message = json.loads(body)
+        label = message['label']
+        data = message['data']
+        logging.debug(label)
+        logging.debug(data)
+        channel.basic_ack(method_frame.delivery_tag)
+    else:
+        logging.debug('no message returned')
+    connection.close()
+    return data, label
+
+
 app = Flask(__name__)
 cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:*"}})
 
@@ -148,6 +178,31 @@ def make_api_sensory_batch_request_public():
     return make_response(jsonify({'batch_id': sensory_batch_request_id}), 201)
 
 
+@app.route('/api/sensory/poll', methods=['POST'])
+def make_api_sensory_poll_public():
+    if request.headers['API-ACCESS-KEY'] != config.API_ACCESS_KEY:
+        logging.debug('bad access key')
+        abort(401)
+    if request.headers['API-VERSION'] != config.API_VERSION:
+        logging.debug('bad access version')
+        abort(400)
+    if not request.json:
+        logging.debug('request not json')
+        abort(400)
+
+    if 'batch_id' not in request.json:
+        logging.debug('batch id not in request')
+        abort(400)
+
+    batch_id = request.json.get('batch_id')
+
+    data, label = sensory_batch_poll(batch_id)
+    return make_response(jsonify({
+        'label': numpy.array(label).tolist(),
+        'data': numpy.array(data).tolist()
+    }), 201)
+
+
 # for small batches..
 @app.route('/api/sensory/request', methods=['POST'])
 def make_api_sensory_request_public():
@@ -176,6 +231,7 @@ def make_api_sensory_request_public():
                                   'labels': numpy.array(labels).tolist(),
         'data': numpy.array(data).tolist()
                                   }), 201)
+
 
 
 @app.route('/api/version', methods=['GET'])

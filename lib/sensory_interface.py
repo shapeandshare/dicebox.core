@@ -10,6 +10,7 @@ import dicebox_config as config
 import filesystem_connecter
 import requests
 import json
+import time
 
 class SensoryInterface:
 
@@ -48,11 +49,40 @@ class SensoryInterface:
             # the queue will stop existing if we take too long, or we clear all the messages.
             # call the sensory service to poll and pop our messages off, it will interface with rabbitmq for us
 
+            outjson = {}
+            outjson['batch_id'] = batch_id
+            json_data = json.dumps(outjson)
+
+            image_label = []
+            image_data = []
+
+            response = {}
+            count = 0
+            while count != batch_size:
+                logging.debug("count: %s" % count)
+                while (len(response) < 1):
+                    time.sleep(1)
+                    response = self.make_sensory_api_call('api/sensory/poll', json_data, 'POST')
+
+                # logging.debug(response)
+                # batch_item = json.load(response)
+
+                image_label.append(response['label']) #  = numpy.append(image_label,[response['label']])
+                image_data.append(response['data'])  # = numpy.append(image_data, [response['data']])
+                # image_label = [response['label']]
+                # image_data = [response['data']]
+
+                #logging.debug(image_label)
+                #logging.debug(image_data)
+
+                count += 1
+            return image_data, image_label
+
             # small batch approach
-            response = self.make_sensory_api_call('api/sensory/request', json_data, 'POST')
-            image_labels = response['labels']
-            image_data = response['data']
-            return image_data, image_labels
+            #response = self.make_sensory_api_call('api/sensory/request', json_data, 'POST')
+            #image_labels = response['labels']
+            #image_data = response['data']
+            #return image_data, image_labels
 
         elif SensoryInterface.InterfaceRole == 'server':
             return SensoryInterface.fsc.get_batch(batch_size, noise=noise)
