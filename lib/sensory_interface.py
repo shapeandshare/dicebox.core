@@ -60,6 +60,8 @@ class SensoryInterface:
             count = 0
             while count != batch_size:
                 logging.debug("count: %s" % count)
+                response = self.make_sensory_api_call('api/sensory/poll', json_data, 'POST')
+
                 while (len(response) < 1):
                     time.sleep(1)
                     response = self.make_sensory_api_call('api/sensory/poll', json_data, 'POST')
