@@ -54,30 +54,56 @@ def sensory_request(batch_size, noise=0):
 def sensory_batch_request(batch_size, noise=0):
     sensory_batch_request_id = uuid.uuid4()
 
-    ## Submit our message
-    url = config.SENSORY_SERVICE_RABBITMQ_URL
-    # logging.debug(url)
-    parameters = pika.URLParameters(url)
-    connection = pika.BlockingConnection(parameters=parameters)
+    # determine how many shards need to be created for the batch
+    shards = 1
+    tail_shard_size = 0
+    if batch_size > config.SENSORY_SERVICE_SHARD_SIZE:
+        tail_shard_size = batch_size % config.SENSORY_SERVICE_SHARD_SIZE
+        shards = (batch_size - (batch_size % config.SENSORY_SERVICE_SHARD_SIZE))/config.SENSORY_SERVICE_SHARD_SIZE
 
-    channel = connection.channel()
+    try:
+        ## Submit our message
+        url = config.SENSORY_SERVICE_RABBITMQ_URL
+        # logging.debug(url)
+        parameters = pika.URLParameters(url)
+        connection = pika.BlockingConnection(parameters=parameters)
 
-    channel.queue_declare(queue=config.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE, durable=True)
+        channel = connection.channel()
 
-    sensory_request = {}
-    sensory_request['sensory_batch_request_id'] = str(sensory_batch_request_id)
-    sensory_request['batch_size'] = batch_size
-    sensory_request['noise'] = noise
+        channel.queue_declare(queue=config.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE, durable=True)
 
-    channel.basic_publish(exchange=config.SENSORY_SERVICE_RABBITMQ_EXCHANGE,
-                          routing_key=config.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY,
-                          body=json.dumps(sensory_request),
-                          properties=pika.BasicProperties(
-                              delivery_mode=2,  # make message persistent
-                          ))
-    logging.debug(" [x] Sent %r" % json.dumps(sensory_request))
-    connection.close()
+        sensory_request = {}
+        sensory_request['sensory_batch_request_id'] = str(sensory_batch_request_id)
+        if batch_size > config.SENSORY_SERVICE_SHARD_SIZE:
+            sensory_request['batch_size'] = config.SENSORY_SERVICE_SHARD_SIZE
+        else:
+            sensory_request['batch_size'] = batch_size
+        sensory_request['noise'] = noise
 
+        for shard in range(0, shards):
+            # send message
+            channel.basic_publish(exchange=config.SENSORY_SERVICE_RABBITMQ_EXCHANGE,
+                                  routing_key=config.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY,
+                                  body=json.dumps(sensory_request),
+                                  properties=pika.BasicProperties(
+                                      delivery_mode=2,  # make message persistent
+                                  ))
+            logging.debug(" [x] Sent %r" % json.dumps(sensory_request))
+        if tail_shard_size > 0:
+            # send final message of size tail_shard_size
+            sensory_request['batch_size'] = tail_shard_size
+            channel.basic_publish(exchange=config.SENSORY_SERVICE_RABBITMQ_EXCHANGE,
+                                  routing_key=config.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY,
+                                  body=json.dumps(sensory_request),
+                                  properties=pika.BasicProperties(
+                                      delivery_mode=2,  # make message persistent
+                                  ))
+            logging.debug(" [x] Sent %r" % json.dumps(sensory_request))
+        connection.close()
+    except:
+        # something went wrong..
+        logging.error('we had a failure sending the batch requests to the message system')
+        return None
     return sensory_batch_request_id
 
 

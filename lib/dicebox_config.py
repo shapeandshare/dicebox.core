@@ -109,6 +109,7 @@ SENSORY_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
     SENSORY_SERVICE_RABBITMQ_PORT,
     SENSORY_SERVICE_RABBITMQ_VHOST
 )
+SENSORY_SERVICE_SHARD_SIZE = my_config.getint('SENSORY_SERVICE', 'shard_size')
 
 
 ###############################################################################
