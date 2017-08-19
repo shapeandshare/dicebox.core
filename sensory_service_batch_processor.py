@@ -44,7 +44,7 @@ def process_batch_order(batch_order):
 
     # iterate over the result
     outbound_connection = pika.BlockingConnection(parameters=parameters)
-    uuid_channel = connection.channel()
+    uuid_channel = outbound_connection.channel()
     arguments = {'x-expires': 120 * 1000}  # 120 seconds
     uuid_channel.queue_declare(queue=sensory_batch_request_id, durable=False, auto_delete=True, arguments=arguments)
 
