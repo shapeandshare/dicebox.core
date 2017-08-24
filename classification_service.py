@@ -13,7 +13,7 @@ logging.basicConfig(
     datefmt='%m/%d/%Y %I:%M:%S %p',
     level=logging.DEBUG,
     filemode='w',
-    filename="%s/dicebox_service.log" % config.LOGS_DIR
+    filename="%s/classification_service.log" % config.LOGS_DIR
 )
 
 network = Network(config.NN_PARAM_CHOICES)
