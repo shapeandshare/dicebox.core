@@ -99,7 +99,8 @@ class SensoryInterface:
             'API-VERSION': config.API_VERSION
         }
         try:
-            url = "%s%s:%i/%s" % (config.SERVER_URI, config.SENSORY_SERVER, config.SERVER_PORT, end_point)
+            url = "%s%s:%s/%s" % (config.SENSORY_URI, config.SENSORY_SERVER, config.SENSORY_PORT, end_point)
+            logging.debug(url)
             response = None
             if call_type == 'GET':
                 response = requests.get(url, data=json_data, headers=headers)
