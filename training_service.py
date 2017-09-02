@@ -25,7 +25,7 @@ logging.basicConfig(
     datefmt='%m/%d/%Y %I:%M:%S %p',
     level=logging.DEBUG,
     filemode='w',
-    filename="%s/trainning_service.log" % config.LOGS_DIR
+    filename="%s/training_service.log" % config.LOGS_DIR
 )
 
 
@@ -34,35 +34,35 @@ cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:*"}})
 
 
 def train_request():
-    trainning_request_id = uuid.uuid4()
+    training_request_id = uuid.uuid4()
 
     try:
         ## Submit our message
-        url = config.TRAINNING_SERVICE_RABBITMQ_URL
+        url = config.TRAINING_SERVICE_RABBITMQ_URL
         logging.debug(url)
         parameters = pika.URLParameters(url)
         connection = pika.BlockingConnection(parameters=parameters)
 
         channel = connection.channel()
 
-        channel.queue_declare(queue=config.TRAINNING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE, durable=True)
+        channel.queue_declare(queue=config.trainING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE, durable=True)
 
-        trainning_request = {}
-        trainning_request['trainning_request_id'] = str(trainning_request_id)
-        channel.basic_publish(exchange=config.TRAINNING_SERVICE_RABBITMQ_EXCHANGE,
-                              routing_key=config.TRAINNING_SERVICE_RABBITMQ_TRAINNING_REQUEST_ROUTING_KEY,
-                              body=json.dumps(trainning_request),
+        training_request = {}
+        training_request['training_request_id'] = str(training_request_id)
+        channel.basic_publish(exchange=config.TRAINING_SERVICE_RABBITMQ_EXCHANGE,
+                              routing_key=config.TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY,
+                              body=json.dumps(training_request),
                               properties=pika.BasicProperties(
                                   delivery_mode=2,  # make message persistent
                               ))
-        logging.debug(" [x] Sent %r" % json.dumps(trainning_request))
+        logging.debug(" [x] Sent %r" % json.dumps(training_request))
         connection.close()
     except:
         # something went wrong..
         logging.error('we had a failure sending the request to the message system')
         return None
 
-    return trainning_request_id
+    return training_request_id
 
 
 # for small batches..
@@ -74,8 +74,8 @@ def make_api_train_request_public():
     if request.headers['API-VERSION'] != config.API_VERSION:
         logging.debug('bad access version')
         abort(400)
-    trainning_request_id = train_request()
-    return make_response(jsonify({'trainning_request_id': trainning_request_id}), 201)
+    training_request_id = train_request()
+    return make_response(jsonify({'training_request_id': training_request_id}), 201)
 
 
 
