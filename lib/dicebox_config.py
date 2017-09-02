@@ -134,6 +134,32 @@ TRAINNING_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
     TRAINNING_SERVICE_RABBITMQ_VHOST
 )
 
+
+###############################################################################
+# Trainning Service Options
+###############################################################################
+TRAINNING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE = my_config.get('TRAINNING_PROCESSOR_SERVICE', 'rabbitmq_exchange')
+TRAINNING_PROCESSOR_SERVICE_RABBITMQ_TRAINNING_REQUEST_ROUTING_KEY = my_config.get('TRAINNING_PROCESSOR_SERVICE', 'rabbitmq_batch_request_routing_key')
+TRAINNING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = my_config.get('TRAINNING_PROCESSOR_SERVICE', 'rabbitmq_train_request_task_queue')
+TRAINNING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST = my_config.get('TRAINNING_PROCESSOR_SERVICE', 'rabbitmq_vhost')
+TRAINNING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI = my_config.get('TRAINNING_PROCESSOR_SERVICE', 'rabbitmq_uri')
+TRAINNING_PROCESSOR_SERVICE_RABBITMQ_USERNAME = my_config.get('TRAINNING_PROCESSOR_SERVICE', 'rabbitmq_username')
+TRAINNING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD = my_config.get('TRAINNING_PROCESSOR_SERVICE', 'rabbitmq_password')
+TRAINNING_PROCESSOR_SERVICE_RABBITMQ_SERVER = my_config.get('TRAINNING_PROCESSOR_SERVICE', 'rabbitmq_server')
+TRAINNING_PROCESSOR_SERVICE_RABBITMQ_PORT = my_config.get('TRAINNING_PROCESSOR_SERVICE', 'rabbitmq_port')
+TRAINNING_PROCESSOR_SERVICE_RABBITMQ_VHOST = urllib.quote_plus(my_config.get('TRAINNING_PROCESSOR_SERVICE', 'rabbitmq_vhost'))
+TRAINNING_PROCESSOR_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
+    TRAINNING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI,
+    TRAINNING_PROCESSOR_SERVICE_RABBITMQ_USERNAME,
+    TRAINNING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD,
+    TRAINNING_PROCESSOR_SERVICE_RABBITMQ_SERVER,
+    TRAINNING_PROCESSOR_SERVICE_RABBITMQ_PORT,
+    TRAINNING_PROCESSOR_SERVICE_RABBITMQ_VHOST
+)
+
+
+
+
 ###############################################################################
 # Client Options
 ###############################################################################
