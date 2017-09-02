@@ -38,7 +38,7 @@ server {
 	#
 	# include snippets/snakeoil.conf;
 	include snippets/options-ssl-nginx.conf;
-	include snippets/snippets-trainning.config;
+	include snippets/snippets-training.config;
 
 	root /var/www/html;
 
@@ -46,7 +46,7 @@ server {
 	index index.html index.htm index.nginx-debian.html;
 
 	#server_name _;
-	server_name trainning.dicebox.io;
+	server_name training.dicebox.io;
 
 	location / {
 		# First attempt to serve request as file, then
@@ -65,7 +65,7 @@ server {
 #               add_header      Access-Control-Allow-Origin     diceboxwebsite.s3.amazonaws.com;
 #               add_header      Access-Control-Allow-Origin     www.dicebox.shapeandshare.com;
 #                add_header      Access-Control-Allow-Headers    API-VERSION,API-ACCESS-KEY,Content-Type;
-                if ($http_origin ~* '^https?://(diceboxwebsite\.s3-us-west-2\.amazonaws\.com|trainning\.dicebox\.io)') {
+                if ($http_origin ~* '^https?://(diceboxwebsite\.s3-us-west-2\.amazonaws\.com|training\.dicebox\.io)') {
                         add_header 'Access-Control-Allow-Origin' "$http_origin" always;
                         add_header      Access-Control-Allow-Headers    API-VERSION,API-ACCESS-KEY,Content-Type;
                 }
