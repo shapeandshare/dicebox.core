@@ -113,6 +113,28 @@ SENSORY_SERVICE_SHARD_SIZE = my_config.getint('SENSORY_SERVICE', 'shard_size')
 
 
 ###############################################################################
+# Trainning Service Options
+###############################################################################
+TRAINNING_SERVICE_RABBITMQ_EXCHANGE = my_config.get('TRAINNING_SERVICE', 'rabbitmq_exchange')
+TRAINNING_SERVICE_RABBITMQ_TRAINNING_REQUEST_ROUTING_KEY = my_config.get('TRAINNING_SERVICE', 'rabbitmq_batch_request_routing_key')
+TRAINNING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = my_config.get('TRAINNING_SERVICE', 'rabbitmq_train_request_task_queue')
+TRAINNING_SERVICE_RABBITMQ_RABBITMQ_VHOST = my_config.get('TRAINNING_SERVICE', 'rabbitmq_vhost')
+TRAINNING_SERVICE_RABBITMQ_RABBITMQ_URI = my_config.get('TRAINNING_SERVICE', 'rabbitmq_uri')
+TRAINNING_SERVICE_RABBITMQ_USERNAME = my_config.get('TRAINNING_SERVICE', 'rabbitmq_username')
+TRAINNING_SERVICE_RABBITMQ_PASSWORD = my_config.get('TRAINNING_SERVICE', 'rabbitmq_password')
+TRAINNING_SERVICE_RABBITMQ_SERVER = my_config.get('TRAINNING_SERVICE', 'rabbitmq_server')
+TRAINNING_SERVICE_RABBITMQ_PORT = my_config.get('TRAINNING_SERVICE', 'rabbitmq_port')
+TRAINNING_SERVICE_RABBITMQ_VHOST = urllib.quote_plus(my_config.get('TRAINNING_SERVICE', 'rabbitmq_vhost'))
+TRAINNING_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
+    TRAINNING_SERVICE_RABBITMQ_RABBITMQ_URI,
+    TRAINNING_SERVICE_RABBITMQ_USERNAME,
+    TRAINNING_SERVICE_RABBITMQ_PASSWORD,
+    TRAINNING_SERVICE_RABBITMQ_SERVER,
+    TRAINNING_SERVICE_RABBITMQ_PORT,
+    TRAINNING_SERVICE_RABBITMQ_VHOST
+)
+
+###############################################################################
 # Client Options
 ###############################################################################
 CLASSIFICATION_SERVER = my_config.get('CLIENT', 'classification_server')
