@@ -45,7 +45,7 @@ def train_request():
 
         channel = connection.channel()
 
-        channel.queue_declare(queue=config.trainING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE, durable=True)
+        channel.queue_declare(queue=config.TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE, durable=True)
 
         training_request = {}
         training_request['training_request_id'] = str(training_request_id)
