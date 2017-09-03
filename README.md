@@ -61,38 +61,6 @@ High Level Components
     A back-end service for picking up a training request, and performing the training.
 
 
-Audience
---------
-Those who need automated dice roll recognition, or wish to use dicebox on another data set or classification problem.
-
-Quick Start
------------
-```
-    # Ensure tensorflow is ready to go
-    source ~/tensorflow/bin/active
-    
-    # Ensure we are in the project directory
-    cd {project_root}
-    
-    # Enure the environment is sane
-    mkdir logs tmp weights datasets
-    pip install -r requirements.txt
-    
-    # Download the dataset
-    cd datasets
-    wget https://s3-us-west-2.amazonaws.com/diceboximages/dist/dicebox_60x50.070817.tar.gz
-    tar xfvz ./dicebox_60x50.070817.tar.gz
-    cd ..
-    
-    # Download the weights file for use by the classification serivce.
-    cd weights
-    wget https://s3-us-west-2.amazonaws.com/diceboxweights/weights.epoch_224.final.2017-07-12_16_26_10_253809.hdf5.tar.gz
-    tar xfvz ./weights.epoch_224.final.2017-07-12_16_26_10_253809.hdf5.tar.gz
-    cp ./weights/weights.epoch_224.final.2017-07-12_16_26_10_253809.hdf5 ./weights/weights.best.hdf5
-    cd ..
-```
-At this point all the bundled applications should function with the default configuration.
-
 Requirements
 ------------
 
