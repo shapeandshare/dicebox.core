@@ -38,7 +38,7 @@ High Level Components
 
     The stand-alone training application for a selected network genotype.  It will generate weights files for use by the dicebox service.
     
-* **Dicebox Service**
+* **Classification Service**
     
     A REST API that performs classification using the designated network structure and weights.
     
@@ -51,6 +51,15 @@ High Level Components
 * **Sensory Batch Processor**
 
     A back-end service for batch order processing.  Will take requests from the message queue, and then create a corresponding queue with data for a consumer.
+
+* **Training Service**
+
+    The training service is a REST API used to request training.
+
+* **Training Processor Service**
+
+    A back-end service for picking up a training request, and performing the training.
+
 
 Audience
 --------
