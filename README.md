@@ -86,49 +86,6 @@ These are the individual modules required by this project:
     h5py
 ```
 
-Data Sets
----------
-[Download](https://s3-us-west-2.amazonaws.com/diceboximages/dist/dicebox_60x50.070817.tar.gz)
- | Dicebox Dataset 60x50 | approx 265k  gray scale png images of 1d4 and 1d6 dices.
-
-
-### The creation the dataset
-Using the below equipment and the supervised training program the images were generated over successive sessions.
-
-#### Equipment
-
-* [Logitech C930e USB Webcam](https://www.amazon.com/gp/product/B00CRJWW2G/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
-* [Polaroid 8" Heavy Duty Mini Tripod](https://www.amazon.com/gp/product/B004OAFO0I/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
-* [Rotating Display Turntable](https://www.amazon.com/gp/product/B0144DMXEO/ref=oh_aui_detailpage_o02_s00?ie=UTF8&psc=1)
-* [DragonSteel Solid Metal Polyhedral 7 Die D&D Dice Set](https://www.amazon.com/gp/product/B01LW6QSFX/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1)
-
-
-Weights
--------
-[Download](https://s3-us-west-2.amazonaws.com/diceboxweights/weights.epoch_224.final.2017-07-12_16_26_10_253809.hdf5.tar.gz) | 
-Dicebox weights trained on the above dataset.
-
-To use the weights file, download and extract into the `./weights` directory.  By default the service will look for a weights file named `weights.best.hdf5`.  You'll want to rename/copy this file or update the relavent setting within the `dicebox.config` file.
-
-**dicebox.config settings for the above sample weights file**
-```
-[DATASET]
-categories = 11
-image_width = 60
-name = dicebox
-image_height = 50
-```
-```
-[LONESTAR]
-neurons = 987
-layers = 3
-activation = elu
-optimizer = adam
-```
-
-#### Equipment
-Training was done with Tensorflow configured to use a GeForce 1080.
-
 Configuration
 =============
 `dicebox.config` contains the configurable parameters for dicebox.
@@ -252,7 +209,7 @@ Allows for the saving of specific networks pulled from the pool.  The trained we
     python ./lonestar_train.py
 ```
 
-Dicebox Service
+Classification Serrvice
 ===============
 Provides an end-point that performs classifications via REST API calls.
 
@@ -443,6 +400,50 @@ Specifically, I want something:
 
 
 Dicebox has come through a number of iterations to get to where it is today.  I suspect it will probably have more, and may even evolve beyond anything I have yet to image. ;)
+
+
+Data Sets
+---------
+[Download](https://s3-us-west-2.amazonaws.com/diceboximages/dist/dicebox_60x50.070817.tar.gz)
+ | Dicebox Dataset 60x50 | approx 265k  gray scale png images of 1d4 and 1d6 dices.
+
+
+### The creation the dataset
+Using the below equipment and the supervised training program the images were generated over successive sessions.
+
+#### Equipment
+
+* [Logitech C930e USB Webcam](https://www.amazon.com/gp/product/B00CRJWW2G/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+* [Polaroid 8" Heavy Duty Mini Tripod](https://www.amazon.com/gp/product/B004OAFO0I/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+* [Rotating Display Turntable](https://www.amazon.com/gp/product/B0144DMXEO/ref=oh_aui_detailpage_o02_s00?ie=UTF8&psc=1)
+* [DragonSteel Solid Metal Polyhedral 7 Die D&D Dice Set](https://www.amazon.com/gp/product/B01LW6QSFX/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1)
+
+
+Weights
+-------
+[Download](https://s3-us-west-2.amazonaws.com/diceboxweights/weights.epoch_224.final.2017-07-12_16_26_10_253809.hdf5.tar.gz) | 
+Dicebox weights trained on the above dataset.
+
+To use the weights file, download and extract into the `./weights` directory.  By default the service will look for a weights file named `weights.best.hdf5`.  You'll want to rename/copy this file or update the relavent setting within the `dicebox.config` file.
+
+**dicebox.config settings for the above sample weights file**
+```
+[DATASET]
+categories = 11
+image_width = 60
+name = dicebox
+image_height = 50
+```
+```
+[LONESTAR]
+neurons = 987
+layers = 3
+activation = elu
+optimizer = adam
+```
+
+#### Equipment
+Training was done with Tensorflow configured to use a GeForce 1080.
 
 
 References
