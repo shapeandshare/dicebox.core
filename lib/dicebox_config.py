@@ -136,7 +136,7 @@ TRAINING_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
 
 
 ###############################################################################
-# Training Service Options
+# Training Processor Options
 ###############################################################################
 TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE = my_config.get('TRAINING_PROCESSOR_SERVICE', 'rabbitmq_exchange')
 TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = my_config.get('TRAINING_PROCESSOR_SERVICE', 'rabbitmq_batch_request_routing_key')
