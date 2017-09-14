@@ -2,6 +2,7 @@
 
 import dicebox_config as default_config
 import os
+import json
 
 ###############################################################################
 # Data Set Options
@@ -13,20 +14,59 @@ if 'DATASET' in os.environ:
     DATASET = os.environ['DATASET']
 
 NB_CLASSES = default_config.NB_CLASSES
+if 'NB_CLASSES' in os.environ:
+    NB_CLASSES = os.environ['NB_CLASSES']
+
 IMAGE_WIDTH = default_config.IMAGE_WIDTH
+if 'IMAGE_WIDTH' in os.environ:
+    IMAGE_WIDTH = os.environ['IMAGE_WIDTH']
+
 IMAGE_HEIGHT = default_config.IMAGE_HEIGHT
+if 'IMAGE_HEIGHT' in os.environ:
+    IMAGE_HEIGHT = os.environ['IMAGE_HEIGHT']
+
 DATA_BASE_DIRECTORY = default_config.DATA_BASE_DIRECTORY
+if 'DATA_BASE_DIRECTORY' in os.environ:
+    DATA_BASE_DIRECTORY = os.environ['DATA_BASE_DIRECTORY']
 
 # Build Calculated Configs
 NETWORK_NAME = default_config.NETWORK_NAME
-INPUT_SHAPE = default_config.INPUT_SHAPE
-DATA_DIRECTORY = default_config.DATA_DIRECTORY
+if 'NETWORK_NAME' in os.environ:
+    NETWORK_NAME = os.environ['NETWORK_NAME']
 
+INPUT_SHAPE = default_config.INPUT_SHAPE
+if 'INPUT_SHAPE' in os.environ:
+    INPUT_SHAPE = os.environ['INPUT_SHAPE']
+
+DATA_DIRECTORY = default_config.DATA_DIRECTORY
+if 'DATA_DIRECTORY' in os.environ:
+    DATA_DIRECTORY = os.environ['DATA_DIRECTORY']
 
 ###############################################################################
 # Neural Network Taxonomy Options
 ###############################################################################
-NN_PARAM_CHOICES = default_config.NN_PARAM_CHOICES
+NB_NEURONS = default_config.NB_NEURONS
+if 'NB_NEURONS' in os.environ:
+    NB_NEURONS = os.environ['NB_NEURONS']
+
+NB_LAYERS = default_config.NB_LAYERS
+if 'NB_LAYERS' in os.environ:
+    NB_LAYERS = os.environ['NB_LAYERS']
+
+ACTIVATION = default_config.ACTIVATION
+if 'ACTIVATION' in os.environ:
+    ACTIVATION = os.environ['ACTIVATION']
+
+OPTIMIZER = default_config.OPTIMIZER
+if 'OPTIMIZER' in os.environ:
+    OPTIMIZER = os.environ['OPTIMIZER']
+
+NN_PARAM_CHOICES = {
+    'nb_neurons': json.loads(NB_NEURONS),
+    'nb_layers': json.loads(NB_LAYERS),
+    'activation': json.loads(ACTIVATION),
+    'optimizer': json.loads(OPTIMIZER)
+}
 
 
 ###############################################################################
@@ -34,56 +74,138 @@ NN_PARAM_CHOICES = default_config.NN_PARAM_CHOICES
 # {'nb_layers': 2, 'activation': 'sigmoid', 'optimizer': 'adamax', 'nb_neurons': 987}
 # 07/03/2017 04:02:49 AM - INFO - Network accuracy: 97.27%
 ###############################################################################
-NN_LONESTAR_PARAMS = default_config.NN_LONESTAR_PARAMS
+NB_LONESTAR_NEURONS = default_config.NB_LONESTAR_NEURONS
+if 'NB_LONESTAR_NEURONS' in os.environ:
+    NB_LONESTAR_NEURONS = os.environ['NB_LONESTAR_NEURONS']
+
+NB_LONESTAR_LAYERS = default_config.NB_LONESTAR_LAYERS
+if 'NB_LONESTAR_LAYERS' in os.environ:
+    NB_LONESTAR_LAYERS = os.environ['NB_LONESTAR_LAYERS']
+
+LONESTAR_ACTIVATION = default_config.LONESTAR_ACTIVATION
+if 'LONESTAR_ACTIVATION' in os.environ:
+    LONESTAR_ACTIVATION = os.environ['LONESTAR_ACTIVATION']
+
+LONESTAR_OPTIMIZER = default_config.LONESTAR_OPTIMIZER
+if 'LONESTAR_OPTIMIZER' in os.environ:
+    LONESTAR_OPTIMIZER = os.environ['LONESTAR_OPTIMIZER']
+
+NN_LONESTAR_PARAMS = {
+    'nb_neurons': NB_LONESTAR_NEURONS,
+    'nb_layers': NB_LONESTAR_LAYERS,
+    'activation': LONESTAR_ACTIVATION,
+    'optimizer': LONESTAR_OPTIMIZER
+}
 
 
 ###############################################################################
 # Evolution Options
 ###############################################################################
 EPOCHS = default_config.EPOCHS
+if 'EPOCHS' in os.environ:
+    EPOCHS = os.environ['EPOCHS']
+
 GENERATIONS = default_config.GENERATIONS  # Number of times to evole the population.
+if 'GENERATIONS' in os.environ:
+    GENERATIONS = os.environ['GENERATIONS']
+
 POPULATION = default_config.POPULATION  # Number of networks in each generation.
+if 'POPULATION' in os.environ:
+    POPULATION = os.environ['POPULATION']
+
 NOISE = default_config.NOISE
+if 'NOISE' in os.environ:
+    NOISE = os.environ['NOISE']
 
 
 ###############################################################################
 # Training Options / Settings for the 1920x1080 dataset
 ###############################################################################
 BATCH_SIZE = default_config.BATCH_SIZE
+if 'BATCH_SIZE' in os.environ:
+    BATCH_SIZE = os.environ['BATCH_SIZE']
+
 TRAIN_BATCH_SIZE = default_config.TRAIN_BATCH_SIZE
+if 'BATCH_SIZE' in os.environ:
+    BATCH_SIZE = os.environ['BATCH_SIZE']
+
 TEST_BATCH_SIZE = default_config.TEST_BATCH_SIZE
+if 'TEST_BATCH_SIZE' in os.environ:
+    TEST_BATCH_SIZE = os.environ['TEST_BATCH_SIZE']
+
 LOAD_BEST_WEIGHTS_ON_START = default_config.LOAD_BEST_WEIGHTS_ON_START
+if 'LOAD_BEST_WEIGHTS_ON_START' in os.environ:
+    LOAD_BEST_WEIGHTS_ON_START = os.environ['LOAD_BEST_WEIGHTS_ON_START']
 
 ###############################################################################
 # Direcrtory Options
 ###############################################################################
 LOGS_DIR = default_config.LOGS_DIR
-WEIGHTS_DIR = default_config.WEIGHTS_DIR
-TMP_DIR = default_config.TMP_DIR
+if 'LOGS_DIR' in os.environ:
+    LOGS_DIR = os.environ['LOGS_DIR']
 
+WEIGHTS_DIR = default_config.WEIGHTS_DIR
+if 'WEIGHTS_DIR' in os.environ:
+    WEIGHTS_DIR = os.environ['WEIGHTS_DIR']
+
+TMP_DIR = default_config.TMP_DIR
+if 'TMP_DIR' in os.environ:
+    TMP_DIR = os.environ['TMP_DIR']
 
 ###############################################################################
 # Server Options
 ###############################################################################
 API_ACCESS_KEY = default_config.API_ACCESS_KEY
+if 'API_ACCESS_KEY' in os.environ:
+    API_ACCESS_KEY = os.environ['API_ACCESS_KEY']
+
 API_VERSION = default_config.API_VERSION
+if 'API_VERSION' in os.environ:
+    API_VERSION = os.environ['API_VERSION']
+
 LISTENING_HOST = default_config.LISTENING_HOST
+if 'LISTENING_HOST' in os.environ:
+    LISTENING_HOST = os.environ['LISTENING_HOST']
+
 FLASK_DEBUG = default_config.FLASK_DEBUG
+if 'FLASK_DEBUG' in os.environ:
+    FLASK_DEBUG = os.environ['FLASK_DEBUG']
+
 MODEL_WEIGHTS_FILENAME = default_config.MODEL_WEIGHTS_FILENAME
+if 'MODEL_WEIGHTS_FILENAME' in os.environ:
+    MODEL_WEIGHTS_FILENAME = os.environ['MODEL_WEIGHTS_FILENAME']
 
 
 ###############################################################################
 # Sensory Service Options
 ###############################################################################
 SENSORY_SERVER = default_config.SENSORY_SERVER
+if 'SENSORY_SERVER' in os.environ:
+    SENSORY_SERVER = os.environ['SENSORY_SERVER']
+
 SENSORY_PORT = default_config.SENSORY_PORT
+if 'SENSORY_PORT' in os.environ:
+    SENSORY_PORT = os.environ['SENSORY_PORT']
+
 SENSORY_URI = default_config.SENSORY_URI
+if 'SENSORY_URI' in os.environ:
+    SENSORY_URI = os.environ['SENSORY_URI']
 
 SENSORY_SERVICE_RABBITMQ_EXCHANGE = default_config.SENSORY_SERVICE_RABBITMQ_EXCHANGE
+if 'SENSORY_SERVICE_RABBITMQ_EXCHANGE' in os.environ:
+    SENSORY_SERVICE_RABBITMQ_EXCHANGE = os.environ['SENSORY_SERVICE_RABBITMQ_EXCHANGE']
+
 SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY = default_config.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY
+if 'SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY' in os.environ:
+    SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY = os.environ['SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY']
+
 SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE = default_config.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE
+if 'SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE' in os.environ:
+    SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE = os.environ['SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE']
 
 SENSORY_SERVICE_RABBITMQ_URI = default_config.SENSORY_SERVICE_RABBITMQ_URI
+if 'SENSORY_SERVICE_RABBITMQ_URI' in os.environ:
+    SENSORY_SERVICE_RABBITMQ_URI = os.environ['SENSORY_SERVICE_RABBITMQ_URI']
 
 SENSORY_SERVICE_RABBITMQ_USERNAME = default_config.SENSORY_SERVICE_RABBITMQ_USERNAME
 if 'SENSORY_SERVICE_RABBITMQ_USERNAME' in os.environ:
@@ -98,7 +220,13 @@ if 'SENSORY_SERVICE_RABBITMQ_SERVER' in os.environ:
     SENSORY_SERVICE_RABBITMQ_SERVER = os.environ['SENSORY_SERVICE_RABBITMQ_SERVER']
 
 SENSORY_SERVICE_RABBITMQ_PORT = default_config.SENSORY_SERVICE_RABBITMQ_PORT
+if 'SENSORY_SERVICE_RABBITMQ_PORT' in os.environ:
+    SENSORY_SERVICE_RABBITMQ_PORT = os.environ['SENSORY_SERVICE_RABBITMQ_PORT']
+
 SENSORY_SERVICE_RABBITMQ_VHOST = default_config.SENSORY_SERVICE_RABBITMQ_VHOST
+if 'SENSORY_SERVICE_RABBITMQ_VHOST' in os.environ:
+    SENSORY_SERVICE_RABBITMQ_VHOST = os.environ['SENSORY_SERVICE_RABBITMQ_VHOST']
+
 SENSORY_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
     SENSORY_SERVICE_RABBITMQ_URI,
     SENSORY_SERVICE_RABBITMQ_USERNAME,
@@ -108,16 +236,33 @@ SENSORY_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
     SENSORY_SERVICE_RABBITMQ_VHOST
 )
 SENSORY_SERVICE_SHARD_SIZE = default_config.SENSORY_SERVICE_SHARD_SIZE
+if 'SENSORY_SERVICE_SHARD_SIZE' in os.environ:
+    SENSORY_SERVICE_SHARD_SIZE = os.environ['SENSORY_SERVICE_SHARD_SIZE']
+
 
 
 ###############################################################################
 # Training Service Options
 ###############################################################################
 TRAINING_SERVICE_RABBITMQ_EXCHANGE = default_config.TRAINING_SERVICE_RABBITMQ_EXCHANGE
+if 'TRAINING_SERVICE_RABBITMQ_EXCHANGE' in os.environ:
+    TRAINING_SERVICE_RABBITMQ_EXCHANGE = os.environ['TRAINING_SERVICE_RABBITMQ_EXCHANGE']
+
 TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = default_config.TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY
+if 'TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY' in os.environ:
+    TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = os.environ['TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY']
+
 TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = default_config.TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE
+if 'TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE' in os.environ:
+    TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = os.environ['TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE']
+
 TRAINING_SERVICE_RABBITMQ_RABBITMQ_VHOST = default_config.TRAINING_SERVICE_RABBITMQ_RABBITMQ_VHOST
+if 'TRAINING_SERVICE_RABBITMQ_RABBITMQ_VHOST' in os.environ:
+    TRAINING_SERVICE_RABBITMQ_RABBITMQ_VHOST = os.environ['TRAINING_SERVICE_RABBITMQ_RABBITMQ_VHOST']
+
 TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI = default_config.TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI
+if 'TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI' in os.environ:
+    TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI = os.environ['TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI']
 
 TRAINING_SERVICE_RABBITMQ_USERNAME = default_config.TRAINING_SERVICE_RABBITMQ_USERNAME
 if 'TRAINING_SERVICE_RABBITMQ_USERNAME' in os.environ:
@@ -132,7 +277,13 @@ if 'TRAINING_SERVICE_RABBITMQ_SERVER' in os.environ:
     TRAINING_SERVICE_RABBITMQ_SERVER = os.environ['TRAINING_SERVICE_RABBITMQ_SERVER']
 
 TRAINING_SERVICE_RABBITMQ_PORT = default_config.TRAINING_SERVICE_RABBITMQ_PORT
+if 'TRAINING_SERVICE_RABBITMQ_PORT' in os.environ:
+    TRAINING_SERVICE_RABBITMQ_PORT = os.environ['TRAINING_SERVICE_RABBITMQ_PORT']
+
 TRAINING_SERVICE_RABBITMQ_VHOST = default_config.TRAINING_SERVICE_RABBITMQ_VHOST
+if 'TRAINING_SERVICE_RABBITMQ_VHOST' in os.environ:
+    TRAINING_SERVICE_RABBITMQ_VHOST = os.environ['TRAINING_SERVICE_RABBITMQ_VHOST']
+
 TRAINING_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
     TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI,
     TRAINING_SERVICE_RABBITMQ_USERNAME,
@@ -146,10 +297,24 @@ TRAINING_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
 # Training Processor Options
 ###############################################################################
 TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE = default_config.TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE
+if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE' in os.environ:
+    TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE']
+
 TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = default_config.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY
+if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY' in os.environ:
+    TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY']
+
 TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = default_config.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE
+if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE' in os.environ:
+    TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE']
+
 TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST = default_config.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST
+if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST' in os.environ:
+    TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST']
+
 TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI = default_config.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI
+if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI' in os.environ:
+    TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI']
 
 TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME = default_config.TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME
 if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME' in os.environ:
@@ -164,7 +329,13 @@ if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER' in os.environ:
     TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER']
 
 TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT = default_config.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT
+if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT' in os.environ:
+    TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT']
+
 TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST = default_config.TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST
+if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST' in os.environ:
+    TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST']
+
 TRAINING_PROCESSOR_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
     TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI,
     TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME,
@@ -179,7 +350,15 @@ TRAINING_PROCESSOR_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
 # Client Options
 ###############################################################################
 CLASSIFICATION_SERVER = default_config.CLASSIFICATION_SERVER
+if 'CLASSIFICATION_SERVER' in os.environ:
+    CLASSIFICATION_SERVER = os.environ['CLASSIFICATION_SERVER']
+
 SERVER_PORT = default_config.SERVER_PORT
+if 'SERVER_PORT' in os.environ:
+    SERVER_PORT = os.environ['SERVER_PORT']
+
 SERVER_URI = default_config.SERVER_URI
+if 'SERVER_URI' in os.environ:
+    SERVER_URI = os.environ['SERVER_URI']
 
 

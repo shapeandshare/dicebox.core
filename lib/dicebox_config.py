@@ -27,11 +27,16 @@ DATA_DIRECTORY = "%s/%s/data/" % (DATA_BASE_DIRECTORY, NETWORK_NAME)
 ###############################################################################
 # Neural Network Taxonomy Options
 ###############################################################################
+NB_NEURONS = my_config.get('TAXONOMY', 'neurons')
+NB_LAYERS = my_config.get('TAXONOMY', 'layers')
+ACTIVATION = my_config.get('TAXONOMY', 'activation')
+OPTIMIZER = my_config.get('TAXONOMY', 'optimizer')
+
 NN_PARAM_CHOICES = {
-    'nb_neurons': json.loads(my_config.get('TAXONOMY', 'neurons')),
-    'nb_layers': json.loads(my_config.get('TAXONOMY', 'layers')),
-    'activation': json.loads(my_config.get('TAXONOMY', 'activation')),
-    'optimizer': json.loads(my_config.get('TAXONOMY', 'optimizer'))
+    'nb_neurons': json.loads(NB_NEURONS),
+    'nb_layers': json.loads(NB_LAYERS),
+    'activation': json.loads(ACTIVATION),
+    'optimizer': json.loads(OPTIMIZER)
 }
 
 
@@ -40,11 +45,16 @@ NN_PARAM_CHOICES = {
 # {'nb_layers': 2, 'activation': 'sigmoid', 'optimizer': 'adamax', 'nb_neurons': 987}
 # 07/03/2017 04:02:49 AM - INFO - Network accuracy: 97.27%
 ###############################################################################
+NB_LONESTAR_NEURONS = my_config.getint('LONESTAR', 'neurons')
+NB_LONESTAR_LAYERS = my_config.getint('LONESTAR', 'layers')
+LONESTAR_ACTIVATION = my_config.get('LONESTAR', 'activation')
+LONESTAR_OPTIMIZER = my_config.get('LONESTAR', 'optimizer')
+
 NN_LONESTAR_PARAMS = {
-    'nb_neurons': my_config.getint('LONESTAR', 'neurons'),
-    'nb_layers': my_config.getint('LONESTAR', 'layers'),
-    'activation': my_config.get('LONESTAR', 'activation'),
-    'optimizer': my_config.get('LONESTAR', 'optimizer')
+    'nb_neurons': NB_LONESTAR_NEURONS,
+    'nb_layers': NB_LONESTAR_LAYERS,
+    'activation': LONESTAR_ACTIVATION,
+    'optimizer': LONESTAR_OPTIMIZER
 }
 
 
