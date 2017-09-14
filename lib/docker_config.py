@@ -15,15 +15,15 @@ if 'DATASET' in os.environ:
 
 NB_CLASSES = default_config.NB_CLASSES
 if 'NB_CLASSES' in os.environ:
-    NB_CLASSES = os.environ['NB_CLASSES']
+    NB_CLASSES = int(os.environ['NB_CLASSES'])
 
 IMAGE_WIDTH = default_config.IMAGE_WIDTH
 if 'IMAGE_WIDTH' in os.environ:
-    IMAGE_WIDTH = os.environ['IMAGE_WIDTH']
+    IMAGE_WIDTH = int(os.environ['IMAGE_WIDTH'])
 
 IMAGE_HEIGHT = default_config.IMAGE_HEIGHT
 if 'IMAGE_HEIGHT' in os.environ:
-    IMAGE_HEIGHT = os.environ['IMAGE_HEIGHT']
+    IMAGE_HEIGHT = int(os.environ['IMAGE_HEIGHT'])
 
 DATA_BASE_DIRECTORY = default_config.DATA_BASE_DIRECTORY
 if 'DATA_BASE_DIRECTORY' in os.environ:
@@ -76,11 +76,11 @@ NN_PARAM_CHOICES = {
 ###############################################################################
 NB_LONESTAR_NEURONS = default_config.NB_LONESTAR_NEURONS
 if 'NB_LONESTAR_NEURONS' in os.environ:
-    NB_LONESTAR_NEURONS = os.environ['NB_LONESTAR_NEURONS']
+    NB_LONESTAR_NEURONS = int(os.environ['NB_LONESTAR_NEURONS'])
 
 NB_LONESTAR_LAYERS = default_config.NB_LONESTAR_LAYERS
 if 'NB_LONESTAR_LAYERS' in os.environ:
-    NB_LONESTAR_LAYERS = os.environ['NB_LONESTAR_LAYERS']
+    NB_LONESTAR_LAYERS = int(os.environ['NB_LONESTAR_LAYERS'])
 
 LONESTAR_ACTIVATION = default_config.LONESTAR_ACTIVATION
 if 'LONESTAR_ACTIVATION' in os.environ:
@@ -103,19 +103,19 @@ NN_LONESTAR_PARAMS = {
 ###############################################################################
 EPOCHS = default_config.EPOCHS
 if 'EPOCHS' in os.environ:
-    EPOCHS = os.environ['EPOCHS']
+    EPOCHS = int(os.environ['EPOCHS'])
 
 GENERATIONS = default_config.GENERATIONS  # Number of times to evole the population.
 if 'GENERATIONS' in os.environ:
-    GENERATIONS = os.environ['GENERATIONS']
+    GENERATIONS = int(os.environ['GENERATIONS'])
 
 POPULATION = default_config.POPULATION  # Number of networks in each generation.
 if 'POPULATION' in os.environ:
-    POPULATION = os.environ['POPULATION']
+    POPULATION = int(os.environ['POPULATION'])
 
 NOISE = default_config.NOISE
 if 'NOISE' in os.environ:
-    NOISE = os.environ['NOISE']
+    NOISE = float(os.environ['NOISE'])
 
 
 ###############################################################################
@@ -123,19 +123,19 @@ if 'NOISE' in os.environ:
 ###############################################################################
 BATCH_SIZE = default_config.BATCH_SIZE
 if 'BATCH_SIZE' in os.environ:
-    BATCH_SIZE = os.environ['BATCH_SIZE']
+    BATCH_SIZE = int(os.environ['BATCH_SIZE'])
 
 TRAIN_BATCH_SIZE = default_config.TRAIN_BATCH_SIZE
 if 'BATCH_SIZE' in os.environ:
-    BATCH_SIZE = os.environ['BATCH_SIZE']
+    BATCH_SIZE = int(os.environ['BATCH_SIZE'])
 
 TEST_BATCH_SIZE = default_config.TEST_BATCH_SIZE
 if 'TEST_BATCH_SIZE' in os.environ:
-    TEST_BATCH_SIZE = os.environ['TEST_BATCH_SIZE']
+    TEST_BATCH_SIZE = int(os.environ['TEST_BATCH_SIZE'])
 
 LOAD_BEST_WEIGHTS_ON_START = default_config.LOAD_BEST_WEIGHTS_ON_START
 if 'LOAD_BEST_WEIGHTS_ON_START' in os.environ:
-    LOAD_BEST_WEIGHTS_ON_START = os.environ['LOAD_BEST_WEIGHTS_ON_START']
+    LOAD_BEST_WEIGHTS_ON_START = bool(os.environ['LOAD_BEST_WEIGHTS_ON_START'])
 
 ###############################################################################
 # Direcrtory Options
@@ -169,7 +169,7 @@ if 'LISTENING_HOST' in os.environ:
 
 FLASK_DEBUG = default_config.FLASK_DEBUG
 if 'FLASK_DEBUG' in os.environ:
-    FLASK_DEBUG = os.environ['FLASK_DEBUG']
+    FLASK_DEBUG = bool(os.environ['FLASK_DEBUG'])
 
 MODEL_WEIGHTS_FILENAME = default_config.MODEL_WEIGHTS_FILENAME
 if 'MODEL_WEIGHTS_FILENAME' in os.environ:
@@ -237,7 +237,7 @@ SENSORY_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
 )
 SENSORY_SERVICE_SHARD_SIZE = default_config.SENSORY_SERVICE_SHARD_SIZE
 if 'SENSORY_SERVICE_SHARD_SIZE' in os.environ:
-    SENSORY_SERVICE_SHARD_SIZE = os.environ['SENSORY_SERVICE_SHARD_SIZE']
+    SENSORY_SERVICE_SHARD_SIZE = int(os.environ['SENSORY_SERVICE_SHARD_SIZE'])
 
 
 
@@ -355,7 +355,7 @@ if 'CLASSIFICATION_SERVER' in os.environ:
 
 SERVER_PORT = default_config.SERVER_PORT
 if 'SERVER_PORT' in os.environ:
-    SERVER_PORT = os.environ['SERVER_PORT']
+    SERVER_PORT = int(os.environ['SERVER_PORT'])
 
 SERVER_URI = default_config.SERVER_URI
 if 'SERVER_URI' in os.environ:
