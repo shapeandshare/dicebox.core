@@ -65,14 +65,16 @@ for item in network_input_index:
 
     json_data = json.dumps(outjson)
 
-    SERVER_ERROR = False
+    SERVER_ERROR = True
 
     #print(json_data)
-    response = make_api_call('api/sensory/store', json_data, 'POST')
-    if 'sensory_store' in response:
-        if response['sensory_store'] is not True:
-            print(response['sensory_store'])
-    else:
-        SERVER_ERROR = True
-        print('server error ..')
-        print(response)
+    while SERVER_ERROR is True:
+        response = make_api_call('api/sensory/store', json_data, 'POST')
+        if 'sensory_store' in response:
+            SERVER_ERROR = False
+            if response['sensory_store'] is not True:
+                print(response['sensory_store'])
+        else:
+            SERVER_ERROR = True
+            print('server error, retrying ..')
+            print(response)
