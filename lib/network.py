@@ -10,7 +10,7 @@ from keras.callbacks import EarlyStopping
 from keras.callbacks import ModelCheckpoint
 import logging
 import numpy
-import dicebox_config as config
+import docker_config as config
 import filesystem_connecter
 import sensory_interface
 from datetime import datetime

@@ -6,7 +6,7 @@ from PIL import Image
 from array import *
 import logging
 # from datetime import datetime  # used when dumping raw transforms to disk
-import dicebox_config as config
+import docker_config as config
 import filesystem_connecter
 import requests
 import json
