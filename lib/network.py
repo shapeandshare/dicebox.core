@@ -63,11 +63,21 @@ class Network:
             self.network[key] = random.choice(self.nn_param_choices[key])
 
     def create_lonestar(self, create_model=False, weights_filename=None):
+        logging.debug('-' * 80)
+        logging.debug("create_lonestar(create_model:%b, weights_filename=%s)" % (create_model, weights_filename))
+        logging.debug('-' * 80)
+
         # Load from external definition
         self.network['nb_layers'] = config.NN_LONESTAR_PARAMS['nb_layers']
         self.network['activation'] = config.NN_LONESTAR_PARAMS['activation']
         self.network['optimizer'] = config.NN_LONESTAR_PARAMS['optimizer']
         self.network['nb_neurons'] = config.NN_LONESTAR_PARAMS['nb_neurons']
+        logging.debug('-' * 80)
+        logging.debug("self.network['nb_layers']: %s" % self.network['nb_layers'])
+        logging.debug("self.network['activation']: %s" % self.network['activation'])
+        logging.debug("self.network['optimizer']: %s" % self.network['optimizer'])
+        logging.debug("self.network['nb_neurons']:%s" % self.network['nb_neurons'])
+        logging.debug('-' * 80)
 
         if create_model is True:
             if self.model is None:
