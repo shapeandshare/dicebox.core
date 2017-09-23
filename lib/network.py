@@ -261,17 +261,35 @@ class Network:
             logging.error('UNSUPPORTED dataset supplied to train_and_score_and_save')
             raise
 
+        logging.debug('-' * 80)
+        logging.debug('Compiling mode if need be.')
+        logging.debug('-' * 80)
         if self.model is None:
             self.model = self.compile_model(self.network, nb_classes, input_shape)
+        logging.debug('-' * 80)
+        logging.debug('Done!')
+        logging.debug('-' * 80)
 
+        logging.debug('-' * 80)
+        logging.debug('Fitting model.')
+        logging.debug('-' * 80)
         self.model.fit(x_train, y_train,
                        batch_size=batch_size,
                        epochs=10000,  # using early stopping, so no real limit
                        verbose=1,
                        validation_data=(x_test, y_test),
                        callbacks=callbacks_list)
+        logging.debug('-' * 80)
+        logging.debug('Done!')
+        logging.debug('-' * 80)
 
+        logging.debug('-' * 80)
+        logging.debug('Scoring model.')
+        logging.debug('-' * 80)
         score = self.model.evaluate(x_test, y_test, verbose=1)
+        logging.debug('-' * 80)
+        logging.debug('Done!')
+        logging.debug('-' * 80)
 
         return score[1]  # 1 is accuracy. 0 is loss.
 

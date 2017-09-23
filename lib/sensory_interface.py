@@ -85,6 +85,9 @@ class SensoryInterface:
                 #logging.debug(image_data)
 
                 count += 1
+            logging.debug('-' * 80)
+            logging.debug('Done receiving batch.')
+            logging.debug('-' * 80)
             return image_data, image_label
 
             # small batch approach
