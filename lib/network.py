@@ -64,7 +64,9 @@ class Network:
 
     def create_lonestar(self, create_model=False, weights_filename=None):
         logging.debug('-' * 80)
-        logging.debug("create_lonestar(create_model:%b, weights_filename=%s)" % (create_model, weights_filename))
+        logging.debug('create_lonestar(create_model, weights_filename)')
+        logging.debug(create_model)
+        logging.debug(weights_filename)
         logging.debug('-' * 80)
 
         # Load from external definition
@@ -111,6 +113,7 @@ class Network:
     def train_and_save(self, dataset):
         # if self.accuracy == 0.:
         logging.debug('-' * 80)
+        logging.debug("train_and_save(dataset)")
         logging.debug("train_and_save(dataset=%s)" % dataset)
         logging.debug('-' * 80)
         self.accuracy = self.train_and_score_and_save(dataset)
@@ -241,6 +244,7 @@ class Network:
 
     def train_and_score_and_save(self, dataset):
         logging.debug('-' * 80)
+        logging.debug("train_and_score_and_save(dataset)")
         logging.debug("train_and_score_and_save(dataset=%s)" % dataset)
         logging.debug('-' * 80)
         if dataset == 'dicebox':
