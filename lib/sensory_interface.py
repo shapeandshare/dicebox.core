@@ -32,7 +32,14 @@ class SensoryInterface:
 
 
     def get_batch(self, batch_size=0, noise=0):
+        logging.debug('-' * 80)
+        logging.debug("get_batch(batch_size=%i, noise=%i)" % (batch_size, noise))
+        logging.debug('-' * 80)
+
         if SensoryInterface.InterfaceRole == 'client':
+            logging.debug('-' * 80)
+            logging.debug('we are client')
+            logging.debug('-' * 80)
             # TODO: We assemble our data through successive calls to the message service
             # or rest for small..
 
@@ -87,20 +94,30 @@ class SensoryInterface:
             #return image_data, image_labels
 
         elif SensoryInterface.InterfaceRole == 'server':
+            logging.debug('-' * 80)
+            logging.debug('we are server')
+            logging.debug('-' * 80)
             return SensoryInterface.fsc.get_batch(batch_size, noise=noise)
         return None
 
 
 
     def make_sensory_api_call(self, end_point, json_data, call_type):
+        logging.debug('-' * 80)
+        logging.debug("make_sensory_api_call(end_point=%s, json_data=%s, call_type=%s)" % (end_point, json_data, call_type))
+        logging.debug('-' * 80)
+
         headers = {
             'Content-type': 'application/json',
             'API-ACCESS-KEY': config.API_ACCESS_KEY,
             'API-VERSION': config.API_VERSION
         }
+
         try:
             url = "%s%s:%s/%s" % (config.SENSORY_URI, config.SENSORY_SERVER, config.SENSORY_PORT, end_point)
+            logging.debug('-' * 80)
             logging.debug(url)
+            logging.debug('-' * 80)
             response = None
             if call_type == 'GET':
                 response = requests.get(url, data=json_data, headers=headers)
@@ -109,7 +126,16 @@ class SensoryInterface:
 
             if response is not None:
                 if response.status_code != 500:
+                    logging.debug('-' * 80)
+                    logging.debug("response.json()=%s" % response.json())
+                    logging.debug('-' * 80)
                     return response.json()
         except:
+            logging.debug('-' * 80)
+            logging.debug("failed, response.json()={}")
+            logging.debug('-' * 80)
             return {}
+        logging.debug('-' * 80)
+        logging.debug("dead code, response.json()={}")
+        logging.debug('-' * 80)
         return {}

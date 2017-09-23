@@ -110,6 +110,9 @@ class Network:
 
     def train_and_save(self, dataset):
         # if self.accuracy == 0.:
+        logging.debug('-' * 80)
+        logging.debug("train_and_save(dataset=%s)" % dataset)
+        logging.debug('-' * 80)
         self.accuracy = self.train_and_score_and_save(dataset)
 
     def print_network(self):
@@ -201,6 +204,10 @@ class Network:
         return nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test
 
     def get_dicebox_sensory_data(self):
+        logging.debug('-' * 80)
+        logging.debug('get_dicebox_sensory_data(self)')
+        logging.debug('-' * 80)
+
         nb_classes = config.NB_CLASSES
         batch_size = config.BATCH_SIZE
         input_shape = config.INPUT_SHAPE
@@ -233,9 +240,18 @@ class Network:
         return nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test
 
     def train_and_score_and_save(self, dataset):
+        logging.debug('-' * 80)
+        logging.debug("train_and_score_and_save(dataset=%s)" % dataset)
+        logging.debug('-' * 80)
         if dataset == 'dicebox':
             # nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_filesystem()
+            logging.debug('-' * 80)
+            logging.debug('loading sensory data..')
+            logging.debug('-' * 80)
             nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_sensory_data()
+            logging.debug('-' * 80)
+            logging.debug('Done!')
+            logging.debug('-' * 80)
         else:
             # no support yet!
             logging.error('UNSUPPORTED dataset supplied to train_and_score_and_save')
