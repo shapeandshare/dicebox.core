@@ -106,10 +106,6 @@ class SensoryInterface:
 
 
     def make_sensory_api_call(self, end_point, json_data, call_type):
-        logging.debug('-' * 80)
-        logging.debug("make_sensory_api_call(end_point=%s, json_data=%s, call_type=%s)" % (end_point, json_data, call_type))
-        logging.debug('-' * 80)
-
         headers = {
             'Content-type': 'application/json',
             'API-ACCESS-KEY': config.API_ACCESS_KEY,
@@ -129,16 +125,7 @@ class SensoryInterface:
 
             if response is not None:
                 if response.status_code != 500:
-                    logging.debug('-' * 80)
-                    logging.debug("response.json()=%s" % response.json())
-                    logging.debug('-' * 80)
                     return response.json()
         except:
-            logging.debug('-' * 80)
-            logging.debug("failed, response.json()={}")
-            logging.debug('-' * 80)
             return {}
-        logging.debug('-' * 80)
-        logging.debug("dead code, response.json()={}")
-        logging.debug('-' * 80)
         return {}

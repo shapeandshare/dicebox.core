@@ -93,7 +93,7 @@ class Network:
                 logging.debug('compiling model')
                 self.model = self.compile_model(self.network, config.NB_CLASSES, config.INPUT_SHAPE)
                 if weights_filename is not None:
-                    logging.info("loading weights file: (%s)" % weights_filename)
+                    logging.debug("loading weights file: (%s)" % weights_filename)
                     self.load_model(weights_filename)
             # else:
             #     logging.info('model already compiled, skipping.')
@@ -127,8 +127,8 @@ class Network:
 
     def print_network(self):
         """Print out a network."""
-        logging.info(self.network)
-        logging.info("Network accuracy: %.2f%%" % (self.accuracy * 100))
+        logging.debug(self.network)
+        logging.debug("Network accuracy: %.2f%%" % (self.accuracy * 100))
 
     def train_and_score(self, network, dataset):
         if dataset == 'dicebox':
