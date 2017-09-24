@@ -126,8 +126,8 @@ if 'BATCH_SIZE' in os.environ:
     BATCH_SIZE = int(os.environ['BATCH_SIZE'])
 
 TRAIN_BATCH_SIZE = default_config.TRAIN_BATCH_SIZE
-if 'BATCH_SIZE' in os.environ:
-    BATCH_SIZE = int(os.environ['BATCH_SIZE'])
+if 'TRAIN_BATCH_SIZE' in os.environ:
+    TRAIN_BATCH_SIZE = int(os.environ['TRAIN_BATCH_SIZE'])
 
 TEST_BATCH_SIZE = default_config.TEST_BATCH_SIZE
 if 'TEST_BATCH_SIZE' in os.environ:
