@@ -24,7 +24,7 @@ An image classification and training system built with SOA (Service-Oriented Arc
 High Level Components
 ---------------------
 
-![Dicebox Services Diagram](https://github.com/joshburt/com.shapeandshare.dicebox/raw/master/assets/Dicebox%20Services%20Diagram.092317.png)
+![Dicebox Services Diagram](https://github.com/shapeandshare/dicebox.core/raw/master/assets/Dicebox%20Services%20Diagram.092317.png)
 
 * **Client**
 
