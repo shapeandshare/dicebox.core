@@ -2,6 +2,7 @@ import requests
 from lib import dicebox_config as config  # import our high level configuration
 from lib import filesystem_connecter # inport our file system connector for input
 import json # for writing category data to file
+import os
 
 def get_category_map():
     jdata = {}
@@ -51,8 +52,14 @@ for item in network_input_index:
     print("(%s%s)(%s)" % (config.DATA_DIRECTORY, item, metadata[1]))
 
     filename = "%s%s" % (config.DATA_DIRECTORY, item)
-    with open(filename, 'rb') as file:
-        file_content = file.read()
+    try:
+        with open(filename, 'rb') as file:
+            file_content = file.read()
+    except:
+        # if this failed, then we can assume the content has been
+        #picked up by another worker and then removed..
+        print('failed to ready file contents..')
+        break
 
     base64_encoded_content = file_content.encode('base64')
 
@@ -74,6 +81,8 @@ for item in network_input_index:
             SERVER_ERROR = False
             if response['sensory_store'] is not True:
                 print(response['sensory_store'])
+            print("transmitted (%s), removing it.." % filename)
+            #os.remove(filename)
         else:
             SERVER_ERROR = True
             print('server error, retrying ..')
