@@ -1,13 +1,15 @@
+##############################################################################
 # Derived from https://github.com/harvitronix/neural-network-genetic-algorithm
 # Derived source copyright: Matt Harvey, 2017, Derived source license: The MIT License
 # See docs/Matt Harvey.LICENSE
+##############################################################################
 
 """Class that represents the network to be evolved."""
 import random
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.callbacks import EarlyStopping
-from keras.callbacks import ModelCheckpoint
+# from keras.callbacks import ModelCheckpoint
 import logging
 import numpy
 import docker_config as config
@@ -19,11 +21,16 @@ import os
 # Helper: Early stopping.
 early_stopper = EarlyStopping(patience=25)
 
+##############################################################################
+# Feature disabled until a flipper can be added and the filenames created safely.
+# Since this now runs in a container some additional considerations must be made.
+##############################################################################
 # Checkpoint
-filepath = "%s/weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5" % config.WEIGHTS_DIR
-checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+# filepath = "%s/weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5" % config.WEIGHTS_DIR
+# checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+# callbacks_list = [early_stopper, checkpoint]
 
-callbacks_list = [early_stopper, checkpoint]
+callbacks_list = [early_stopper]
 
 
 class Network:
