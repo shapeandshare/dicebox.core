@@ -114,9 +114,9 @@ class SensoryInterface:
 
         try:
             url = "%s%s:%s/%s" % (config.SENSORY_URI, config.SENSORY_SERVER, config.SENSORY_PORT, end_point)
-            logging.debug('-' * 80)
-            logging.debug(url)
-            logging.debug('-' * 80)
+            # logging.debug('-' * 80)
+            # logging.debug(url)
+            # logging.debug('-' * 80)
             response = None
             if call_type == 'GET':
                 response = requests.get(url, data=json_data, headers=headers)

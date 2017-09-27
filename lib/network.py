@@ -227,17 +227,46 @@ class Network:
 
         # train_image_data, train_image_labels = Network.fsc.get_batch(train_batch_size, noise=noise)
         train_image_data, train_image_labels = Network.ssc.get_batch(train_batch_size, noise=noise)
-        train_image_data = numpy.array(train_image_data)
-        train_image_data = train_image_data.astype('float32')
-        train_image_data /= 255
-        train_image_labels = numpy.array(train_image_labels)
+        try:
+            logging.debug('-' * 80)
+            logging.debug(train_image_data)
+
+            train_image_data = numpy.array(train_image_data)
+            logging.debug(train_image_data)
+
+            train_image_data = train_image_data.astype('float32')
+            logging.debug(train_image_data)
+
+            train_image_data /= 255
+            logging.debug(train_image_data)
+
+            train_image_labels = numpy.array(train_image_labels)
+            logging.debug(train_image_labels)
+            logging.debug('-' * 80)
+        except ValueError:
+            logging.debug('Caught ValueError when processing training data.')
+            raise 'failing out..'
 
         # test_image_data, test_image_labels = Network.fsc.get_batch(test_batch_size, noise=noise)
         test_image_data, test_image_labels = Network.ssc.get_batch(test_batch_size, noise=noise)
-        test_image_data = numpy.array(test_image_data)
-        test_image_data = test_image_data.astype('float32')
-        test_image_data /= 255
-        test_image_labels = numpy.array(test_image_labels)
+        try:
+            logging.debug('-' * 80)
+            logging.debug(test_image_data)
+
+            test_image_data = numpy.array(test_image_data)
+            logging.debug(test_image_data)
+
+            test_image_data = test_image_data.astype('float32')
+            logging.debug(test_image_data)
+
+            test_image_data /= 255
+            logging.debug(test_image_data)
+
+            test_image_labels = numpy.array(test_image_labels)
+            logging.debug(test_image_labels)
+        except ValueError:
+            logging.debug('Caught ValueError when processing test data.')
+            raise 'failing out..'
 
         logging.debug("nb_classes: (%i)" % nb_classes)
         logging.debug("batch_size: (%i)" % batch_size)
