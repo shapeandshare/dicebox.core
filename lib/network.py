@@ -229,17 +229,21 @@ class Network:
         train_image_data, train_image_labels = Network.ssc.get_batch(train_batch_size, noise=noise)
         try:
             logging.debug('-' * 80)
+            logging.debug('train_image_data to numpy.array')
             logging.debug(train_image_data)
 
             train_image_data = numpy.array(train_image_data)
             logging.debug(train_image_data)
 
+            logging.debug('train_image_data astype float32')
             train_image_data = train_image_data.astype('float32')
             logging.debug(train_image_data)
 
+            logging.debug('train_image_data /255')
             train_image_data /= 255
             logging.debug(train_image_data)
 
+            logging.debug('train_image_labels to numpy.array')
             train_image_labels = numpy.array(train_image_labels)
             logging.debug(train_image_labels)
             logging.debug('-' * 80)
@@ -251,17 +255,21 @@ class Network:
         test_image_data, test_image_labels = Network.ssc.get_batch(test_batch_size, noise=noise)
         try:
             logging.debug('-' * 80)
+            logging.debug('test_image_data to numpy.array')
             logging.debug(test_image_data)
 
             test_image_data = numpy.array(test_image_data)
             logging.debug(test_image_data)
 
+            logging.debug('test_image_data astype float32')
             test_image_data = test_image_data.astype('float32')
             logging.debug(test_image_data)
 
+            logging.debug('test_image_data  /255')
             test_image_data /= 255
             logging.debug(test_image_data)
 
+            logging.debug('test_image_labels to numpy.array')
             test_image_labels = numpy.array(test_image_labels)
             logging.debug(test_image_labels)
         except ValueError:
