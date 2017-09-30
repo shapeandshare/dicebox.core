@@ -96,7 +96,7 @@ class SensoryInterface:
                     logging.debug("decoded one hot category to: (%i)" % cat_index)
 
                 # look up human-readable category
-                current_category = natural_category_list[cat_index]
+                current_category = natural_category_list[str(cat_index)]
                 logging.debug("decoded natural category: (%s)" % current_category)
 
                 encoded_image_data = response.json.get('data')
