@@ -11,6 +11,9 @@ import filesystem_connecter
 import requests
 import json
 import time
+import base64
+from datetime import datetime
+
 
 class SensoryInterface:
 
@@ -63,6 +66,9 @@ class SensoryInterface:
             image_label = []
             image_data = []
 
+
+            natural_category_list = self.get_category_map()
+
             response = {}
             count = 0
             while count != batch_size:
@@ -75,6 +81,27 @@ class SensoryInterface:
 
                 # logging.debug(response)
                 # batch_item = json.load(response)
+
+                # lets attempt to cache to file here and convert the one-hot value to the directory structure
+                # first convert label to one-hot value
+                cat_index = -1
+                one_hot_cat = response['label']
+                for i in range(0, len(one_hot_cat)):
+                    if one_hot_cat[i] == 1:
+                        cat_index = i
+                if cat_index < 0:
+                    logging.debug('unable to decode one hot category value')
+                    raise
+                else:
+                    logging.debug("decoded one hot category to: (%i)" % cat_index)
+
+                # look up human-readable category
+                current_category = natural_category_list[cat_index]
+                logging.debug("decoded natural category: (%s)" % current_category)
+
+                encoded_image_data = response.json.get('data')
+                decoded_image_data = base64.b64decode(encoded_image_data)
+                self.sensory_store('./tmp', current_category, decoded_image_data)
 
                 image_label.append(response['label']) #  = numpy.append(image_label,[response['label']])
                 image_data.append(response['data'])  # = numpy.append(image_data, [response['data']])
@@ -129,3 +156,35 @@ class SensoryInterface:
         except:
             return {}
         return {}
+
+
+    # TODO: temporary - we should calculate this using one of the provided methods this is really for testing the threaded-caching
+    def get_category_map(self):
+        jdata = {}
+        with open('./category_map.json') as data_file:
+            raw_cat_data = json.load(data_file)
+        for d in raw_cat_data:
+            jdata[str(raw_cat_data[d])] = str(d)
+        return jdata
+
+    # TODO: temporary - we should calculate this using one of the provided methods this is really for testing the threaded-caching
+    def sensory_store(self, data_dir, data_category, raw_image_data):
+        filename = "%s" % datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.png')
+        path = "%s%s/" % (data_dir, data_category)
+        full_filename = "%s%s" % (path, filename)
+        logging.debug("(%s)" % (full_filename))
+        self.make_sure_path_exists(path)
+        with open(full_filename, 'wb') as f:
+            f.write(raw_image_data)
+        return True
+
+    # TODO: temporary - we should calculate this using one of the provided methods this is really for testing the threaded-caching
+    # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
+    def make_sure_path_exists(self, path):
+        try:
+            if os.path.exists(path) is False:
+                os.makedirs(path)
+        except OSError as exception:
+            if exception.errno != errno.EEXIST:
+                raise
+
