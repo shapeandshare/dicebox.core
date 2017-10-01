@@ -120,31 +120,30 @@ class SensoryInterface:
                 logging.debug("count: %s" % count)
                 new_image_data = None
                 new_image_label = None
+
                 try:
                     new_image_data, new_image_label = self.sensory_batch_poll(batch_id)
                     image_data.append(new_image_data)
                     image_label.append(new_image_label)
                     count += 1
+
+                    cat_index = -1
+                    one_hot_cat = new_image_label
+                    for i in range(0, len(one_hot_cat)):
+                        if one_hot_cat[i] == 1:
+                            cat_index = i
+
+                    # lets attempt to cache to file here and convert the one-hot value to the directory structure
+                    # first convert label to one-hot value
+                    if cat_index < 0:
+                        logging.debug('unable to decode one hot category value')
+                    else:
+                        logging.debug("decoded one hot category to: (%i)" % cat_index)
+                        decoded_image_data = base64.b64decode(new_image_data)
+                        self.sensory_store(config.TMP_DIR, cat_index, decoded_image_data)
+
                 except:
                     logging.debug('.')
-
-
-                # lets attempt to cache to file here and convert the one-hot value to the directory structure
-                # first convert label to one-hot value
-                cat_index = -1
-                one_hot_cat = new_image_label
-                for i in range(0, len(one_hot_cat)):
-                    if one_hot_cat[i] == 1:
-                        cat_index = i
-                if cat_index < 0:
-                    logging.debug('unable to decode one hot category value')
-                    raise
-                else:
-                    logging.debug("decoded one hot category to: (%i)" % cat_index)
-
-                decoded_image_data = base64.b64decode(new_image_data)
-                self.sensory_store(config.TMP_DIR, cat_index, decoded_image_data)
-
 
             logging.debug('-' * 80)
             logging.debug('Done receiving batch.')
