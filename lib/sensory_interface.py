@@ -145,7 +145,7 @@ class SensoryInterface:
                     logging.debug("decoded one hot category to: (%i)" % cat_index)
 
                     #decoded_image_data = base64.b64decode(new_image_data)
-                    decoded_image_data = base64.b64decode(array.array(new_image_data).tostring())
+                    decoded_image_data = base64.b64decode(str(new_image_data))
                     logging.debug('raw image decoded, dumping to file ..')
                     ret = self.sensory_store(config.TMP_DIR, cat_index, decoded_image_data)
                     if ret is True:
