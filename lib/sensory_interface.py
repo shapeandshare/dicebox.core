@@ -118,6 +118,8 @@ class SensoryInterface:
 
             while count < batch_size:
                 logging.debug("count: %s" % count)
+                new_image_data = None
+                new_image_label = None
                 try:
                     new_image_data, new_image_label = self.sensory_batch_poll(batch_id)
                     image_data.append(new_image_data)
