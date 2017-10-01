@@ -126,29 +126,31 @@ class SensoryInterface:
                     image_data.append(new_image_data)
                     image_label.append(new_image_label)
                     count += 1
-
-                    cat_index = -1
-                    if new_image_label is not None:
-                        one_hot_cat = new_image_label
-                        for i in range(0, len(one_hot_cat)):
-                            if one_hot_cat[i] == 1:
-                                cat_index = i
-
-                    # lets attempt to cache to file here and convert the one-hot value to the directory structure
-                    # first convert label to one-hot value
-                    if cat_index < 0:
-                        logging.debug('unable to decode one hot category value')
-                    else:
-                        logging.debug("decoded one hot category to: (%i)" % cat_index)
-                        decoded_image_data = base64.b64decode(new_image_data)
-                        logging.debug('raw image decoded, dumping to file ..')
-                        ret = self.sensory_store(config.TMP_DIR, cat_index, decoded_image_data)
-                        if ret is True:
-                            logging.debug('successfully stored to disk..')
-                        else:
-                            logging.debug('failed to store to disk!')
                 except:
                     logging.debug('.')
+
+
+                cat_index = -1
+                if new_image_label is not None:
+                    one_hot_cat = new_image_label
+                    for i in range(0, len(one_hot_cat)):
+                        if one_hot_cat[i] == 1:
+                            cat_index = i
+
+                # lets attempt to cache to file here and convert the one-hot value to the directory structure
+                # first convert label to one-hot value
+                if cat_index < 0:
+                    logging.debug('unable to decode one hot category value')
+                else:
+                    logging.debug("decoded one hot category to: (%i)" % cat_index)
+                    decoded_image_data = base64.b64decode(new_image_data)
+                    logging.debug('raw image decoded, dumping to file ..')
+                    ret = self.sensory_store(config.TMP_DIR, cat_index, decoded_image_data)
+                    if ret is True:
+                        logging.debug('successfully stored to disk..')
+                    else:
+                        logging.debug('failed to store to disk!')
+
 
             logging.debug('-' * 80)
             logging.debug('Done receiving batch.')
