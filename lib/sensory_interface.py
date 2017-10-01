@@ -96,6 +96,7 @@ class SensoryInterface:
                     logging.debug("decoded one hot category to: (%i)" % cat_index)
 
                 # look up human-readable category
+                logging.debug("cat map: (%s)" % natural_category_list)
                 current_category = natural_category_list[str(cat_index)]
                 logging.debug("decoded natural category: (%s)" % current_category)
 
