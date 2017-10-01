@@ -219,12 +219,12 @@ class SensoryInterface:
 
         method_frame, header_frame, body = channel.basic_get(batch_id)
         if method_frame:
-            logging.debug("%s %s %s" % (method_frame, header_frame, body))
+            #logging.debug("%s %s %s" % (method_frame, header_frame, body))
             message = json.loads(body)
             label = message['label']
             data = message['data']
-            logging.debug(label)
-            logging.debug(data)
+            #logging.debug(label)
+            #logging.debug(data)
             channel.basic_ack(method_frame.delivery_tag)
         else:
             logging.debug('no message returned')
