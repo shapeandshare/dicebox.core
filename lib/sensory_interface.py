@@ -118,12 +118,13 @@ class SensoryInterface:
 
             while count < batch_size:
                 logging.debug("count: %s" % count)
-                new_image_data, new_image_label = self.sensory_batch_poll(batch_id)
-                image_data.append(new_image_data)
-                image_label.append(new_image_label)
-                count += 1
-
-
+                try:
+                    new_image_data, new_image_label = self.sensory_batch_poll(batch_id)
+                    image_data.append(new_image_data)
+                    image_label.append(new_image_label)
+                    count += 1
+                except:
+                    logging.debug('.')
             logging.debug('-' * 80)
             logging.debug('Done receiving batch.')
             logging.debug('-' * 80)
@@ -211,6 +212,7 @@ class SensoryInterface:
         url = config.SENSORY_SERVICE_RABBITMQ_URL
         # logging.debug(url)
         parameters = pika.URLParameters(url)
+
         connection = pika.BlockingConnection(parameters=parameters)
 
         channel = connection.channel()
