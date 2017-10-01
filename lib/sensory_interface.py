@@ -16,6 +16,7 @@ from datetime import datetime
 import pika
 import errno
 import array
+import itertools
 
 
 class SensoryInterface:
@@ -145,7 +146,8 @@ class SensoryInterface:
                     logging.debug("decoded one hot category to: (%i)" % cat_index)
 
                     #decoded_image_data = base64.b64decode(new_image_data)
-                    decoded_image_data = base64.b64decode(str(new_image_data))
+                    logging.debug(new_image_data)
+                    decoded_image_data = base64.b64decode(''.join(itertools.imap(str, new_image_data)))
                     logging.debug('raw image decoded, dumping to file ..')
                     ret = self.sensory_store(config.TMP_DIR, cat_index, decoded_image_data)
                     if ret is True:
