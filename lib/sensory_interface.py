@@ -15,6 +15,7 @@ import base64
 from datetime import datetime
 import pika
 import errno
+import array
 
 
 class SensoryInterface:
@@ -129,7 +130,6 @@ class SensoryInterface:
                 except:
                     logging.debug('.')
 
-
                 cat_index = -1
                 if new_image_label is not None:
                     one_hot_cat = new_image_label
@@ -143,14 +143,15 @@ class SensoryInterface:
                     logging.debug('unable to decode one hot category value')
                 else:
                     logging.debug("decoded one hot category to: (%i)" % cat_index)
-                    decoded_image_data = base64.b64decode(new_image_data)
+
+                    #decoded_image_data = base64.b64decode(new_image_data)
+                    decoded_image_data = base64.b64decode(array.array(new_image_data).tostring())
                     logging.debug('raw image decoded, dumping to file ..')
                     ret = self.sensory_store(config.TMP_DIR, cat_index, decoded_image_data)
                     if ret is True:
                         logging.debug('successfully stored to disk..')
                     else:
                         logging.debug('failed to store to disk!')
-
 
             logging.debug('-' * 80)
             logging.debug('Done receiving batch.')
