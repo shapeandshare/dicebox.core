@@ -13,6 +13,8 @@ import json
 import time
 import base64
 from datetime import datetime
+import pika
+import errno
 
 
 class SensoryInterface:
@@ -67,52 +69,61 @@ class SensoryInterface:
             image_data = []
 
 
-            natural_category_list = self.get_category_map()
+            # natural_category_list = self.get_category_map()
 
             response = {}
             count = 0
-            while count != batch_size:
+            # while count != batch_size:
+            #     logging.debug("count: %s" % count)
+            #     response = self.make_sensory_api_call('api/sensory/poll', json_data, 'POST')
+            #
+            #     while (len(response) < 1):
+            #         time.sleep(1)
+            #         response = self.make_sensory_api_call('api/sensory/poll', json_data, 'POST')
+            #
+            #     # logging.debug(response)
+            #     # batch_item = json.load(response)
+            #
+            #     # lets attempt to cache to file here and convert the one-hot value to the directory structure
+            #     # first convert label to one-hot value
+            #     cat_index = -1
+            #     one_hot_cat = response['label']
+            #     for i in range(0, len(one_hot_cat)):
+            #         if one_hot_cat[i] == 1:
+            #             cat_index = i
+            #     if cat_index < 0:
+            #         logging.debug('unable to decode one hot category value')
+            #         raise
+            #     else:
+            #         logging.debug("decoded one hot category to: (%i)" % cat_index)
+            #
+            #     # look up human-readable category
+            #     logging.debug("cat map: (%s)" % natural_category_list)
+            #     current_category = natural_category_list[str(cat_index)]
+            #     logging.debug("decoded natural category: (%s)" % current_category)
+            #
+            #     encoded_image_data = response.json.get('data')
+            #     decoded_image_data = base64.b64decode(encoded_image_data)
+            #     self.sensory_store('./tmp', current_category, decoded_image_data)
+            #
+            #     image_label.append(response['label']) #  = numpy.append(image_label,[response['label']])
+            #     image_data.append(response['data'])  # = numpy.append(image_data, [response['data']])
+            #     # image_label = [response['label']]
+            #     # image_data = [response['data']]
+            #
+            #     #logging.debug(image_label)
+            #     #logging.debug(image_data)
+            #
+            #     count += 1
+
+            while count < batch_size:
                 logging.debug("count: %s" % count)
-                response = self.make_sensory_api_call('api/sensory/poll', json_data, 'POST')
-
-                while (len(response) < 1):
-                    time.sleep(1)
-                    response = self.make_sensory_api_call('api/sensory/poll', json_data, 'POST')
-
-                # logging.debug(response)
-                # batch_item = json.load(response)
-
-                # lets attempt to cache to file here and convert the one-hot value to the directory structure
-                # first convert label to one-hot value
-                cat_index = -1
-                one_hot_cat = response['label']
-                for i in range(0, len(one_hot_cat)):
-                    if one_hot_cat[i] == 1:
-                        cat_index = i
-                if cat_index < 0:
-                    logging.debug('unable to decode one hot category value')
-                    raise
-                else:
-                    logging.debug("decoded one hot category to: (%i)" % cat_index)
-
-                # look up human-readable category
-                logging.debug("cat map: (%s)" % natural_category_list)
-                current_category = natural_category_list[str(cat_index)]
-                logging.debug("decoded natural category: (%s)" % current_category)
-
-                encoded_image_data = response.json.get('data')
-                decoded_image_data = base64.b64decode(encoded_image_data)
-                self.sensory_store('./tmp', current_category, decoded_image_data)
-
-                image_label.append(response['label']) #  = numpy.append(image_label,[response['label']])
-                image_data.append(response['data'])  # = numpy.append(image_data, [response['data']])
-                # image_label = [response['label']]
-                # image_data = [response['data']]
-
-                #logging.debug(image_label)
-                #logging.debug(image_data)
-
+                new_image_data, new_image_label = self.sensory_batch_poll(batch_id)
+                image_data.append(new_image_data)
+                image_label.append(new_image_label)
                 count += 1
+
+
             logging.debug('-' * 80)
             logging.debug('Done receiving batch.')
             logging.debug('-' * 80)
@@ -188,4 +199,33 @@ class SensoryInterface:
         except OSError as exception:
             if exception.errno != errno.EEXIST:
                 raise
+
+
+    def sensory_batch_poll(self, batch_id):
+        # lets try to grab more than one at a time // combine and return
+        # since this is going to clients lets reduce chatter
+
+        data = None
+        label = None
+
+        url = config.SENSORY_SERVICE_RABBITMQ_URL
+        # logging.debug(url)
+        parameters = pika.URLParameters(url)
+        connection = pika.BlockingConnection(parameters=parameters)
+
+        channel = connection.channel()
+
+        method_frame, header_frame, body = channel.basic_get(batch_id)
+        if method_frame:
+            logging.debug("%s %s %s" % (method_frame, header_frame, body))
+            message = json.loads(body)
+            label = message['label']
+            data = message['data']
+            logging.debug(label)
+            logging.debug(data)
+            channel.basic_ack(method_frame.delivery_tag)
+        else:
+            logging.debug('no message returned')
+        connection.close()
+        return data, label
 
