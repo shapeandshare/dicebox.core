@@ -148,9 +148,9 @@ class SensoryInterface:
                     #decoded_image_data = base64.b64decode(new_image_data)
                     logging.debug(new_image_data)
                     #decoded_image_data = base64.b64decode(''.join(chr(x) for x in new_image_data))
-                    proto_image = numpy.array(new_image_data)
+                    #proto_image = numpy.array(new_image_data)
 
-                    im = Image.fromarray(proto_image)
+                    im = Image.fromarray(new_image_data)
                     # im.save("your_file.jpeg")
                     decoded_image_data = im.tobytes()
 
