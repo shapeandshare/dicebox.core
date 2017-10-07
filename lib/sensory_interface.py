@@ -145,19 +145,12 @@ class SensoryInterface:
                 else:
                     logging.debug("decoded one hot category to: (%i)" % cat_index)
 
-                    #decoded_image_data = base64.b64decode(new_image_data)
-                    logging.debug(new_image_data)
-                    #decoded_image_data = base64.b64decode(''.join(chr(x) for x in new_image_data))
-                    #proto_image = numpy.array(new_image_data)
+                    newimage = Image.new('L', (config.IMAGE_WIDTH, config.IMAGE_HEIGHT))  # type, size
+                    newimage.putdata(new_image_data)
+                    #newimage.save("./tmp/filename.png")  # takes type from filename extension
 
-                    im = Image.fromarray(new_image_data)
-                    # im.save("your_file.jpeg")
-                    decoded_image_data = im.tobytes()
-
-                    # decoded_image_data = base64.b64decode(proto_image)
-
-                    logging.debug('raw image decoded, dumping to file ..')
-                    ret = self.sensory_store(config.TMP_DIR, cat_index, decoded_image_data)
+                    #logging.debug('raw image decoded, dumping to file ..')
+                    ret = self.image_sensory_store(config.TMP_DIR, cat_index, newimage)
                     if ret is True:
                         logging.debug('successfully stored to disk..')
                     else:
@@ -219,14 +212,13 @@ class SensoryInterface:
         return jdata
 
     # TODO: temporary - we should calculate this using one of the provided methods this is really for testing the threaded-caching
-    def sensory_store(self, data_dir, data_category, raw_image_data):
+    def image_sensory_store(self, data_dir, data_category, image_obj):
         filename = "%s" % datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.png')
-        path = "%s%s/" % (data_dir, data_category)
+        path = "%s/%s/" % (data_dir, data_category)
         full_filename = "%s%s" % (path, filename)
         logging.debug("(%s)" % (full_filename))
         self.make_sure_path_exists(path)
-        with open(full_filename, 'wb') as f:
-            f.write(raw_image_data)
+        image_obj.save(full_filename)
         return True
 
     # TODO: temporary - we should calculate this using one of the provided methods this is really for testing the threaded-caching
