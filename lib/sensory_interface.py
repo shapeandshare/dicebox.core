@@ -147,7 +147,6 @@ class SensoryInterface:
 
                     newimage = Image.new('L', (config.IMAGE_WIDTH, config.IMAGE_HEIGHT))  # type, size
                     newimage.putdata(new_image_data)
-                    #newimage.save("./tmp/filename.png")  # takes type from filename extension
 
                     #logging.debug('raw image decoded, dumping to file ..')
                     ret = self.image_sensory_store(config.TMP_DIR, cat_index, newimage)

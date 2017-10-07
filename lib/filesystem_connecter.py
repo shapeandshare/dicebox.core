@@ -127,6 +127,7 @@ class FileSystemConnector:
 
         # Crop Image If Required
         logging.debug('Crop image if required')
+
         # Now ensure we are the same dimensions as when we started
         new_width, new_height = im.size
         # if new_width > original_width or new_height > original_height:
