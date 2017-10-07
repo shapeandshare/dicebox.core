@@ -149,8 +149,12 @@ class SensoryInterface:
                     logging.debug(new_image_data)
                     #decoded_image_data = base64.b64decode(''.join(chr(x) for x in new_image_data))
                     proto_image = numpy.array(new_image_data)
-                    decoded_image_data = base64.b64decode(proto_image)
 
+                    im = Image.fromarray(proto_image)
+                    # im.save("your_file.jpeg")
+                    decoded_image_data = im.tobytes()
+
+                    # decoded_image_data = base64.b64decode(proto_image)
 
                     logging.debug('raw image decoded, dumping to file ..')
                     ret = self.sensory_store(config.TMP_DIR, cat_index, decoded_image_data)
