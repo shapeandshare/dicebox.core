@@ -7,3 +7,4 @@ Change Log
 * Added venv to the gitignore list
 * Created change log (this!)
 * Removed requirements details from readme.
+* Updated Copyright dates
