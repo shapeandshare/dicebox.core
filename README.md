@@ -12,21 +12,6 @@ The requirements can be automatically installed using the below command:
 ```
     pip install -r requirements.txt
 ```
-These are the individual modules required by this project:
-
-```
-    Flask==0.12.1
-    Flask_Cors==3.0.3
-    flask-cors==3.0.3
-    pika==0.10.0
-    requests==2.13.0
-    tqdm==4.14.0
-    Pillow==4.2.1
-    keras==2.0.6
-    numpy==1.13.1
-    tensorflow==1.1.0
-    h5py
-```
 
 References
 ----------
