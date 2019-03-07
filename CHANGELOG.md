@@ -6,3 +6,4 @@ Change Log
 * Updated requirments.
 * Added venv to the gitignore list
 * Created change log (this!)
+* Removed requirements details from readme.
