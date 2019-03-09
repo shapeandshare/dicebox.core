@@ -135,7 +135,8 @@ if 'TEST_BATCH_SIZE' in os.environ:
 
 LOAD_BEST_WEIGHTS_ON_START = default_config.LOAD_BEST_WEIGHTS_ON_START
 if 'LOAD_BEST_WEIGHTS_ON_START' in os.environ:
-    LOAD_BEST_WEIGHTS_ON_START = bool(os.environ['LOAD_BEST_WEIGHTS_ON_START'])
+        if os.environ['LOAD_BEST_WEIGHTS_ON_START'] == 'False':
+            LOAD_BEST_WEIGHTS_ON_START = False
 
 ###############################################################################
 # Direcrtory Options
@@ -169,7 +170,8 @@ if 'LISTENING_HOST' in os.environ:
 
 FLASK_DEBUG = default_config.FLASK_DEBUG
 if 'FLASK_DEBUG' in os.environ:
-    FLASK_DEBUG = bool(os.environ['FLASK_DEBUG'])
+    if os.environ['FLASK_DEBUG'] == 'True':
+        FLASK_DEBUG = True
 
 MODEL_WEIGHTS_FILENAME = default_config.MODEL_WEIGHTS_FILENAME
 if 'MODEL_WEIGHTS_FILENAME' in os.environ:

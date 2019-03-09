@@ -8,3 +8,7 @@ Change Log
 * Created change log (this!)
 * Removed requirements details from readme.
 * Updated Copyright dates
+
+03.09.2019
+----------
+* Fixed docker environment variable over-ride bug which ignored boolean values.
