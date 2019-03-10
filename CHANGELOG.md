@@ -12,3 +12,7 @@ Change Log
 03.09.2019
 ----------
 * Fixed docker environment variable over-ride bug which ignored boolean values.
+
+03.10.2019
+----------
+* Explicitly cast filename to string. Keras model weights save/load issue:  https://github.com/keras-team/keras/issues/11269

@@ -341,7 +341,7 @@ class Network:
 
     def save_model(self, filename):
         logging.debug('saving model weights to file..')
-        self.model.save(filename)
+        self.model.save(str(filename))   # https://github.com/keras-team/keras/issues/11269
 
     def load_model(self, filename):
         if self.model is None:
@@ -349,7 +349,7 @@ class Network:
             raise
         logging.debug('loading weights file..')
         try:
-            self.model.load_weights(filename)
+            self.model.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
         except Exception as e:
             logging.error('Unable to load weights file.')
             logging.error(e)
