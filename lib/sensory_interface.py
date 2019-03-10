@@ -125,35 +125,38 @@ class SensoryInterface:
 
                 try:
                     new_image_data, new_image_label = self.sensory_batch_poll(batch_id)
-                    image_data.append(new_image_data)
-                    image_label.append(new_image_label)
-                    count += 1
+
+                    cat_index = -1
+                    if new_image_label is not None:
+                        one_hot_cat = new_image_label
+                        for i in range(0, len(one_hot_cat)):
+                            if one_hot_cat[i] == 1:
+                                cat_index = i
+
+                    # lets attempt to cache to file here and convert the one-hot value to the directory structure
+                    # first convert label to one-hot value
+                    if cat_index < 0:
+                        logging.debug('unable to decode one hot category value')
+                        raise
+                    else:
+                        logging.debug("decoded one hot category to: (%i)" % cat_index)
+
+                        newimage = Image.new('L', (config.IMAGE_WIDTH, config.IMAGE_HEIGHT))  # type, size
+                        newimage.putdata(new_image_data)
+
+                        # logging.debug('raw image decoded, dumping to file ..')
+                        ret = self.image_sensory_store(config.TMP_DIR, cat_index, newimage)
+                        if ret is True:
+                            logging.debug('successfully stored to disk..')
+                        else:
+                            logging.debug('failed to store to disk!')
+                            raise
+
+                        image_data.append(new_image_data)
+                        image_label.append(new_image_label)
+                        count += 1
                 except:
                     logging.debug('.')
-
-                cat_index = -1
-                if new_image_label is not None:
-                    one_hot_cat = new_image_label
-                    for i in range(0, len(one_hot_cat)):
-                        if one_hot_cat[i] == 1:
-                            cat_index = i
-
-                # lets attempt to cache to file here and convert the one-hot value to the directory structure
-                # first convert label to one-hot value
-                if cat_index < 0:
-                    logging.debug('unable to decode one hot category value')
-                else:
-                    logging.debug("decoded one hot category to: (%i)" % cat_index)
-
-                    newimage = Image.new('L', (config.IMAGE_WIDTH, config.IMAGE_HEIGHT))  # type, size
-                    newimage.putdata(new_image_data)
-
-                    #logging.debug('raw image decoded, dumping to file ..')
-                    ret = self.image_sensory_store(config.TMP_DIR, cat_index, newimage)
-                    if ret is True:
-                        logging.debug('successfully stored to disk..')
-                    else:
-                        logging.debug('failed to store to disk!')
 
             logging.debug('-' * 80)
             logging.debug('Done receiving batch.')

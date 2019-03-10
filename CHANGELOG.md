@@ -16,3 +16,5 @@ Change Log
 03.10.2019
 ----------
 * Explicitly cast filename to string. Keras model weights save/load issue:  https://github.com/keras-team/keras/issues/11269
+* Fixed a bug that could cause the training processor to leave messages on the queues.
+
