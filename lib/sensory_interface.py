@@ -160,10 +160,6 @@ class SensoryInterface:
 
             logging.debug('-' * 80)
             logging.debug('Done receiving batch.')
-            logging.debug('image_data')
-            logging.debug(image_data)
-            logging.debug('image_label')
-            logging.debug(image_label)
             logging.debug('-' * 80)
             return image_data, image_label
 
