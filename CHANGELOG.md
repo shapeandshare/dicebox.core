@@ -22,3 +22,6 @@ Change Log
 ----------
 * Added config setting for dicebox compliant datasets.
 * Switched over internal logic to use new feature flipper instead of hardcoded list.
+* Removed upused variable
+* Updated logging
+* Corrected configuration override bug
