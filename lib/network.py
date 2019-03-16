@@ -57,7 +57,8 @@ class Network:
         self.model = None
 
         if Network.fsc is None:
-            # logging.debug('creating a new fsc..')
+            logging.debug('creating a new fsc..')
+            logging.info('config.DATA_DIRECTORY: (%s)' % config.DATA_DIRECTORY)
             Network.fsc = filesystem_connecter.FileSystemConnector(config.DATA_DIRECTORY)
 
         if Network.ssc is None:
