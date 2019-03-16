@@ -34,15 +34,15 @@ if 'DATA_BASE_DIRECTORY' in os.environ:
     DATA_BASE_DIRECTORY = os.environ['DATA_BASE_DIRECTORY']
 
 # Build Calculated Configs
-NETWORK_NAME = default_config.NETWORK_NAME
+NETWORK_NAME = "%s_%ix%i" % (DATASET, IMAGE_WIDTH, IMAGE_HEIGHT)
 if 'NETWORK_NAME' in os.environ:
     NETWORK_NAME = os.environ['NETWORK_NAME']
 
-INPUT_SHAPE = default_config.INPUT_SHAPE
+INPUT_SHAPE = (IMAGE_WIDTH*IMAGE_HEIGHT,)
 if 'INPUT_SHAPE' in os.environ:
     INPUT_SHAPE = os.environ['INPUT_SHAPE']
 
-DATA_DIRECTORY = default_config.DATA_DIRECTORY
+DATA_DIRECTORY = "%s/%s/data/" % (DATA_BASE_DIRECTORY, NETWORK_NAME)
 if 'DATA_DIRECTORY' in os.environ:
     DATA_DIRECTORY = os.environ['DATA_DIRECTORY']
 
