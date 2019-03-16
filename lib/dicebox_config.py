@@ -13,6 +13,7 @@ my_config.read(configFilePath)
 
 # Load user defined config
 DATASET = my_config.get('DATASET', 'name')
+DICEBOX_COMPLIANT_DATASET = my_config.getboolean('DATASET', 'dicebox_compliant')
 NB_CLASSES = my_config.getint('DATASET', 'categories')
 IMAGE_WIDTH = my_config.getint('DATASET', 'image_width')
 IMAGE_HEIGHT = my_config.getint('DATASET', 'image_height')
