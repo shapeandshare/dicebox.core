@@ -8,7 +8,6 @@ import logging
 # from datetime import datetime  # used when dumping raw transforms to disk
 import docker_config as config
 
-
 class FileSystemConnector:
 
     DATASET_INDEX = None
