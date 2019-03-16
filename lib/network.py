@@ -141,6 +141,10 @@ class Network:
         logging.info('Fitting model:')
         logging.info(network)
 
+        logging.info('batch_size: %s' % batch_size)
+        logging.info('nb_classes: %s' % nb_classes)
+        logging.info('input_shape: %s' % input_shape)
+
         model.fit(x_train, y_train,
                   batch_size=batch_size,
                   epochs=10000,  # using early stopping, so no real limit
@@ -188,6 +192,13 @@ class Network:
         train_batch_size = config.TRAIN_BATCH_SIZE
         test_batch_size = config.TEST_BATCH_SIZE
 
+        logging.info('nb_classes: %s' % nb_classes)
+        logging.info('batch_size: %s' % batch_size)
+        logging.info('input_shape: %s' % input_shape)
+        logging.info('noise: %s' % noise)
+        logging.info('train_batch_size: %s' % train_batch_size)
+        logging.info('test_batch_size: %s' % test_batch_size)
+
         train_image_data, train_image_labels = Network.fsc.get_batch(train_batch_size, noise=noise)
         # train_image_data, train_image_labels = Network.ssc.get_batch(train_batch_size, noise=noise)
         train_image_data = numpy.array(train_image_data)
@@ -202,9 +213,9 @@ class Network:
         test_image_data /= 255
         test_image_labels = numpy.array(test_image_labels)
 
-        logging.debug("nb_classes: (%i)" % nb_classes)
-        logging.debug("batch_size: (%i)" % batch_size)
-        logging.debug("input_shape: (%s)" % input_shape)
+        logging.info("nb_classes: (%i)" % nb_classes)
+        logging.info("batch_size: (%i)" % batch_size)
+        logging.info("input_shape: (%s)" % input_shape)
 
         x_train = train_image_data
         x_test = test_image_data
