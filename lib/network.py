@@ -108,15 +108,13 @@ class Network:
         """
         self.network = network
 
-    def train(self, dataset):
+    def train(self):
         """Train the network and record the accuracy.
 
-        Args:
-            dataset (str): Name of dataset to use.
 
         """
         if self.accuracy == 0.:
-            self.accuracy = self.train_and_score(self.network, dataset)
+            self.accuracy = self.train_and_score(self.network)
 
     def train_and_save(self, dataset):
         # if self.accuracy == 0.:
@@ -131,7 +129,7 @@ class Network:
         logging.info(self.network)
         logging.info("Network accuracy: %.2f%%" % (self.accuracy * 100))
 
-    def train_and_score(self, network, dataset):
+    def train_and_score(self, network):
         if config.DICEBOX_COMPLIANT_DATASET is True:
             nb_classes, batch_size, input_shape, x_train, \
                 x_test, y_train, y_test = self.get_dicebox_filesystem()
