@@ -128,8 +128,8 @@ class Network:
 
     def print_network(self):
         """Print out a network."""
-        logging.debug(self.network)
-        logging.debug("Network accuracy: %.2f%%" % (self.accuracy * 100))
+        logging.info(self.network)
+        logging.info("Network accuracy: %.2f%%" % (self.accuracy * 100))
 
     def train_and_score(self, network, dataset):
         if config.DICEBOX_COMPLIANT_DATASET is True:
