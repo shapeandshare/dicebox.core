@@ -13,6 +13,10 @@ DATASET = default_config.DATASET
 if 'DATASET' in os.environ:
     DATASET = os.environ['DATASET']
 
+DICEBOX_COMPLIANT_DATASET = default_config.DICEBOX_COMPLIANT_DATASET
+if 'DICEBOX_COMPLIANT_DATASET' in os.environ:
+    DICEBOX_COMPLIANT_DATASET = os.environ['DICEBOX_COMPLIANT_DATASET']
+
 NB_CLASSES = default_config.NB_CLASSES
 if 'NB_CLASSES' in os.environ:
     NB_CLASSES = int(os.environ['NB_CLASSES'])

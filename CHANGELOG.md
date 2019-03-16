@@ -18,3 +18,7 @@ Change Log
 * Explicitly cast filename to string. Keras model weights save/load issue:  https://github.com/keras-team/keras/issues/11269
 * Fixed a bug that could cause the training processor to leave messages on the queues.
 
+03.16.2019
+----------
+* Added config setting for dicebox compliant datasets.
+* Switched over internal logic to use new feature flipper instead of hardcoded list.

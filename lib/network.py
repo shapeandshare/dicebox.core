@@ -131,11 +131,11 @@ class Network:
         logging.debug("Network accuracy: %.2f%%" % (self.accuracy * 100))
 
     def train_and_score(self, network, dataset):
-        if dataset == 'dicebox':
+        if config.DICEBOX_COMPLIANT_DATASET is True:
             nb_classes, batch_size, input_shape, x_train, \
                 x_test, y_train, y_test = self.get_dicebox_filesystem()
         else:
-            raise
+            Exception('Unknown dataset type!  Please define, or correct.')
 
         model = self.compile_model(network, nb_classes, input_shape)
 
