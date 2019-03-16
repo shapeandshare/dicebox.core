@@ -8,7 +8,6 @@ import logging
 # from datetime import datetime  # used when dumping raw transforms to disk
 import docker_config as config
 
-
 class FileSystemConnector:
 
     DATASET_INDEX = None
@@ -19,6 +18,7 @@ class FileSystemConnector:
     def __init__(self, data_directory):
         if FileSystemConnector.DATA_DIRECTORY is None:
             FileSystemConnector.DATA_DIRECTORY = data_directory
+            logging.info('data directory: (%s)' % FileSystemConnector.DATA_DIRECTORY)
 
         if FileSystemConnector.DATASET_INDEX is None:
             FileSystemConnector.DATASET_INDEX = FileSystemConnector.get_data_set(self)

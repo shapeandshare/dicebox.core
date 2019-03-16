@@ -57,7 +57,8 @@ class Network:
         self.model = None
 
         if Network.fsc is None:
-            # logging.debug('creating a new fsc..')
+            logging.debug('creating a new fsc..')
+            logging.info('config.DATA_DIRECTORY: (%s)' % config.DATA_DIRECTORY)
             Network.fsc = filesystem_connecter.FileSystemConnector(config.DATA_DIRECTORY)
 
         if Network.ssc is None:
@@ -107,15 +108,13 @@ class Network:
         """
         self.network = network
 
-    def train(self, dataset):
+    def train(self):
         """Train the network and record the accuracy.
 
-        Args:
-            dataset (str): Name of dataset to use.
 
         """
         if self.accuracy == 0.:
-            self.accuracy = self.train_and_score(self.network, dataset)
+            self.accuracy = self.train_and_score(self.network)
 
     def train_and_save(self, dataset):
         # if self.accuracy == 0.:
@@ -127,10 +126,10 @@ class Network:
 
     def print_network(self):
         """Print out a network."""
-        logging.debug(self.network)
-        logging.debug("Network accuracy: %.2f%%" % (self.accuracy * 100))
+        logging.info(self.network)
+        logging.info("Network accuracy: %.2f%%" % (self.accuracy * 100))
 
-    def train_and_score(self, network, dataset):
+    def train_and_score(self, network):
         if config.DICEBOX_COMPLIANT_DATASET is True:
             nb_classes, batch_size, input_shape, x_train, \
                 x_test, y_train, y_test = self.get_dicebox_filesystem()
@@ -141,6 +140,10 @@ class Network:
 
         logging.info('Fitting model:')
         logging.info(network)
+
+        logging.info('batch_size: %s' % batch_size)
+        logging.info('nb_classes: %s' % nb_classes)
+        logging.info('input_shape: %s' % input_shape)
 
         model.fit(x_train, y_train,
                   batch_size=batch_size,
@@ -189,6 +192,13 @@ class Network:
         train_batch_size = config.TRAIN_BATCH_SIZE
         test_batch_size = config.TEST_BATCH_SIZE
 
+        logging.info('nb_classes: %s' % nb_classes)
+        logging.info('batch_size: %s' % batch_size)
+        logging.info('input_shape: %s' % input_shape)
+        logging.info('noise: %s' % noise)
+        logging.info('train_batch_size: %s' % train_batch_size)
+        logging.info('test_batch_size: %s' % test_batch_size)
+
         train_image_data, train_image_labels = Network.fsc.get_batch(train_batch_size, noise=noise)
         # train_image_data, train_image_labels = Network.ssc.get_batch(train_batch_size, noise=noise)
         train_image_data = numpy.array(train_image_data)
@@ -203,9 +213,9 @@ class Network:
         test_image_data /= 255
         test_image_labels = numpy.array(test_image_labels)
 
-        logging.debug("nb_classes: (%i)" % nb_classes)
-        logging.debug("batch_size: (%i)" % batch_size)
-        logging.debug("input_shape: (%s)" % input_shape)
+        logging.info("nb_classes: (%i)" % nb_classes)
+        logging.info("batch_size: (%i)" % batch_size)
+        logging.info("input_shape: (%s)" % input_shape)
 
         x_train = train_image_data
         x_test = test_image_data
@@ -305,7 +315,7 @@ class Network:
         else:
             # no support yet!
             logging.error('UNSUPPORTED dataset supplied to train_and_score_and_save')
-            raise
+            Exception('UNSUPPORTED dataset supplied to train_and_score_and_save')
 
         logging.debug('-' * 80)
         logging.debug('Compiling mode if need be.')
@@ -346,7 +356,7 @@ class Network:
     def load_model(self, filename):
         if self.model is None:
             logging.error('no model! :(  compile the model first.')
-            raise
+            Exception('no model! :(  compile the model first.')
         logging.debug('loading weights file..')
         try:
             self.model.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
@@ -360,11 +370,11 @@ class Network:
             x_test = self.get_dicebox_raw(network_input)
         else:
             logging.error("UNKNOWN DATASET (%s) passed to classify" % dataset)
-            raise
+            Exception("UNKNOWN DATASET (%s) passed to classify" % dataset)
 
         if self.model is None:
             logging.error('Unable to classify without a model. :(')
-            raise
+            Exception('Unable to classify without a model. :(')
 
         model_prediction = self.model.predict_classes(x_test, batch_size=1, verbose=0)
         logging.info(model_prediction)
