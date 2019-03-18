@@ -213,10 +213,6 @@ class Network:
         test_image_data /= 255
         test_image_labels = numpy.array(test_image_labels)
 
-        logging.info("nb_classes: (%i)" % nb_classes)
-        logging.info("batch_size: (%i)" % batch_size)
-        logging.info("input_shape: (%s)" % input_shape)
-
         x_train = train_image_data
         x_test = test_image_data
         y_train = train_image_labels
@@ -318,7 +314,7 @@ class Network:
             Exception('UNSUPPORTED dataset supplied to train_and_score_and_save')
 
         logging.debug('-' * 80)
-        logging.debug('Compiling mode if need be.')
+        logging.debug('Compiling model if need be.')
         logging.debug('-' * 80)
         if self.model is None:
             self.model = self.compile_model(self.network, nb_classes, input_shape)
@@ -350,7 +346,7 @@ class Network:
         return score[1]  # 1 is accuracy. 0 is loss.
 
     def save_model(self, filename):
-        logging.debug('saving model weights to file..')
+        logging.info('saving model weights to file..')
         self.model.save(str(filename))   # https://github.com/keras-team/keras/issues/11269
 
     def load_model(self, filename):
@@ -363,7 +359,7 @@ class Network:
         except Exception as e:
             logging.error('Unable to load weights file.')
             logging.error(e)
-            raise
+            raise e
 
     def classify(self, dataset, network_input):
         if dataset == 'dicebox_raw':
@@ -392,7 +388,7 @@ class Network:
         except:
             os.remove(filename)
             logging.error('Exception caught processing image data.')
-            raise
+            Exception('Exception caught processing image data.')
 
         os.remove(filename)
 
