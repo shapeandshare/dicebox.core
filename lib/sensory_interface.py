@@ -136,7 +136,7 @@ class SensoryInterface:
                     # lets attempt to cache to file here and convert the one-hot value to the directory structure
                     # first convert label to one-hot value
                     if cat_index < 0:
-                        logging.debug('unable to decode one hot category value')
+                        logging.error('unable to decode one hot category value')
                         Exception('unable to decode one hot category value')
                     else:
                         logging.debug("decoded one hot category to: (%i)" % cat_index)
@@ -149,7 +149,7 @@ class SensoryInterface:
                         if ret is True:
                             logging.debug('successfully stored to disk..')
                         else:
-                            logging.debug('failed to store to disk!')
+                            logging.error('failed to store to disk!')
                             Exception('failed to store to disk!')
 
                         image_data.append(new_image_data)
