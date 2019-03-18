@@ -25,3 +25,7 @@ Change Log
 * Removed upused variable
 * Updated logging
 * Corrected configuration override bug
+
+3.17.2019
+---------
+* Updated logging levels and exception messages.
