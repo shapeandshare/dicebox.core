@@ -29,3 +29,7 @@ Change Log
 3.17.2019
 ---------
 * Updated logging levels and exception messages.
+
+03.21.2019
+----------
+* Allow the File System Connector to be optional when creating a Network.
