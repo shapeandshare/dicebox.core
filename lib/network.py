@@ -41,7 +41,7 @@ class Network:
     fsc = None  # file system connector
     ssc = None  # sensory service connector
 
-    def __init__(self, nn_param_choices=None):
+    def __init__(self, nn_param_choices=None, create_fcs=True):
         """Initialize our network.
 
         Args:
@@ -56,7 +56,7 @@ class Network:
         self.network = {}  # (dic): represents MLP network parameters
         self.model = None
 
-        if Network.fsc is None:
+        if Network.fsc is None and create_fcs is True:
             logging.debug('creating a new fsc..')
             logging.info('config.DATA_DIRECTORY: (%s)' % config.DATA_DIRECTORY)
             Network.fsc = filesystem_connecter.FileSystemConnector(config.DATA_DIRECTORY)
