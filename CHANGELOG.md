@@ -33,3 +33,7 @@ Change Log
 03.21.2019
 ----------
 * Allow the File System Connector to be optional when creating a Network.
+
+03.22.2019
+----------
+* Updated classify method to use the dicebox compliance flag in lieu of a magic string.
