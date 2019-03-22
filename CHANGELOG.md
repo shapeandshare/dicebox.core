@@ -37,3 +37,5 @@ Change Log
 03.22.2019
 ----------
 * Updated classify method to use the dicebox compliance flag in lieu of a magic string.
+* Make content indexing optional when creating FSC and Network objects. Scenario is leveraged by classification service currently.
+* Cleaning up from exception handling.
