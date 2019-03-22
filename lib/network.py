@@ -361,12 +361,12 @@ class Network:
             logging.error(e)
             raise e
 
-    def classify(self, dataset, network_input):
-        if dataset == 'dicebox_raw':
+    def classify(self, network_input):
+        if config.DICEBOX_COMPLIANT_DATASET is True:
             x_test = self.get_dicebox_raw(network_input)
         else:
-            logging.error("UNKNOWN DATASET (%s) passed to classify" % dataset)
-            Exception("UNKNOWN DATASET (%s) passed to classify" % dataset)
+            logging.error("UNKNOWN DATASET (%s) passed to classify" % config.NETWORK_NAME)
+            Exception("UNKNOWN DATASET (%s) passed to classify" % config.NETWORK_NAME)
 
         if self.model is None:
             logging.error('Unable to classify without a model. :(')
