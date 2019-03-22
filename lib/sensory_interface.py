@@ -203,11 +203,11 @@ class SensoryInterface:
             return {}
         return {}
 
-
+    # This can be pulled from the File System Connector, doesn't need to be here, and isn't used anymore ..
     # TODO: temporary - we should calculate this using one of the provided methods this is really for testing the threaded-caching
     def get_category_map(self):
         jdata = {}
-        with open('./category_map.json') as data_file:
+        with open('%s/category_map.json' % config.WEIGHTS_DIR) as data_file:
             raw_cat_data = json.load(data_file)
         for d in raw_cat_data:
             jdata[str(raw_cat_data[d])] = str(d)
