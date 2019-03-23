@@ -15,20 +15,23 @@ class FileSystemConnector:
     CATEGORY_MAP = None
     PIXEL_CACHE = {}
 
-    def __init__(self, data_directory):
+    def __init__(self, data_directory, disable_data_indexing=False):
         if FileSystemConnector.DATA_DIRECTORY is None:
             FileSystemConnector.DATA_DIRECTORY = data_directory
             logging.info('data directory: (%s)' % FileSystemConnector.DATA_DIRECTORY)
 
-        if FileSystemConnector.DATASET_INDEX is None:
-            FileSystemConnector.DATASET_INDEX = FileSystemConnector.get_data_set(self)
-            logging.debug('DATASET_INDEX')
-            logging.debug(FileSystemConnector.DATASET_INDEX)
-
-        if FileSystemConnector.CATEGORY_MAP is None:
-            FileSystemConnector.CATEGORY_MAP = FileSystemConnector.get_data_set_categories(self)
-            logging.debug('CATEGORY_MAP')
-            logging.debug(FileSystemConnector.CATEGORY_MAP)
+        if disable_data_indexing is False:
+            if FileSystemConnector.DATASET_INDEX is None:
+                FileSystemConnector.DATASET_INDEX = FileSystemConnector.get_data_set(self)
+                logging.debug('DATASET_INDEX')
+                logging.debug(FileSystemConnector.DATASET_INDEX)
+    
+            if FileSystemConnector.CATEGORY_MAP is None:
+                FileSystemConnector.CATEGORY_MAP = FileSystemConnector.get_data_set_categories(self)
+                logging.debug('CATEGORY_MAP')
+                logging.debug(FileSystemConnector.CATEGORY_MAP)
+        else:
+            logging.info('File System Connector Data Indexing Disabled.')
 
     def get_batch_list(self, batch_size):
         output = []
