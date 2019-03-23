@@ -299,12 +299,12 @@ class Network:
         logging.debug("train_and_score_and_save(dataset)")
         logging.debug("train_and_score_and_save(dataset=%s)" % dataset)
         logging.debug('-' * 80)
-        if dataset == 'dicebox':
-            # nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_filesystem()
+        if config.DICEBOX_COMPLIANT_DATASET is True:
             logging.debug('-' * 80)
             logging.debug('loading sensory data..')
             logging.debug('-' * 80)
-            nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_sensory_data()
+            # nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_sensory_data()
+            nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_filesystem()
             logging.debug('-' * 80)
             logging.debug('Done!')
             logging.debug('-' * 80)
