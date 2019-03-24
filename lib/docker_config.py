@@ -1,8 +1,17 @@
-# Allow over-riding the defaults with non-secure ENV varaibles, or secure docker secrets
+"""Allow over-riding the defaults with non-secure ENV variables, or secure docker secrets
 
-import dicebox_config as default_config
+###############################################################################
+# Local Config File Handler
+# Copyright (c) 2017-2019 Joshua Burt
+###############################################################################
+"""
+
+###############################################################################
+# Dependencies
+###############################################################################
 import os
 import json
+import lib.dicebox_config as default_config
 
 ###############################################################################
 # Data Set Options
@@ -139,8 +148,8 @@ if 'TEST_BATCH_SIZE' in os.environ:
 
 LOAD_BEST_WEIGHTS_ON_START = default_config.LOAD_BEST_WEIGHTS_ON_START
 if 'LOAD_BEST_WEIGHTS_ON_START' in os.environ:
-        if os.environ['LOAD_BEST_WEIGHTS_ON_START'] == 'False':
-            LOAD_BEST_WEIGHTS_ON_START = False
+    if os.environ['LOAD_BEST_WEIGHTS_ON_START'] == 'False':
+        LOAD_BEST_WEIGHTS_ON_START = False
 
 ###############################################################################
 # Direcrtory Options
@@ -366,5 +375,3 @@ if 'SERVER_PORT' in os.environ:
 SERVER_URI = default_config.SERVER_URI
 if 'SERVER_URI' in os.environ:
     SERVER_URI = os.environ['SERVER_URI']
-
-
