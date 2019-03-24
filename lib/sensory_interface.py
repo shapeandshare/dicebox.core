@@ -155,8 +155,10 @@ class SensoryInterface:
                         image_data.append(new_image_data)
                         image_label.append(new_image_label)
                         count += 1
-                except:
+                except Exception as e:
+                    logging.error(e)
                     logging.debug('.')
+                    # raise e
 
             logging.debug('-' * 80)
             logging.debug('Done receiving batch.')
@@ -245,21 +247,24 @@ class SensoryInterface:
         # logging.debug(url)
         parameters = pika.URLParameters(url)
 
-        connection = pika.BlockingConnection(parameters=parameters)
+        try:
+            connection = pika.BlockingConnection(parameters=parameters)
 
-        channel = connection.channel()
+            channel = connection.channel()
 
-        method_frame, header_frame, body = channel.basic_get(batch_id)
-        if method_frame:
-            #logging.debug("%s %s %s" % (method_frame, header_frame, body))
-            message = json.loads(body)
-            label = message['label']
-            data = message['data']
-            #logging.debug(label)
-            #logging.debug(data)
-            channel.basic_ack(method_frame.delivery_tag)
-        else:
-            logging.debug('no message returned')
-        connection.close()
+            method_frame, header_frame, body = channel.basic_get(batch_id)
+            if method_frame:
+                #logging.debug("%s %s %s" % (method_frame, header_frame, body))
+                message = json.loads(body)
+                label = message['label']
+                data = message['data']
+                #logging.debug(label)
+                #logging.debug(data)
+                channel.basic_ack(method_frame.delivery_tag)
+            else:
+                logging.debug('no message returned')
+        except Exception as e:
+            logging.warning(e)
+        finally:
+            connection.close()
         return data, label
-

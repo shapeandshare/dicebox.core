@@ -37,3 +37,7 @@ Change Log
 03.22.2019
 ----------
 * Updated classify method to use the dicebox compliance flag in lieu of a magic string.
+
+03.23.2019
+----------
+* Fix leaking file descriptors when polling for queue readiness within the trainingprocessor / sensory interface code.
