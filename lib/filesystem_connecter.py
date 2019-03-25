@@ -69,7 +69,7 @@ class FileSystemConnector(object):
         return output
 
     def get_batch(self, batch_size, noise=0):
-        """For a given batch size and noise level, returns a dictionarty of data and labels.
+        """For a given batch size and noise level, returns a dictionary of data and labels.
 
         :param batch_size: integer
         :param noise: floating point number
@@ -115,6 +115,11 @@ class FileSystemConnector(object):
 
     @staticmethod
     def lucky(noise=0):
+        """Simple function to determine whether or not a thing occurs.
+
+        :param noise: floating point value for noise
+        :return: boolean
+        """
         if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
             logging.debug('luck bestowed')
             return True
@@ -122,6 +127,12 @@ class FileSystemConnector(object):
 
     @staticmethod
     def process_image(filename, noise=0):
+        """For a given filename, and noise level, will return a numpy array of pixel data.
+
+        :param filename:
+        :param noise:
+        :return:
+        """
         pixel_data = array('B')
 
         im = Image.open(filename).convert('L') # Load as gray
@@ -206,6 +217,10 @@ class FileSystemConnector(object):
         return data
 
     def get_data_set_categories(self):
+        """Returns the dataset index as a dictionary of categories
+
+        :return: category map as a dictionary
+        """
         natural_categories = []
         category_map = {}
         value_list = self.DATASET_INDEX.values()
@@ -223,6 +238,7 @@ class FileSystemConnector(object):
         return category_map
 
     def get_data_set(self):
+        """Returns a dictionary of [k:filename, v:array of filename and category] for the entire data set."""
         data_set = {}
         for root, dirnames, filenames in os.walk(self.DATA_DIRECTORY):
             for filename in fnmatch.filter(filenames, '*.png'):
