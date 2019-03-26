@@ -1,6 +1,6 @@
 import requests
-from lib import dicebox_config as config  # import our high level configuration
-from lib import filesystem_connecter # inport our file system connector for input
+from dicebox import dicebox_config as config  # import our high level configuration
+from dicebox import filesystem_connecter # inport our file system connector for input
 import json # for writing category data to file
 
 def get_category_map():

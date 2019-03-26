@@ -17,7 +17,7 @@ import logging
 import numpy
 from PIL import Image
 # from datetime import datetime  # used when dumping raw transforms to disk
-import lib.docker_config as config
+import dicebox.docker_config as config
 
 class FileSystemConnector(object):
     """File System Connector Class"""

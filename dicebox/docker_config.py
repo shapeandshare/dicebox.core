@@ -11,7 +11,7 @@
 ###############################################################################
 import os
 import json
-import lib.dicebox_config as default_config
+import dicebox.dicebox_config as default_config
 
 ###############################################################################
 # Data Set Options
