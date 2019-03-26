@@ -19,6 +19,7 @@ from PIL import Image
 # from datetime import datetime  # used when dumping raw transforms to disk
 import dicebox.docker_config as config
 
+
 class FileSystemConnector(object):
     """File System Connector Class"""
     DATASET_INDEX = None
