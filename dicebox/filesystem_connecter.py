@@ -29,7 +29,7 @@ class FileSystemConnector(object):
 
     def __init__(self, data_directory, disable_data_indexing=False):
         if self.DATA_DIRECTORY is None:
-            self.DATA_DIRECTORY = data_directory
+            self.DATA_DIRECTORY = os.path.normpath(data_directory)
             logging.info('data directory: (%s)', self.DATA_DIRECTORY)
 
         if disable_data_indexing is False:
@@ -239,12 +239,17 @@ class FileSystemConnector(object):
         return category_map
 
     def get_data_set(self):
-        """Returns a dictionary of [k:filename, v:array of filename and category] for the entire data set."""
+        """
+        Returns a dictionary of [k:filename, v:array of filename and category] for the entire data set.
+
+        When we move this to python 3, there are much better libraries to handle this.  Checkout PurePath..
+        """
         data_set = {}
         for root, dirnames, filenames in os.walk(self.DATA_DIRECTORY):
             for filename in fnmatch.filter(filenames, '*.png'):
                 new_entry = str(os.path.join(root, filename))
-                new_entry = new_entry.replace(self.DATA_DIRECTORY, '')
+                new_entry = new_entry.replace('%s/' % self.DATA_DIRECTORY, '')
+                new_entry = os.path.normpath(new_entry)
                 category, filename = new_entry.split('/')
                 # logging.info("category: (%s), filename: (%s)" % (category, filename))
                 data_set[new_entry] = [filename, category]
