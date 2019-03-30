@@ -141,7 +141,7 @@ class FileSystemConnector(object):
         :param noise:
         :return:
         """
-        pixel_data = array('B')
+        pixel_data = array.array('B')
 
         im = Image.open(filename).convert('L') # Load as gray
 
