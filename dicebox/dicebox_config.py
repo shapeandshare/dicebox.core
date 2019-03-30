@@ -14,199 +14,200 @@ import json
 import urllib
 
 
-###############################################################################
-# Create config objects.
-###############################################################################
-LOCAL_CONIFG = ConfigParser.ConfigParser()
-LOCAL_CONIFG.read('./dicebox.config')
+class DiceboxConfig(object):
+
+    def __init__(self, config_file='./dicebox.config'):
+        ###############################################################################
+        # Create config objects.
+        ###############################################################################
+        local_config = ConfigParser.ConfigParser()
+        local_config.read(config_file)
+
+        ###############################################################################
+        # Data Set Options
+        ###############################################################################
+        
+        # Load user defined config
+        self.DATASET = local_config.get('DATASET', 'name')
+        self.DICEBOX_COMPLIANT_DATASET = local_config.getboolean('DATASET', 'dicebox_compliant')
+        self.NB_CLASSES = local_config.getint('DATASET', 'categories')
+        self.IMAGE_WIDTH = local_config.getint('DATASET', 'image_width')
+        self.IMAGE_HEIGHT = local_config.getint('DATASET', 'image_height')
+        self.DATA_BASE_DIRECTORY = local_config.get('DIRECTORY', 'dataset_base_directory')
+
+        # Build Calculated Configs
+        self.NETWORK_NAME = "%s_%ix%i" % (self.DATASET, self.IMAGE_WIDTH, self.IMAGE_HEIGHT)
+        self.INPUT_SHAPE = (self.IMAGE_WIDTH * self.IMAGE_HEIGHT,)
+        self.DATA_DIRECTORY = "%s/%s/data/" % (self.DATA_BASE_DIRECTORY, self.NETWORK_NAME)
 
 
-###############################################################################
-# Data Set Options
-###############################################################################
+        ###############################################################################
+        # Neural Network Taxonomy Options
+        ###############################################################################
+        self.NB_NEURONS = local_config.get('TAXONOMY', 'neurons')
+        self.NB_LAYERS = local_config.get('TAXONOMY', 'layers')
+        self.ACTIVATION = local_config.get('TAXONOMY', 'activation')
+        self.OPTIMIZER = local_config.get('TAXONOMY', 'optimizer')
 
-# Load user defined config
-DATASET = LOCAL_CONIFG.get('DATASET', 'name')
-DICEBOX_COMPLIANT_DATASET = LOCAL_CONIFG.getboolean('DATASET', 'dicebox_compliant')
-NB_CLASSES = LOCAL_CONIFG.getint('DATASET', 'categories')
-IMAGE_WIDTH = LOCAL_CONIFG.getint('DATASET', 'image_width')
-IMAGE_HEIGHT = LOCAL_CONIFG.getint('DATASET', 'image_height')
-DATA_BASE_DIRECTORY = LOCAL_CONIFG.get('DIRECTORY', 'dataset_base_directory')
-
-# Build Calculated Configs
-NETWORK_NAME = "%s_%ix%i" % (DATASET, IMAGE_WIDTH, IMAGE_HEIGHT)
-INPUT_SHAPE = (IMAGE_WIDTH*IMAGE_HEIGHT,)
-DATA_DIRECTORY = "%s/%s/data/" % (DATA_BASE_DIRECTORY, NETWORK_NAME)
+        self.NN_PARAM_CHOICES = {
+            'nb_neurons': json.loads(self.NB_NEURONS),
+            'nb_layers': json.loads(self.NB_LAYERS),
+            'activation': json.loads(self.ACTIVATION),
+            'optimizer': json.loads(self.OPTIMIZER)
+        }
 
 
-###############################################################################
-# Neural Network Taxonomy Options
-###############################################################################
-NB_NEURONS = LOCAL_CONIFG.get('TAXONOMY', 'neurons')
-NB_LAYERS = LOCAL_CONIFG.get('TAXONOMY', 'layers')
-ACTIVATION = LOCAL_CONIFG.get('TAXONOMY', 'activation')
-OPTIMIZER = LOCAL_CONIFG.get('TAXONOMY', 'optimizer')
+        ###############################################################################
+        # Lonestar Options
+        ###############################################################################
+        self.NB_LONESTAR_NEURONS = local_config.getint('LONESTAR', 'neurons')
+        self.NB_LONESTAR_LAYERS = local_config.getint('LONESTAR', 'layers')
+        self.LONESTAR_ACTIVATION = local_config.get('LONESTAR', 'activation')
+        self.LONESTAR_OPTIMIZER = local_config.get('LONESTAR', 'optimizer')
 
-NN_PARAM_CHOICES = {
-    'nb_neurons': json.loads(NB_NEURONS),
-    'nb_layers': json.loads(NB_LAYERS),
-    'activation': json.loads(ACTIVATION),
-    'optimizer': json.loads(OPTIMIZER)
-}
-
-
-###############################################################################
-# Lonestar Options
-# {'nb_layers': 2, 'activation': 'sigmoid', 'optimizer': 'adamax', 'nb_neurons': 987}
-# 07/03/2017 04:02:49 AM - INFO - Network accuracy: 97.27%
-###############################################################################
-NB_LONESTAR_NEURONS = LOCAL_CONIFG.getint('LONESTAR', 'neurons')
-NB_LONESTAR_LAYERS = LOCAL_CONIFG.getint('LONESTAR', 'layers')
-LONESTAR_ACTIVATION = LOCAL_CONIFG.get('LONESTAR', 'activation')
-LONESTAR_OPTIMIZER = LOCAL_CONIFG.get('LONESTAR', 'optimizer')
-
-NN_LONESTAR_PARAMS = {
-    'nb_neurons': NB_LONESTAR_NEURONS,
-    'nb_layers': NB_LONESTAR_LAYERS,
-    'activation': LONESTAR_ACTIVATION,
-    'optimizer': LONESTAR_OPTIMIZER
-}
+        self.NN_LONESTAR_PARAMS = {
+            'nb_neurons': self.NB_LONESTAR_NEURONS,
+            'nb_layers': self.NB_LONESTAR_LAYERS,
+            'activation': self.LONESTAR_ACTIVATION,
+            'optimizer': self.LONESTAR_OPTIMIZER
+        }
 
 
-###############################################################################
-# Evolution Options
-###############################################################################
-EPOCHS = LOCAL_CONIFG.getint('EVOLUTION', 'epochs')
+        ###############################################################################
+        # Evolution Options
+        ###############################################################################
+        self.EPOCHS = local_config.getint('EVOLUTION', 'epochs')
 
-# Number of times to evole the population.
-GENERATIONS = LOCAL_CONIFG.getint('EVOLUTION', 'generations')
+        # Number of times to evole the population.
+        self.GENERATIONS = local_config.getint('EVOLUTION', 'generations')
 
-# Number of networks in each generation.
-POPULATION = LOCAL_CONIFG.getint('EVOLUTION', 'population')
-NOISE = LOCAL_CONIFG.getfloat('GLOBAL', 'noise')
-
-
-###############################################################################
-# Training Options / Settings for the 1920x1080 dataset
-###############################################################################
-BATCH_SIZE = LOCAL_CONIFG.getint('TRAINING', 'batch_size')
-TRAIN_BATCH_SIZE = LOCAL_CONIFG.getint('TRAINING', 'train_batch_size')
-TEST_BATCH_SIZE = LOCAL_CONIFG.getint('TRAINING', 'test_batch_size')
-LOAD_BEST_WEIGHTS_ON_START = LOCAL_CONIFG.getboolean('TRAINING', 'load_best_weights_on_start')
-
-###############################################################################
-# Direcrtory Options
-###############################################################################
-LOGS_DIR = LOCAL_CONIFG.get('DIRECTORY', 'logs_dir')
-WEIGHTS_DIR = LOCAL_CONIFG.get('DIRECTORY', 'weights_dir')
-TMP_DIR = LOCAL_CONIFG.get('DIRECTORY', 'tmp_dir')
+        # Number of networks in each generation.
+        self.POPULATION = local_config.getint('EVOLUTION', 'population')
+        self.NOISE = local_config.getfloat('GLOBAL', 'noise')
 
 
-###############################################################################
-# Server Options
-###############################################################################
-API_ACCESS_KEY = LOCAL_CONIFG.get('SERVER', 'api_access_key')
-API_VERSION = LOCAL_CONIFG.get('SERVER', 'api_version')
-LISTENING_HOST = LOCAL_CONIFG.get('SERVER', 'listening_host')
-FLASK_DEBUG = LOCAL_CONIFG.getboolean('SERVER', 'flask_debug')
-MODEL_WEIGHTS_FILENAME = LOCAL_CONIFG.get('SERVER', 'model_weights_filename')
+        ###############################################################################
+        # Training Options / Settings for the 1920x1080 dataset
+        ###############################################################################
+        self.BATCH_SIZE = local_config.getint('TRAINING', 'batch_size')
+        self.TRAIN_BATCH_SIZE = local_config.getint('TRAINING', 'train_batch_size')
+        self.TEST_BATCH_SIZE = local_config.getint('TRAINING', 'test_batch_size')
+        self.LOAD_BEST_WEIGHTS_ON_START = local_config.getboolean('TRAINING', 'load_best_weights_on_start')
 
 
-###############################################################################
-# Sensory Service Options
-###############################################################################
-SENSORY_SERVER = LOCAL_CONIFG.get('SENSORY_SERVICE', 'sensory_server')
-SENSORY_PORT = LOCAL_CONIFG.getint('SENSORY_SERVICE', 'sensory_port')
-SENSORY_URI = LOCAL_CONIFG.get('SENSORY_SERVICE', 'sensory_uri')
-
-SENSORY_SERVICE_RABBITMQ_EXCHANGE = LOCAL_CONIFG.get('SENSORY_SERVICE', 'rabbitmq_exchange')
-SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY = LOCAL_CONIFG.get(
-    'SENSORY_SERVICE', 'rabbitmq_batch_request_routing_key')
-SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE = LOCAL_CONIFG.get(
-    'SENSORY_SERVICE', 'rabbitmq_batch_request_task_queue')
-
-SENSORY_SERVICE_RABBITMQ_URI = LOCAL_CONIFG.get('SENSORY_SERVICE', 'rabbitmq_uri')
-SENSORY_SERVICE_RABBITMQ_USERNAME = LOCAL_CONIFG.get('SENSORY_SERVICE', 'rabbitmq_username')
-SENSORY_SERVICE_RABBITMQ_PASSWORD = LOCAL_CONIFG.get('SENSORY_SERVICE', 'rabbitmq_password')
-SENSORY_SERVICE_RABBITMQ_SERVER = LOCAL_CONIFG.get('SENSORY_SERVICE', 'rabbitmq_server')
-SENSORY_SERVICE_RABBITMQ_PORT = LOCAL_CONIFG.get('SENSORY_SERVICE', 'rabbitmq_port')
-SENSORY_SERVICE_RABBITMQ_VHOST = urllib.quote_plus(
-    LOCAL_CONIFG.get('SENSORY_SERVICE', 'rabbitmq_vhost'))
-
-SENSORY_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
-    SENSORY_SERVICE_RABBITMQ_URI,
-    SENSORY_SERVICE_RABBITMQ_USERNAME,
-    SENSORY_SERVICE_RABBITMQ_PASSWORD,
-    SENSORY_SERVICE_RABBITMQ_SERVER,
-    SENSORY_SERVICE_RABBITMQ_PORT,
-    SENSORY_SERVICE_RABBITMQ_VHOST
-)
-SENSORY_SERVICE_SHARD_SIZE = LOCAL_CONIFG.getint('SENSORY_SERVICE', 'shard_size')
+        ###############################################################################
+        # Direcrtory Options
+        ###############################################################################
+        self.LOGS_DIR = local_config.get('DIRECTORY', 'logs_dir')
+        self.WEIGHTS_DIR = local_config.get('DIRECTORY', 'weights_dir')
+        self.TMP_DIR = local_config.get('DIRECTORY', 'tmp_dir')
 
 
-###############################################################################
-# Training Service Options
-###############################################################################
-TRAINING_SERVICE_RABBITMQ_EXCHANGE = LOCAL_CONIFG.get(
-    'TRAINING_SERVICE', 'rabbitmq_exchange')
-TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = LOCAL_CONIFG.get(
-    'TRAINING_SERVICE', 'rabbitmq_batch_request_routing_key')
-TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = LOCAL_CONIFG.get(
-    'TRAINING_SERVICE', 'rabbitmq_train_request_task_queue')
-TRAINING_SERVICE_RABBITMQ_RABBITMQ_VHOST = LOCAL_CONIFG.get('TRAINING_SERVICE', 'rabbitmq_vhost')
-TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI = LOCAL_CONIFG.get('TRAINING_SERVICE', 'rabbitmq_uri')
-TRAINING_SERVICE_RABBITMQ_USERNAME = LOCAL_CONIFG.get('TRAINING_SERVICE', 'rabbitmq_username')
-TRAINING_SERVICE_RABBITMQ_PASSWORD = LOCAL_CONIFG.get('TRAINING_SERVICE', 'rabbitmq_password')
-TRAINING_SERVICE_RABBITMQ_SERVER = LOCAL_CONIFG.get('TRAINING_SERVICE', 'rabbitmq_server')
-TRAINING_SERVICE_RABBITMQ_PORT = LOCAL_CONIFG.get('TRAINING_SERVICE', 'rabbitmq_port')
-TRAINING_SERVICE_RABBITMQ_VHOST = urllib.quote_plus(
-    LOCAL_CONIFG.get('TRAINING_SERVICE', 'rabbitmq_vhost'))
-TRAINING_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
-    TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI,
-    TRAINING_SERVICE_RABBITMQ_USERNAME,
-    TRAINING_SERVICE_RABBITMQ_PASSWORD,
-    TRAINING_SERVICE_RABBITMQ_SERVER,
-    TRAINING_SERVICE_RABBITMQ_PORT,
-    TRAINING_SERVICE_RABBITMQ_VHOST
-)
+        ###############################################################################
+        # Server Options
+        ###############################################################################
+        self.API_ACCESS_KEY = local_config.get('SERVER', 'api_access_key')
+        self.API_VERSION = local_config.get('SERVER', 'api_version')
+        self.LISTENING_HOST = local_config.get('SERVER', 'listening_host')
+        self.FLASK_DEBUG = local_config.getboolean('SERVER', 'flask_debug')
+        self.MODEL_WEIGHTS_FILENAME = local_config.get('SERVER', 'model_weights_filename')
 
 
-###############################################################################
-# Training Processor Options
-###############################################################################
-TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE = LOCAL_CONIFG.get(
-    'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_exchange')
-TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = LOCAL_CONIFG.get(
-    'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_batch_request_routing_key')
-TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = LOCAL_CONIFG.get(
-    'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_train_request_task_queue')
-TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST = LOCAL_CONIFG.get(
-    'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_vhost')
-TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI = LOCAL_CONIFG.get(
-    'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_uri')
-TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME = LOCAL_CONIFG.get(
-    'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_username')
-TRAINING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD = LOCAL_CONIFG.get(
-    'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_password')
-TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER = LOCAL_CONIFG.get(
-    'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_server')
-TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT = LOCAL_CONIFG.get(
-    'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_port')
-TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST = urllib.quote_plus(
-    LOCAL_CONIFG.get('TRAINING_PROCESSOR_SERVICE', 'rabbitmq_vhost'))
-TRAINING_PROCESSOR_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
-    TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI,
-    TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME,
-    TRAINING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD,
-    TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER,
-    TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT,
-    TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST
-)
+        ###############################################################################
+        # Sensory Service Options
+        ###############################################################################
+        self.SENSORY_SERVER = local_config.get('SENSORY_SERVICE', 'sensory_server')
+        self.SENSORY_PORT = local_config.getint('SENSORY_SERVICE', 'sensory_port')
+        self.SENSORY_URI = local_config.get('SENSORY_SERVICE', 'sensory_uri')
+
+        self.SENSORY_SERVICE_RABBITMQ_EXCHANGE = local_config.get('SENSORY_SERVICE', 'rabbitmq_exchange')
+        self.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY = local_config.get(
+            'SENSORY_SERVICE', 'rabbitmq_batch_request_routing_key')
+        self.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE = local_config.get(
+            'SENSORY_SERVICE', 'rabbitmq_batch_request_task_queue')
+
+        self.SENSORY_SERVICE_RABBITMQ_URI = local_config.get('SENSORY_SERVICE', 'rabbitmq_uri')
+        self.SENSORY_SERVICE_RABBITMQ_USERNAME = local_config.get('SENSORY_SERVICE', 'rabbitmq_username')
+        self.SENSORY_SERVICE_RABBITMQ_PASSWORD = local_config.get('SENSORY_SERVICE', 'rabbitmq_password')
+        self.SENSORY_SERVICE_RABBITMQ_SERVER = local_config.get('SENSORY_SERVICE', 'rabbitmq_server')
+        self.SENSORY_SERVICE_RABBITMQ_PORT = local_config.get('SENSORY_SERVICE', 'rabbitmq_port')
+        self.SENSORY_SERVICE_RABBITMQ_VHOST = urllib.quote_plus(
+            local_config.get('SENSORY_SERVICE', 'rabbitmq_vhost'))
+
+        self.SENSORY_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
+            self.SENSORY_SERVICE_RABBITMQ_URI,
+            self.SENSORY_SERVICE_RABBITMQ_USERNAME,
+            self.SENSORY_SERVICE_RABBITMQ_PASSWORD,
+            self.SENSORY_SERVICE_RABBITMQ_SERVER,
+            self.SENSORY_SERVICE_RABBITMQ_PORT,
+            self.SENSORY_SERVICE_RABBITMQ_VHOST
+        )
+        self.SENSORY_SERVICE_SHARD_SIZE = local_config.getint('SENSORY_SERVICE', 'shard_size')
 
 
-###############################################################################
-# Client Options
-###############################################################################
-CLASSIFICATION_SERVER = LOCAL_CONIFG.get('CLIENT', 'classification_server')
-SERVER_PORT = LOCAL_CONIFG.getint('CLIENT', 'classification_port')
-SERVER_URI = LOCAL_CONIFG.get('CLIENT', 'classification_uri')
+        ###############################################################################
+        # Training Service Options
+        ###############################################################################
+        self.TRAINING_SERVICE_RABBITMQ_EXCHANGE = local_config.get(
+            'TRAINING_SERVICE', 'rabbitmq_exchange')
+        self.TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = local_config.get(
+            'TRAINING_SERVICE', 'rabbitmq_batch_request_routing_key')
+        self.TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = local_config.get(
+            'TRAINING_SERVICE', 'rabbitmq_train_request_task_queue')
+        self.TRAINING_SERVICE_RABBITMQ_RABBITMQ_VHOST = local_config.get('TRAINING_SERVICE', 'rabbitmq_vhost')
+        self.TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI = local_config.get('TRAINING_SERVICE', 'rabbitmq_uri')
+        self.TRAINING_SERVICE_RABBITMQ_USERNAME = local_config.get('TRAINING_SERVICE', 'rabbitmq_username')
+        self.TRAINING_SERVICE_RABBITMQ_PASSWORD = local_config.get('TRAINING_SERVICE', 'rabbitmq_password')
+        self.TRAINING_SERVICE_RABBITMQ_SERVER = local_config.get('TRAINING_SERVICE', 'rabbitmq_server')
+        self.TRAINING_SERVICE_RABBITMQ_PORT = local_config.get('TRAINING_SERVICE', 'rabbitmq_port')
+        self.TRAINING_SERVICE_RABBITMQ_VHOST = urllib.quote_plus(
+            local_config.get('TRAINING_SERVICE', 'rabbitmq_vhost'))
+        self.TRAINING_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
+            self.TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI,
+            self.TRAINING_SERVICE_RABBITMQ_USERNAME,
+            self.TRAINING_SERVICE_RABBITMQ_PASSWORD,
+            self.TRAINING_SERVICE_RABBITMQ_SERVER,
+            self.TRAINING_SERVICE_RABBITMQ_PORT,
+            self.TRAINING_SERVICE_RABBITMQ_VHOST
+        )
+
+
+        ###############################################################################
+        # Training Processor Options
+        ###############################################################################
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE = local_config.get(
+            'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_exchange')
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = local_config.get(
+            'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_batch_request_routing_key')
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = local_config.get(
+            'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_train_request_task_queue')
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST = local_config.get(
+            'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_vhost')
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI = local_config.get(
+            'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_uri')
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME = local_config.get(
+            'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_username')
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD = local_config.get(
+            'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_password')
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER = local_config.get(
+            'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_server')
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT = local_config.get(
+            'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_port')
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST = urllib.quote_plus(
+            local_config.get('TRAINING_PROCESSOR_SERVICE', 'rabbitmq_vhost'))
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI,
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME,
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD,
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER,
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT,
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST
+        )
+
+
+        ###############################################################################
+        # Client Options
+        ###############################################################################
+        self.CLASSIFICATION_SERVER = local_config.get('CLIENT', 'classification_server')
+        self.SERVER_PORT = local_config.getint('CLIENT', 'classification_port')
+        self.SERVER_URI = local_config.get('CLIENT', 'classification_uri')
