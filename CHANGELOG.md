@@ -41,3 +41,9 @@ Change Log
 03.23.2019
 ----------
 * Fix leaking file descriptors when polling for queue readiness within the trainingprocessor / sensory interface code.
+
+03.30.2019
+----------
+- Refactored configuration into a class to allow config file over-rides
+- Initial round of linting completed
+_ Unit tests for file system connector class added.
