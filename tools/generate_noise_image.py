@@ -1,4 +1,4 @@
-import lib.dicebox_config as config
+import dicebox.dicebox_config as config
 from datetime import datetime
 import numpy
 from PIL import Image

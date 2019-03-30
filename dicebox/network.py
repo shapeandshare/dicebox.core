@@ -12,25 +12,11 @@ from keras.callbacks import EarlyStopping
 # from keras.callbacks import ModelCheckpoint
 import logging
 import numpy
-import docker_config as config
-import filesystem_connecter
-import sensory_interface
+import dicebox.docker_config as config
+import dicebox.filesystem_connecter
+import dicebox.sensory_interface
 from datetime import datetime
 import os
-
-# Helper: Early stopping.
-early_stopper = EarlyStopping(patience=25)
-
-##############################################################################
-# Feature disabled until a flipper can be added and the filenames created safely.
-# Since this now runs in a container some additional considerations must be made.
-##############################################################################
-# Checkpoint
-# filepath = "%s/weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5" % config.WEIGHTS_DIR
-# checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
-# callbacks_list = [early_stopper, checkpoint]
-
-callbacks_list = [early_stopper]
 
 
 class Network:
@@ -41,7 +27,27 @@ class Network:
     fsc = None  # file system connector
     ssc = None  # sensory service connector
 
-    def __init__(self, nn_param_choices=None, create_fcs=True, disable_data_indexing=False):
+    CONFIG = None
+
+    # Helper: Early stopping.
+    early_stopper = EarlyStopping(patience=25)
+
+    ##############################################################################
+    # Feature disabled until a flipper can be added and the filenames created safely.
+    # Since this now runs in a container some additional considerations must be made.
+    ##############################################################################
+    # Checkpoint
+    # filepath = "%s/weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5" % config.WEIGHTS_DIR
+    # checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+    # callbacks_list = [early_stopper, checkpoint]
+
+    callbacks_list = [early_stopper]
+
+
+    def __init__(self, nn_param_choices=None, create_fcs=True, disable_data_indexing=False, config_file='./dicebox.config'):
+        if self.CONFIG is None:
+            self.CONFIG = dicebox.docker_config.DockerConfig(config_file)
+
         """Initialize our network.
 
         Args:
@@ -56,14 +62,14 @@ class Network:
         self.network = {}  # (dic): represents MLP network parameters
         self.model = None
 
-        if Network.fsc is None and create_fcs is True:
+        if self.fsc is None and create_fcs is True:
             logging.debug('creating a new fsc..')
-            logging.info('config.DATA_DIRECTORY: (%s)' % config.DATA_DIRECTORY)
-            Network.fsc = filesystem_connecter.FileSystemConnector(config.DATA_DIRECTORY, disable_data_indexing)
+            logging.info('self.CONFIG.DATA_DIRECTORY: (%s)' % self.CONFIG.DATA_DIRECTORY)
+            self.fsc = dicebox.filesystem_connecter.FileSystemConnector(self.CONFIG.DATA_DIRECTORY, disable_data_indexing, config_file)
 
-        if Network.ssc is None:
+        if self.ssc is None:
             logging.debug('creating a new ssc..')
-            Network.ssc = sensory_interface.SensoryInterface('client')
+            self.ssc = dicebox.sensory_interface.SensoryInterface('client', config_file)
 
     def create_random(self):
         """Create a random network."""
@@ -78,10 +84,10 @@ class Network:
         logging.debug('-' * 80)
 
         # Load from external definition
-        self.network['nb_layers'] = config.NN_LONESTAR_PARAMS['nb_layers']
-        self.network['activation'] = config.NN_LONESTAR_PARAMS['activation']
-        self.network['optimizer'] = config.NN_LONESTAR_PARAMS['optimizer']
-        self.network['nb_neurons'] = config.NN_LONESTAR_PARAMS['nb_neurons']
+        self.network['nb_layers'] = self.CONFIG.NN_LONESTAR_PARAMS['nb_layers']
+        self.network['activation'] = self.CONFIG.NN_LONESTAR_PARAMS['activation']
+        self.network['optimizer'] = self.CONFIG.NN_LONESTAR_PARAMS['optimizer']
+        self.network['nb_neurons'] = self.CONFIG.NN_LONESTAR_PARAMS['nb_neurons']
         logging.debug('-' * 80)
         logging.debug("self.network['nb_layers']: %s" % self.network['nb_layers'])
         logging.debug("self.network['activation']: %s" % self.network['activation'])
@@ -92,7 +98,7 @@ class Network:
         if create_model is True:
             if self.model is None:
                 logging.debug('compiling model')
-                self.model = self.compile_model(self.network, config.NB_CLASSES, config.INPUT_SHAPE)
+                self.model = self.compile_model(self.network, self.CONFIG.NB_CLASSES, self.CONFIG.INPUT_SHAPE)
                 if weights_filename is not None:
                     logging.debug("loading weights file: (%s)" % weights_filename)
                     self.load_model(weights_filename)
@@ -130,11 +136,11 @@ class Network:
         logging.info("Network accuracy: %.2f%%" % (self.accuracy * 100))
 
     def train_and_score(self, network):
-        if config.DICEBOX_COMPLIANT_DATASET is True:
+        if self.CONFIG.DICEBOX_COMPLIANT_DATASET is True:
             nb_classes, batch_size, input_shape, x_train, \
                 x_test, y_train, y_test = self.get_dicebox_filesystem()
         else:
-            Exception('Unknown dataset type!  Please define, or correct.')
+            raise Exception('Unknown dataset type!  Please define, or correct.')
 
         model = self.compile_model(network, nb_classes, input_shape)
 
@@ -185,12 +191,12 @@ class Network:
         return model
 
     def get_dicebox_filesystem(self):
-        nb_classes = config.NB_CLASSES
-        batch_size = config.BATCH_SIZE
-        input_shape = config.INPUT_SHAPE
-        noise = config.NOISE
-        train_batch_size = config.TRAIN_BATCH_SIZE
-        test_batch_size = config.TEST_BATCH_SIZE
+        nb_classes = self.CONFIG.NB_CLASSES
+        batch_size = self.CONFIG.BATCH_SIZE
+        input_shape = self.CONFIG.INPUT_SHAPE
+        noise = self.CONFIG.NOISE
+        train_batch_size = self.CONFIG.TRAIN_BATCH_SIZE
+        test_batch_size = self.CONFIG.TEST_BATCH_SIZE
 
         logging.info('nb_classes: %s' % nb_classes)
         logging.info('batch_size: %s' % batch_size)
@@ -199,14 +205,14 @@ class Network:
         logging.info('train_batch_size: %s' % train_batch_size)
         logging.info('test_batch_size: %s' % test_batch_size)
 
-        train_image_data, train_image_labels = Network.fsc.get_batch(train_batch_size, noise=noise)
+        train_image_data, train_image_labels = self.fsc.get_batch(train_batch_size, noise=noise)
         # train_image_data, train_image_labels = Network.ssc.get_batch(train_batch_size, noise=noise)
         train_image_data = numpy.array(train_image_data)
         train_image_data = train_image_data.astype('float32')
         train_image_data /= 255
         train_image_labels = numpy.array(train_image_labels)
 
-        test_image_data, test_image_labels = Network.fsc.get_batch(test_batch_size, noise=noise)
+        test_image_data, test_image_labels = self.fsc.get_batch(test_batch_size, noise=noise)
         # test_image_data, test_image_labels = Network.ssc.get_batch(test_batch_size, noise=noise)
         test_image_data = numpy.array(test_image_data)
         test_image_data = test_image_data.astype('float32')
@@ -224,15 +230,15 @@ class Network:
         logging.debug('get_dicebox_sensory_data(self)')
         logging.debug('-' * 80)
 
-        nb_classes = config.NB_CLASSES
-        batch_size = config.BATCH_SIZE
-        input_shape = config.INPUT_SHAPE
-        noise = config.NOISE
-        train_batch_size = config.TRAIN_BATCH_SIZE
-        test_batch_size = config.TEST_BATCH_SIZE
+        nb_classes = self.CONFIG.NB_CLASSES
+        batch_size = self.CONFIG.BATCH_SIZE
+        input_shape = self.CONFIG.INPUT_SHAPE
+        noise = self.CONFIG.NOISE
+        train_batch_size = self.CONFIG.TRAIN_BATCH_SIZE
+        test_batch_size = self.CONFIG.TEST_BATCH_SIZE
 
         # train_image_data, train_image_labels = Network.fsc.get_batch(train_batch_size, noise=noise)
-        train_image_data, train_image_labels = Network.ssc.get_batch(train_batch_size, noise=noise)
+        train_image_data, train_image_labels = self.ssc.get_batch(train_batch_size, noise=noise)
         try:
             logging.debug('-' * 80)
             logging.debug('train_image_data to numpy.array')
@@ -259,7 +265,7 @@ class Network:
             raise
 
         # test_image_data, test_image_labels = Network.fsc.get_batch(test_batch_size, noise=noise)
-        test_image_data, test_image_labels = Network.ssc.get_batch(test_batch_size, noise=noise)
+        test_image_data, test_image_labels = self.ssc.get_batch(test_batch_size, noise=noise)
         try:
             logging.debug('-' * 80)
             logging.debug('test_image_data to numpy.array')
@@ -299,7 +305,7 @@ class Network:
         logging.debug("train_and_score_and_save(dataset)")
         logging.debug("train_and_score_and_save(dataset=%s)" % dataset)
         logging.debug('-' * 80)
-        if config.DICEBOX_COMPLIANT_DATASET is True:
+        if self.CONFIG.DICEBOX_COMPLIANT_DATASET is True:
             logging.debug('-' * 80)
             logging.debug('loading sensory data..')
             logging.debug('-' * 80)
@@ -311,7 +317,7 @@ class Network:
         else:
             # no support yet!
             logging.error('UNSUPPORTED dataset supplied to train_and_score_and_save')
-            Exception('UNSUPPORTED dataset supplied to train_and_score_and_save')
+            raise Exception('UNSUPPORTED dataset supplied to train_and_score_and_save')
 
         logging.debug('-' * 80)
         logging.debug('Compiling model if need be.')
@@ -330,7 +336,7 @@ class Network:
                        epochs=10000,  # using early stopping, so no real limit
                        verbose=1,
                        validation_data=(x_test, y_test),
-                       callbacks=callbacks_list)
+                       callbacks=self.callbacks_list)
         logging.debug('-' * 80)
         logging.debug('Done!')
         logging.debug('-' * 80)
@@ -352,7 +358,7 @@ class Network:
     def load_model(self, filename):
         if self.model is None:
             logging.error('no model! :(  compile the model first.')
-            Exception('no model! :(  compile the model first.')
+            raise Exception('no model! :(  compile the model first.')
         logging.debug('loading weights file..')
         try:
             self.model.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
@@ -362,15 +368,15 @@ class Network:
             raise e
 
     def classify(self, network_input):
-        if config.DICEBOX_COMPLIANT_DATASET is True:
+        if self.CONFIG.DICEBOX_COMPLIANT_DATASET is True:
             x_test = self.get_dicebox_raw(network_input)
         else:
-            logging.error("UNKNOWN DATASET (%s) passed to classify" % config.NETWORK_NAME)
-            Exception("UNKNOWN DATASET (%s) passed to classify" % config.NETWORK_NAME)
+            logging.error("UNKNOWN DATASET (%s) passed to classify" % self.CONFIG.NETWORK_NAME)
+            raise Exception("UNKNOWN DATASET (%s) passed to classify" % self.CONFIG.NETWORK_NAME)
 
         if self.model is None:
             logging.error('Unable to classify without a model. :(')
-            Exception('Unable to classify without a model. :(')
+            raise Exception('Unable to classify without a model. :(')
 
         model_prediction = self.model.predict_classes(x_test, batch_size=1, verbose=0)
         logging.info(model_prediction)
@@ -379,7 +385,7 @@ class Network:
 
     def get_dicebox_raw(self, raw_image_data):
         # ugh dump to file for the time being
-        filename = "%s/%s" % (config.TMP_DIR, datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png'))
+        filename = "%s/%s" % (self.CONFIG.TMP_DIR, datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png'))
         with open(filename, 'wb') as f:
             f.write(raw_image_data)
 
@@ -387,7 +393,7 @@ class Network:
             test_image_data = self.fsc.process_image(filename)
         except:
             logging.error('Exception caught processing image data.')
-            Exception('Exception caught processing image data.')
+            raise Exception('Exception caught processing image data.')
         finally:
             os.remove(filename)
 
