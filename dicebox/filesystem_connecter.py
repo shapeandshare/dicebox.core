@@ -56,7 +56,7 @@ class FileSystemConnector(object):
         value_list = self.DATASET_INDEX.values()
 
         set_indices = []
-        for i in range(1, set_size):
+        for i in range(0, set_size):
             set_indices.append(i)
 
         output_list = []
