@@ -24,23 +24,24 @@ class Test(unittest.TestCase):
 
     EXPECTED_DATASET_INDEX = None
     EXPECTED_CATEGORY_MAP = None
-    DATASET_LOCATION = 'test/data/test_dataset/data'
-    DICEBOX_CONFIG_FILE = 'test/data/dicebox.config'
+    TEST_DATA_BASE = 'test/data'
+    DATASET_LOCATION = '%s/test_dataset/data' % TEST_DATA_BASE
+    DICEBOX_CONFIG_FILE = '%s/dicebox.config' % TEST_DATA_BASE
     DISABLE_DATA_INDEXING = False
 
     def setUp(self):
         # instantiate the file system connector Class
         self.fsc = filesystemconnectorclass.FileSystemConnector(self.DATASET_LOCATION, self.DISABLE_DATA_INDEXING, self.DICEBOX_CONFIG_FILE)
 
-        with open('test/data/DATASET_INDEX.json') as json_file:
+        with open('%s/DATASET_INDEX.json' % self.TEST_DATA_BASE) as json_file:
             self.EXPECTED_DATASET_INDEX = json.load(json_file)
         if self.EXPECTED_DATASET_INDEX is None:
-            Exception('Unable to load data/DATASET_INDEX.json!')
+            Exception('Unable to load %s/DATASET_INDEX.json!', self.TEST_DATA_BASE)
 
-        with open('test/data/CATEGORY_MAP.json') as json_file:
+        with open('%s/CATEGORY_MAP.json' % self.TEST_DATA_BASE) as json_file:
             self.EXPECTED_CATEGORY_MAP = json.load(json_file)
         if self.EXPECTED_CATEGORY_MAP is None:
-            Exception('Unable to load data/CATEGORY_MAP.json!')
+            Exception('Unable to load %s/CATEGORY_MAP.json!', self.TEST_DATA_BASE)
 
     def test_class_variable_DATA_DIRECTORY(self):
         self.assertEqual(self.DATASET_LOCATION, self.fsc.DATA_DIRECTORY)
