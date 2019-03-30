@@ -3,7 +3,8 @@ import dicebox.filesystem_connecter as filesystemconnectorclass
 import logging
 import sys
 import json
-
+import numpy
+import numpy.testing
 
 root = logging.getLogger()
 root.setLevel(logging.DEBUG)
@@ -24,11 +25,12 @@ class Test(unittest.TestCase):
     EXPECTED_DATASET_INDEX = None
     EXPECTED_CATEGORY_MAP = None
     DATASET_LOCATION = 'test/data/test_dataset/data'
+    DICEBOX_CONFIG_FILE = 'test/data/dicebox.config'
     DISABLE_DATA_INDEXING = False
 
     def setUp(self):
         # instantiate the file system connector Class
-        self.fsc = filesystemconnectorclass.FileSystemConnector(self.DATASET_LOCATION, self.DISABLE_DATA_INDEXING)
+        self.fsc = filesystemconnectorclass.FileSystemConnector(self.DATASET_LOCATION, self.DISABLE_DATA_INDEXING, self.DICEBOX_CONFIG_FILE)
 
         with open('test/data/DATASET_INDEX.json') as json_file:
             self.EXPECTED_DATASET_INDEX = json.load(json_file)
@@ -76,7 +78,21 @@ class Test(unittest.TestCase):
         except Exception as e:
             self.assertEqual(e.message, 'Max batch size: 2, but 3 was specified!')
 
+    def test_lucky(self):
+        noise = 0
+        self.assertFalse(self.fsc.lucky(noise))
 
+        noise = 1
+        self.assertTrue(self.fsc.lucky(noise))
+
+    def test_process_image(self):
+        filename = 'test/data/test_dataset/data/0/mnist_testing_0_28x28_3.png'
+
+        noise = 0
+        expected_data = numpy.fromfile('test/data/test_dataset/data/0/mnist_testing_0_28x28_3.png.nbarray.binary', dtype=numpy.uint8)
+        returned_data = self.fsc.process_image(filename, noise)
+        # returned_data.tofile('test/data/test_dataset/data/0/mnist_testing_0_28x28_3.png.nbarray.binary')
+        numpy.testing.assert_array_equal(returned_data, expected_data)
 
 
 if __name__ == '__main__':
