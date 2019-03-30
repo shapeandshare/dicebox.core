@@ -17,7 +17,7 @@ import logging
 import numpy
 from PIL import Image
 # from datetime import datetime  # used when dumping raw transforms to disk
-import dicebox.docker_config as config
+import dicebox.docker_config
 
 
 class FileSystemConnector(object):
@@ -27,7 +27,12 @@ class FileSystemConnector(object):
     CATEGORY_MAP = None
     PIXEL_CACHE = {}
 
-    def __init__(self, data_directory, disable_data_indexing=False):
+    CONFIG = None
+
+    def __init__(self, data_directory, disable_data_indexing=False, config_file='./dicebox.config'):
+        if self.CONFIG is None:
+            self.CONFIG = dicebox.docker_config.DockerConfig(config_file)
+
         if self.DATA_DIRECTORY is None:
             self.DATA_DIRECTORY = os.path.normpath(data_directory)
             logging.info('data directory: (%s)', self.DATA_DIRECTORY)
@@ -129,8 +134,7 @@ class FileSystemConnector(object):
             return True
         return False
 
-    @staticmethod
-    def process_image(filename, noise=0):
+    def process_image(self, filename, noise=0):
         """For a given filename, and noise level, will return a numpy array of pixel data.
 
         :param filename:
@@ -195,7 +199,7 @@ class FileSystemConnector(object):
 
         # Ensure the input will match in input tensor
         #im = im.resize((original_width, original_height), Image.ANTIALIAS)
-        im = im.resize((config.IMAGE_WIDTH, config.IMAGE_HEIGHT), Image.ANTIALIAS)
+        im = im.resize((self.CONFIG.IMAGE_WIDTH, self.CONFIG.IMAGE_HEIGHT), Image.ANTIALIAS)
         logging.debug("new size: (%i, %i)", im.size[0], im.size[1])
 
         # dump to file for manual review
