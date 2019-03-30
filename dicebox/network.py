@@ -18,20 +18,6 @@ import dicebox.sensory_interface
 from datetime import datetime
 import os
 
-# Helper: Early stopping.
-early_stopper = EarlyStopping(patience=25)
-
-##############################################################################
-# Feature disabled until a flipper can be added and the filenames created safely.
-# Since this now runs in a container some additional considerations must be made.
-##############################################################################
-# Checkpoint
-# filepath = "%s/weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5" % config.WEIGHTS_DIR
-# checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
-# callbacks_list = [early_stopper, checkpoint]
-
-callbacks_list = [early_stopper]
-
 
 class Network:
     """Represent a network and let us operate on it.
@@ -42,6 +28,21 @@ class Network:
     ssc = None  # sensory service connector
 
     CONFIG = None
+
+    # Helper: Early stopping.
+    early_stopper = EarlyStopping(patience=25)
+
+    ##############################################################################
+    # Feature disabled until a flipper can be added and the filenames created safely.
+    # Since this now runs in a container some additional considerations must be made.
+    ##############################################################################
+    # Checkpoint
+    # filepath = "%s/weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5" % config.WEIGHTS_DIR
+    # checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+    # callbacks_list = [early_stopper, checkpoint]
+
+    callbacks_list = [early_stopper]
+
 
     def __init__(self, nn_param_choices=None, create_fcs=True, disable_data_indexing=False, config_file='./dicebox.config'):
         if self.CONFIG is None:
@@ -335,7 +336,7 @@ class Network:
                        epochs=10000,  # using early stopping, so no real limit
                        verbose=1,
                        validation_data=(x_test, y_test),
-                       callbacks=callbacks_list)
+                       callbacks=self.callbacks_list)
         logging.debug('-' * 80)
         logging.debug('Done!')
         logging.debug('-' * 80)
