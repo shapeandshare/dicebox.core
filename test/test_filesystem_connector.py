@@ -1,5 +1,5 @@
 import unittest
-from dicebox import filesystem_connecter as filesystemconnectorclass
+import dicebox.filesystem_connecter as filesystemconnectorclass
 import logging
 import sys
 
@@ -12,7 +12,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 root.addHandler(handler)
 
-dataset_location = '/Users/joshburt/Workbench/dicebox.io'
+dataset_location = './tests/data/test_dataset/data'
 disable_data_indexing = False
 
 class Test(unittest.TestCase):
