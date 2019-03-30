@@ -311,7 +311,7 @@ class Network:
         else:
             # no support yet!
             logging.error('UNSUPPORTED dataset supplied to train_and_score_and_save')
-            Exception('UNSUPPORTED dataset supplied to train_and_score_and_save')
+            raise Exception('UNSUPPORTED dataset supplied to train_and_score_and_save')
 
         logging.debug('-' * 80)
         logging.debug('Compiling model if need be.')
@@ -352,7 +352,7 @@ class Network:
     def load_model(self, filename):
         if self.model is None:
             logging.error('no model! :(  compile the model first.')
-            Exception('no model! :(  compile the model first.')
+            raise Exception('no model! :(  compile the model first.')
         logging.debug('loading weights file..')
         try:
             self.model.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
@@ -366,11 +366,11 @@ class Network:
             x_test = self.get_dicebox_raw(network_input)
         else:
             logging.error("UNKNOWN DATASET (%s) passed to classify" % config.NETWORK_NAME)
-            Exception("UNKNOWN DATASET (%s) passed to classify" % config.NETWORK_NAME)
+            raise Exception("UNKNOWN DATASET (%s) passed to classify" % config.NETWORK_NAME)
 
         if self.model is None:
             logging.error('Unable to classify without a model. :(')
-            Exception('Unable to classify without a model. :(')
+            raise Exception('Unable to classify without a model. :(')
 
         model_prediction = self.model.predict_classes(x_test, batch_size=1, verbose=0)
         logging.info(model_prediction)
@@ -387,7 +387,7 @@ class Network:
             test_image_data = self.fsc.process_image(filename)
         except:
             logging.error('Exception caught processing image data.')
-            Exception('Exception caught processing image data.')
+            raise Exception('Exception caught processing image data.')
         finally:
             os.remove(filename)
 

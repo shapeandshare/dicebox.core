@@ -137,7 +137,7 @@ class SensoryInterface:
                     # first convert label to one-hot value
                     if cat_index < 0:
                         logging.error('unable to decode one hot category value')
-                        Exception('unable to decode one hot category value')
+                        raise Exception('unable to decode one hot category value')
                     else:
                         logging.debug("decoded one hot category to: (%i)" % cat_index)
 
@@ -150,7 +150,7 @@ class SensoryInterface:
                             logging.debug('successfully stored to disk..')
                         else:
                             logging.error('failed to store to disk!')
-                            Exception('failed to store to disk!')
+                            raise Exception('failed to store to disk!')
 
                         image_data.append(new_image_data)
                         image_label.append(new_image_label)

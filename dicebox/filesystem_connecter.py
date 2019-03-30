@@ -55,6 +55,9 @@ class FileSystemConnector(object):
         set_size = len(self.DATASET_INDEX)
         value_list = self.DATASET_INDEX.values()
 
+        if batch_size > set_size:
+            raise Exception('Max batch size: %s, but %s was specified!' % (set_size, batch_size))
+
         set_indices = []
         for i in range(0, set_size):
             set_indices.append(i)
