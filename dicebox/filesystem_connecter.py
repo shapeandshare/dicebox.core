@@ -93,7 +93,7 @@ class FileSystemConnector(object):
         # build file path
         for i in range(0, batch_size):
             item = batch_list[i]
-            filename = "%s%s/%s" % (self.DATA_DIRECTORY, item[1], item[0])
+            filename = "%s/%s/%s" % (self.DATA_DIRECTORY, item[1], item[0])
             logging.debug("(%s)(%s)", category_map[item[1]], filename)
             # logging.info("  natural category label: (%s)" % item[1])
             # logging.info("  neural network category label: (%i)" % category_map[item[1]])
