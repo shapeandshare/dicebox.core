@@ -66,6 +66,18 @@ class Test(unittest.TestCase):
                 break
         self.assertTrue(found)
 
+        batch_size = 2
+        returned_batch = self.fsc.get_batch_list(batch_size)
+        logging.debug(returned_batch)
+
+        batch_size = 3
+        try:
+            returned_batch = self.fsc.get_batch_list(batch_size)
+        except Exception as e:
+            self.assertEqual(e.message, 'Max batch size: 2, but 3 was specified!')
+
+
+
 
 if __name__ == '__main__':
     # begin the unittest.main()
