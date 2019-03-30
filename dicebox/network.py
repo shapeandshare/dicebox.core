@@ -156,7 +156,7 @@ class Network:
                   epochs=10000,  # using early stopping, so no real limit
                   verbose=1,
                   validation_data=(x_test, y_test),
-                  callbacks=[early_stopper])
+                  callbacks=[self.early_stopper])
 
         score = model.evaluate(x_test, y_test, verbose=0)
 
