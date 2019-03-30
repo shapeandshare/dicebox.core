@@ -87,10 +87,10 @@ class Test(unittest.TestCase):
         self.assertTrue(self.fsc.lucky(noise))
 
     def test_process_image(self):
-        filename = 'test/data/test_dataset/data/0/mnist_testing_0_28x28_3.png'
+        filename = '%s/0/mnist_testing_0_28x28_3.png' % self.DATASET_LOCATION
 
         noise = 0
-        expected_data = numpy.fromfile('test/data/test_dataset/data/0/mnist_testing_0_28x28_3.png.nbarray.binary', dtype=numpy.uint8)
+        expected_data = numpy.fromfile('%s/0/mnist_testing_0_28x28_3.png.nbarray.binary' % self.DATASET_LOCATION, dtype=numpy.uint8)
         returned_data = self.fsc.process_image(filename, noise)
         # returned_data.tofile('test/data/test_dataset/data/0/mnist_testing_0_28x28_3.png.nbarray.binary')
         numpy.testing.assert_array_equal(returned_data, expected_data)
