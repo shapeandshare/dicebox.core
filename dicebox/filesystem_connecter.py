@@ -105,7 +105,7 @@ class FileSystemConnector(object):
             # Help prevent over-fitting, and allow for new
             # sensory data to enter the cache, even when a cache
             # hit would occur.
-            if self.lucky(noise):
+            if self.PIXEL_CACHE.has_key(filename) and not self.lucky(noise):
                 del self.PIXEL_CACHE[filename]
 
             # use pixel cache if possible
