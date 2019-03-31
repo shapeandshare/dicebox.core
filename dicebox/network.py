@@ -237,9 +237,10 @@ class Network:
         train_batch_size = self.CONFIG.TRAIN_BATCH_SIZE
         test_batch_size = self.CONFIG.TEST_BATCH_SIZE
 
-        # train_image_data, train_image_labels = Network.fsc.get_batch(train_batch_size, noise=noise)
-        train_image_data, train_image_labels = self.ssc.get_batch(train_batch_size, noise=noise)
         try:
+            # train_image_data, train_image_labels = Network.fsc.get_batch(train_batch_size, noise=noise)
+            train_image_data, train_image_labels = self.ssc.get_batch(train_batch_size, noise=noise)
+
             logging.debug('-' * 80)
             logging.debug('train_image_data to numpy.array')
             #logging.debug(train_image_data)
@@ -262,11 +263,12 @@ class Network:
         except ValueError:
             logging.debug('Caught ValueError when processing training data.')
             logging.debug('failing out..')
-            raise
+            raise ValueError
 
-        # test_image_data, test_image_labels = Network.fsc.get_batch(test_batch_size, noise=noise)
-        test_image_data, test_image_labels = self.ssc.get_batch(test_batch_size, noise=noise)
         try:
+            # test_image_data, test_image_labels = Network.fsc.get_batch(test_batch_size, noise=noise)
+            test_image_data, test_image_labels = self.ssc.get_batch(test_batch_size, noise=noise)
+
             logging.debug('-' * 80)
             logging.debug('test_image_data to numpy.array')
             #logging.debug(test_image_data)
@@ -288,7 +290,7 @@ class Network:
         except ValueError:
             logging.debug('Caught ValueError when processing test data.')
             logging.debug('failing out..')
-            raise
+            raise ValueError
 
         logging.debug("nb_classes: (%i)" % nb_classes)
         logging.debug("batch_size: (%i)" % batch_size)
