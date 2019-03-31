@@ -61,6 +61,13 @@ class SensoryInterface:
 
             json_data = json.dumps(outjson)
             batch_request_id = self.make_sensory_api_call('api/sensory/batch', json_data, 'POST')
+
+            # Check the value of the response!
+            if batch_request_id is None or batch_request_id == {}:
+                # Then we failed to contact the sensory service, or some other error occurred..
+                logging.error('Error getting a sensory batch request id!')
+                raise Exception('Error getting a sensory batch request id from the sensory service!')
+
             batch_id = batch_request_id['batch_id']
 
             logging.debug(batch_id)
@@ -184,6 +191,8 @@ class SensoryInterface:
         return None
 
     def make_sensory_api_call(self, end_point, json_data, call_type):
+        # This should implement retry...
+
         headers = {
             'Content-type': 'application/json',
             'API-ACCESS-KEY': self.CONFIG.API_ACCESS_KEY,
