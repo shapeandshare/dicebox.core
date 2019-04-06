@@ -22,31 +22,31 @@ import dicebox.docker_config
 
 class FileSystemConnector(object):
     """File System Connector Class"""
-    DATASET_INDEX = None
-    DATA_DIRECTORY = None
-    CATEGORY_MAP = None
-    PIXEL_CACHE = {}
+    dataset_index = None
+    data_directory = None
+    category_map = None
+    pixel_cache = {}
 
-    CONFIG = None
+    config = None
 
     def __init__(self, data_directory, disable_data_indexing=False, config_file='./dicebox.config'):
-        if self.CONFIG is None:
-            self.CONFIG = dicebox.docker_config.DockerConfig(config_file)
+        if self.config is None:
+            self.config = dicebox.docker_config.DockerConfig(config_file)
 
-        if self.DATA_DIRECTORY is None:
-            self.DATA_DIRECTORY = os.path.normpath(data_directory)
-            logging.info('data directory: (%s)', self.DATA_DIRECTORY)
+        if self.data_directory is None:
+            self.data_directory = os.path.normpath(data_directory)
+            logging.info('data directory: (%s)', self.data_directory)
 
         if disable_data_indexing is False:
-            if self.DATASET_INDEX is None:
-                self.DATASET_INDEX = self.get_data_set()
-                logging.debug('DATASET_INDEX')
-                logging.debug(self.DATASET_INDEX)
+            if self.dataset_index is None:
+                self.dataset_index = self.get_data_set()
+                logging.debug('dataset_index')
+                logging.debug(self.dataset_index)
 
-            if self.CATEGORY_MAP is None:
-                self.CATEGORY_MAP = self.get_data_set_categories()
+            if self.category_map is None:
+                self.category_map = self.get_data_set_categories()
                 logging.debug('CATEGORY_MAP')
-                logging.debug(self.CATEGORY_MAP)
+                logging.debug(self.category_map)
         else:
             logging.info('File System Connector Data Indexing Disabled.')
 
@@ -57,8 +57,8 @@ class FileSystemConnector(object):
         :return: array of indices in the batch size (each index appearing only once).
         """
         output = []
-        set_size = len(self.DATASET_INDEX)
-        value_list = self.DATASET_INDEX.values()
+        set_size = len(self.dataset_index)
+        value_list = self.dataset_index.values()
 
         if batch_size > set_size:
             raise Exception('Max batch size: %s, but %s was specified!' % (set_size, batch_size))
@@ -87,13 +87,13 @@ class FileSystemConnector(object):
         image_data = []
         image_labels = []
 
-        category_map = self.CATEGORY_MAP
+        category_map = self.category_map
         batch_list = self.get_batch_list(batch_size)
 
         # build file path
         for i in range(0, batch_size):
             item = batch_list[i]
-            filename = "%s/%s/%s" % (self.DATA_DIRECTORY, item[1], item[0])
+            filename = "%s/%s/%s" % (self.data_directory, item[1], item[0])
             logging.debug("(%s)(%s)", category_map[item[1]], filename)
             # logging.info("  natural category label: (%s)" % item[1])
             # logging.info("  neural network category label: (%i)" % category_map[item[1]])
@@ -106,17 +106,17 @@ class FileSystemConnector(object):
             # sensory data to enter the cache, even when a cache
             # hit would occur.
             if self.lucky(noise):
-                del self.PIXEL_CACHE[filename]
+                del self.pixel_cache[filename]
 
             # use pixel cache if possible
             # [k,v] (filename, pixeldata)
-            if self.PIXEL_CACHE.has_key(filename):
+            if self.pixel_cache.has_key(filename):
                 # found in cache
-                pixel_data = self.PIXEL_CACHE[filename]
+                pixel_data = self.pixel_cache[filename]
                 logging.debug("loaded cached pixel data for (%s)", filename)
             else:
                 pixel_data = self.process_image(filename, noise)
-                self.PIXEL_CACHE[filename] = pixel_data  # add to cache
+                self.pixel_cache[filename] = pixel_data  # add to cache
                 logging.debug("cached pixel data for (%s)", filename)
 
             image_data.append(pixel_data)
@@ -143,9 +143,9 @@ class FileSystemConnector(object):
         """
         pixel_data = array.array('B')
 
-        im = Image.open(filename).convert('L') # Load as gray
+        local_image = Image.open(filename).convert('L') # Load as gray
 
-        original_width, original_height = im.size
+        original_width, original_height = local_image.size
         # original_size = original_width, original_height
         logging.debug("original size: (%i, %i)", original_width, original_height)
 
@@ -156,8 +156,8 @@ class FileSystemConnector(object):
             if float(ord(struct.unpack('c', os.urandom(1))[0])) / 255 > 0.5:
                 rotation_angle = rotation_angle * -1
             logging.debug("Rotating image %f", rotation_angle)
-            im = im.rotate(rotation_angle)
-            logging.debug("new size: (%i, %i)", im.size[0], im.size[1])
+            local_image = local_image.rotate(rotation_angle)
+            logging.debug("new size: (%i, %i)", local_image.size[0], local_image.size[1])
 
         # Perform a random scale
         if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
@@ -167,21 +167,21 @@ class FileSystemConnector(object):
                 random_scale = 1.5 * float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
 
             logging.debug("Scaling image %f", random_scale)
-            width, height = im.size
+            width, height = local_image.size
             new_width = int(width * random_scale)
             new_height = int(height * random_scale)
             if new_width > 0 and new_height > 0:
                 new_size = int(width * random_scale), int(height * random_scale)
                 # logging.info(new_size)
-                im = im.resize(new_size)
-                # im = im.resize(new_size, Image.ANTIALIAS)
-                logging.debug("new size: (%i, %i)", im.size[0], im.size[1])
+                local_image = local_image.resize(new_size)
+                # local_image = local_image.resize(new_size, Image.ANTIALIAS)
+                logging.debug("new size: (%i, %i)", local_image.size[0], local_image.size[1])
 
         # Crop Image If Required
         logging.debug('Crop image if required')
 
         # Now ensure we are the same dimensions as when we started
-        new_width, new_height = im.size
+        new_width, new_height = local_image.size
         # if new_width > original_width or new_height > original_height:
         new_middle_x = float(new_width) / 2
         new_middle_y = float(new_height) / 2
@@ -194,21 +194,21 @@ class FileSystemConnector(object):
         logging.debug("right: %i", right)
         logging.debug("lower: %i", lower)
 
-        im = im.crop((left, upper, right, lower))
-        logging.debug("new size: (%i, %i)", im.size[0], im.size[1])
+        local_image = local_image.crop((left, upper, right, lower))
+        logging.debug("new size: (%i, %i)", local_image.size[0], local_image.size[1])
 
         # Ensure the input will match in input tensor
-        #im = im.resize((original_width, original_height), Image.ANTIALIAS)
-        im = im.resize((self.CONFIG.IMAGE_WIDTH, self.CONFIG.IMAGE_HEIGHT), Image.ANTIALIAS)
-        logging.debug("new size: (%i, %i)", im.size[0], im.size[1])
+        #local_image = local_image.resize((original_width, original_height), Image.ANTIALIAS)
+        local_image = local_image.resize((self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT), Image.ANTIALIAS)
+        logging.debug("new size: (%i, %i)", local_image.size[0], local_image.size[1])
 
         # dump to file for manual review
         # filename = datetime.now().strftime('transform_%Y-%m-%d_%H_%M_%S_%f.png')
-        #im.save("./tmp/%s" % filename)
+        #local_image.save("./tmp/%s" % filename)
 
-        pixel = im.load()
+        pixel = local_image.load()
 
-        width, height = im.size
+        width, height = local_image.size
 
         for x in range(0, width):
             for y in range(0, height):
@@ -231,7 +231,7 @@ class FileSystemConnector(object):
         """
         natural_categories = []
         category_map = {}
-        value_list = self.DATASET_INDEX.values()
+        value_list = self.dataset_index.values()
         for item in value_list:
             # logging.info(item)
             # logging.info("natural category label: (%s)" % item[1])
@@ -252,10 +252,10 @@ class FileSystemConnector(object):
         When we move this to python 3, there are much better libraries to handle this.  Checkout PurePath..
         """
         data_set = {}
-        for root, dirnames, filenames in os.walk(self.DATA_DIRECTORY):
+        for root, _, filenames in os.walk(self.data_directory):
             for filename in fnmatch.filter(filenames, '*.png'):
                 new_entry = str(os.path.join(root, filename))
-                new_entry = new_entry.replace('%s/' % self.DATA_DIRECTORY, '')
+                new_entry = new_entry.replace('%s/' % self.data_directory, '')
                 new_entry = os.path.normpath(new_entry)
                 category, filename = new_entry.split('/')
                 # logging.info("category: (%s), filename: (%s)" % (category, filename))
