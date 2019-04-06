@@ -33,10 +33,10 @@ class Test(unittest.TestCase):
         # instantiate the file system connector Class
         self.fsc = filesystemconnectorclass.FileSystemConnector(self.DATASET_LOCATION, self.DISABLE_DATA_INDEXING, self.DICEBOX_CONFIG_FILE)
 
-        with open('%s/dataset_index.json' % self.TEST_DATA_BASE) as json_file:
+        with open('%s/DATASET_INDEX.json' % self.TEST_DATA_BASE) as json_file:
             self.EXPECTED_DATASET_INDEX = json.load(json_file)
         if self.EXPECTED_DATASET_INDEX is None:
-            Exception('Unable to load %s/dataset_index.json!', self.TEST_DATA_BASE)
+            Exception('Unable to load %s/DATASET_INDEX.json!', self.TEST_DATA_BASE)
 
         with open('%s/CATEGORY_MAP.json' % self.TEST_DATA_BASE) as json_file:
             self.EXPECTED_CATEGORY_MAP = json.load(json_file)
