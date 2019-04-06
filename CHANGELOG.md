@@ -54,4 +54,5 @@ _ Unit tests for file system connector class added.
 - Removed unused imports
 - Removed unused objects
 - Added additional test coverage
+- Moved assets, and tools to the SDK.
 
