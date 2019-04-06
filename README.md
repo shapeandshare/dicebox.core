@@ -2,6 +2,9 @@
 
 Core libraries for the dicebox API platform.
 
+Notes
+-----
+* run_unit_tests.sh created to wrap python unit test runner.
 
 Requirements
 ------------

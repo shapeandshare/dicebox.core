@@ -1,54 +1,45 @@
 import os
-import fnmatch
-import struct
-import numpy
 from PIL import Image
-from array import *
 import logging
-# from datetime import datetime  # used when dumping raw transforms to disk
 import dicebox.docker_config
 import dicebox.filesystem_connecter
 import requests
 import json
-import time
-import base64
 from datetime import datetime
 import pika
 import errno
-import array
-import itertools
 
 
 class SensoryInterface:
 
     fsc = None  # file system connector
-    InterfaceRole = None
-    CONFIG = None
+    interface_role = None
+    config = None
 
     def __init__(self, role, config_file='./dicebox.config'):
         logging.debug('Three wise monkeys')
 
-        if self.CONFIG is None:
-            self.CONFIG = dicebox.docker_config.DockerConfig(config_file)
+        if self.config is None:
+            self.config = dicebox.docker_config.DockerConfig(config_file)
 
-        if self.InterfaceRole is None:
-            self.InterfaceRole = role
+        if self.interface_role is None:
+            self.interface_role = role
 
         # Consuming side
         if role == 'client':
-            logging.debug("[%s] client side sensory interface code goes here.", self.InterfaceRole)
+            logging.debug("[%s] client side sensory interface code goes here.", self.interface_role)
 
         if role == 'server':
             if self.fsc is None:
-                logging.debug("[%s] creating a new fsc..", self.InterfaceRole)
-                self.fsc = dicebox.filesystem_connecter.FileSystemConnector(self.CONFIG.DATA_DIRECTORY)
+                logging.debug("[%s] creating a new fsc..", self.interface_role)
+                self.fsc = dicebox.filesystem_connecter.FileSystemConnector(self.config.DATA_DIRECTORY)
 
     def get_batch(self, batch_size=0, noise=0):
         logging.debug('-' * 80)
         logging.debug("get_batch(batch_size=%i, noise=%i)" % (batch_size, noise))
         logging.debug('-' * 80)
 
-        if self.InterfaceRole == 'client':
+        if self.interface_role == 'client':
             logging.debug('-' * 80)
             logging.debug('we are client')
             logging.debug('-' * 80)
@@ -153,7 +144,7 @@ class SensoryInterface:
                     else:
                         logging.debug("decoded one hot category to: (%i)" % cat_index)
 
-                        newimage = Image.new('L', (self.CONFIG.IMAGE_WIDTH, self.CONFIG.IMAGE_HEIGHT))  # type, size
+                        newimage = Image.new('L', (self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT))  # type, size
                         newimage.putdata(new_image_data)
 
                         #############################################################
@@ -170,7 +161,6 @@ class SensoryInterface:
                         #     logging.error('failed to store to disk!')
                         #     raise Exception('failed to store to disk!')
                         #############################################################
-
 
                         image_data.append(new_image_data)
                         image_label.append(new_image_label)
@@ -191,7 +181,7 @@ class SensoryInterface:
             #image_data = response['data']
             #return image_data, image_labels
 
-        elif self.InterfaceRole == 'server':
+        elif self.interface_role == 'server':
             logging.debug('-' * 80)
             logging.debug('we are server')
             logging.debug('-' * 80)
@@ -203,12 +193,12 @@ class SensoryInterface:
 
         headers = {
             'Content-type': 'application/json',
-            'API-ACCESS-KEY': self.CONFIG.API_ACCESS_KEY,
-            'API-VERSION': self.CONFIG.API_VERSION
+            'API-ACCESS-KEY': self.config.API_ACCESS_KEY,
+            'API-VERSION': self.config.API_VERSION
         }
 
         try:
-            url = "%s%s:%s/%s" % (self.CONFIG.SENSORY_URI, self.CONFIG.SENSORY_SERVER, self.CONFIG.SENSORY_PORT, end_point)
+            url = "%s%s:%s/%s" % (self.config.SENSORY_URI, self.config.SENSORY_SERVER, self.config.SENSORY_PORT, end_point)
             # logging.debug('-' * 80)
             # logging.debug(url)
             # logging.debug('-' * 80)
@@ -229,7 +219,7 @@ class SensoryInterface:
     # TODO: temporary - we should calculate this using one of the provided methods this is really for testing the threaded-caching
     def get_category_map(self):
         jdata = {}
-        with open('%s/category_map.json' % self.CONFIG.WEIGHTS_DIR) as data_file:
+        with open('%s/category_map.json' % self.config.WEIGHTS_DIR) as data_file:
             raw_cat_data = json.load(data_file)
         for d in raw_cat_data:
             jdata[str(raw_cat_data[d])] = str(d)
@@ -247,7 +237,8 @@ class SensoryInterface:
 
     # TODO: temporary - we should calculate this using one of the provided methods this is really for testing the threaded-caching
     # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
-    def make_sure_path_exists(self, path):
+    @staticmethod
+    def make_sure_path_exists(path):
         try:
             if os.path.exists(path) is False:
                 os.makedirs(path)
@@ -262,7 +253,7 @@ class SensoryInterface:
         data = None
         label = None
 
-        url = self.CONFIG.SENSORY_SERVICE_RABBITMQ_URL
+        url = self.config.SENSORY_SERVICE_RABBITMQ_URL
         # logging.debug(url)
         parameters = pika.URLParameters(url)
 

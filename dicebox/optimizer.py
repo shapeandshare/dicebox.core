@@ -17,15 +17,15 @@ import dicebox.network
 class Optimizer:
     """Class that implements genetic algorithm for MLP optimization."""
 
-    CONFIG_FILE = None
-    CONFIG = None
+    config_file = None
+    # config = None
 
     def __init__(self, nn_param_choices, retain=0.4, random_select=0.1, mutate_chance=0.2, config_file='./dicebox.config'):
-        if self.CONFIG_FILE is None:
-            self.CONFIG_FILE = config_file
+        if self.config_file is None:
+            self.config_file = config_file
 
-        if self.CONFIG is None:
-            self.CONFIG = dicebox.docker_config.DockerConfig(self.CONFIG_FILE)
+        # if self.config is None:
+        #     self.config = dicebox.docker_config.DockerConfig(self.config_file)
 
         """Create an optimizer.
 
@@ -58,7 +58,7 @@ class Optimizer:
         pop = []
         for _ in range(0, count):
             # Create a random network.
-            network = dicebox.network.Network(self.nn_param_choices, self.CONFIG_FILE)
+            network = dicebox.network.Network(self.nn_param_choices, self.config_file)
             network.create_random()
 
             # Add the network to our population.
@@ -80,7 +80,7 @@ class Optimizer:
         pop = []
         for _ in range(0, count):
             # Create a random network.
-            network = dicebox.network.Network(self.nn_param_choices, self.CONFIG_FILE)
+            network = dicebox.network.Network(self.nn_param_choices, self.config_file)
             network.create_lonestar()
 
             # Add the network to our population.
@@ -129,7 +129,7 @@ class Optimizer:
                 )
 
             # Now create a network object.
-            network = dicebox.network.Network(self.nn_param_choices, self.CONFIG_FILE)
+            network = dicebox.network.Network(self.nn_param_choices, self.config_file)
             network.create_set(child)
 
             children.append(network)

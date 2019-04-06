@@ -52,3 +52,11 @@ Change Log
 ----------
 * Fixed bug which prevent luck from working correctly.
 * Disabled code which cached data to disk for the training processor until the code to pull from cache is also completed.
+
+04.06.2019
+----------
+* Reactored variables names
+* Removed unused imports
+* Removed unused objects
+* Added additional test coverage
+* Moved assets, and tools to the SDK.
