@@ -47,3 +47,11 @@ Change Log
 - Refactored configuration into a class to allow config file over-rides
 - Initial round of linting completed
 _ Unit tests for file system connector class added.
+
+04.06.2019
+----------
+- Reactored variables names
+- Removed unused imports
+- Removed unused objects
+- Added additional test coverage
+
