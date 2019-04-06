@@ -95,6 +95,15 @@ class Test(unittest.TestCase):
         # returned_data.tofile('test/data/test_dataset/data/0/mnist_testing_0_28x28_3.png.nbarray.binary')
         numpy.testing.assert_array_equal(returned_data, expected_data)
 
+    def test_get_data_set_categories(self):
+        returned_categories = self.fsc.get_data_set_categories()
+        self.assertEqual(returned_categories, self.EXPECTED_CATEGORY_MAP)
+
+    def test_get_data_set(self):
+        returned_data_set = self.fsc.get_data_set()
+        self.assertEqual(returned_data_set, self.EXPECTED_DATASET_INDEX)
+
+
 
 if __name__ == '__main__':
     # begin the unittest.main()
