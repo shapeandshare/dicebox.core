@@ -147,13 +147,20 @@ class SensoryInterface:
                         newimage = Image.new('L', (self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT))  # type, size
                         newimage.putdata(new_image_data)
 
-                        # logging.debug('raw image decoded, dumping to file ..')
-                        ret = self.image_sensory_store(self.config.TMP_DIR, cat_index, newimage)
-                        if ret is True:
-                            logging.debug('successfully stored to disk..')
-                        else:
-                            logging.error('failed to store to disk!')
-                            raise Exception('failed to store to disk!')
+                        #############################################################
+                        # TODO: this enables caching the images to disk, for later use
+                        #############################################################
+                        # image review etc. Ideally we would also attempt to PULL from cache too
+                        # however this has not yet been implemented...
+                        #
+                        # # logging.debug('raw image decoded, dumping to file ..')
+                        # ret = self.image_sensory_store(self.CONFIG.TMP_DIR, cat_index, newimage)
+                        # if ret is True:
+                        #     logging.debug('successfully stored to disk..')
+                        # else:
+                        #     logging.error('failed to store to disk!')
+                        #     raise Exception('failed to store to disk!')
+                        #############################################################
 
                         image_data.append(new_image_data)
                         image_label.append(new_image_label)

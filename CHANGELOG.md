@@ -44,9 +44,14 @@ Change Log
 
 03.30.2019
 ----------
-- Refactored configuration into a class to allow config file over-rides
-- Initial round of linting completed
-_ Unit tests for file system connector class added.
+* Refactored configuration into a class to allow config file over-rides
+* Initial round of linting completed
+* Unit tests for file system connector class added.
+
+03.31.2019
+----------
+* Fixed bug which prevent luck from working correctly.
+* Disabled code which cached data to disk for the training processor until the code to pull from cache is also completed.
 
 04.06.2019
 ----------
@@ -54,4 +59,3 @@ _ Unit tests for file system connector class added.
 - Removed unused imports
 - Removed unused objects
 - Added additional test coverage
-
