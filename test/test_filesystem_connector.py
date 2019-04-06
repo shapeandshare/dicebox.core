@@ -1,10 +1,11 @@
 import unittest
-import dicebox.filesystem_connecter as filesystemconnectorclass
 import logging
 import sys
 import json
 import numpy
 import numpy.testing
+from dicebox.connectors .filesystem_connecter import FileSystemConnector
+
 
 root = logging.getLogger()
 root.setLevel(logging.DEBUG)
@@ -31,7 +32,7 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         # instantiate the file system connector Class
-        self.fsc = filesystemconnectorclass.FileSystemConnector(self.DATASET_LOCATION, self.DISABLE_DATA_INDEXING, self.DICEBOX_CONFIG_FILE)
+        self.fsc = FileSystemConnector(self.DATASET_LOCATION, self.DISABLE_DATA_INDEXING, self.DICEBOX_CONFIG_FILE)
 
         with open('%s/DATASET_INDEX.json' % self.TEST_DATA_BASE) as json_file:
             self.EXPECTED_DATASET_INDEX = json.load(json_file)

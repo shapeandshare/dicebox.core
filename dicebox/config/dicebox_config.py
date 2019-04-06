@@ -11,13 +11,13 @@
 ###############################################################################
 import os
 import json
-import dicebox.dicebox_config
+from dicebox.config.base_config import BaseConfig
 
 
-class DockerConfig(object):
+class DiceboxConfig(object):
     
     def __init__(self, config_file='./dicebox.config'):
-        self.dc = dicebox.dicebox_config.DiceboxConfig(config_file)
+        self.dc = BaseConfig(config_file)
     
         
         ###############################################################################

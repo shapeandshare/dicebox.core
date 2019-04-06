@@ -60,3 +60,4 @@ Change Log
 * Removed unused objects
 * Added additional test coverage
 * Moved assets, and tools to the SDK.
+* Refactored namespace

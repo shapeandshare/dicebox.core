@@ -16,8 +16,7 @@ import array
 import logging
 import numpy
 from PIL import Image
-# from datetime import datetime  # used when dumping raw transforms to disk
-import dicebox.docker_config
+from dicebox.config.dicebox_config import DiceboxConfig
 
 
 class FileSystemConnector(object):
@@ -31,7 +30,7 @@ class FileSystemConnector(object):
 
     def __init__(self, data_directory, disable_data_indexing=False, config_file='./dicebox.config'):
         if self.config is None:
-            self.config = dicebox.docker_config.DockerConfig(config_file)
+            self.config = DiceboxConfig(config_file)
 
         if self.data_directory is None:
             self.data_directory = os.path.normpath(data_directory)
