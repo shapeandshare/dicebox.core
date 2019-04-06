@@ -55,7 +55,8 @@ Change Log
 
 04.06.2019
 ----------
-- Reactored variables names
-- Removed unused imports
-- Removed unused objects
-- Added additional test coverage
+* Reactored variables names
+* Removed unused imports
+* Removed unused objects
+* Added additional test coverage
+* Moved assets, and tools to the SDK.
