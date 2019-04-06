@@ -12,14 +12,14 @@ from keras.callbacks import EarlyStopping
 # from keras.callbacks import ModelCheckpoint
 import logging
 import numpy
-import dicebox.docker_config
-import dicebox.filesystem_connecter
-import dicebox.sensory_interface
 from datetime import datetime
 import os
+from dicebox.config.dicebox_config import DiceboxConfig
+from dicebox.connectors.filesystem_connecter import FileSystemConnector
+from dicebox.connectors.sensory_service_connector import SensoryServiceConnector
 
 
-class Network:
+class DiceboxNetwork:
     """Represent a network and let us operate on it.
 
     Currently only works for an MLP.
@@ -46,7 +46,7 @@ class Network:
 
     def __init__(self, nn_param_choices=None, create_fcs=True, disable_data_indexing=False, config_file='./dicebox.config'):
         if self.config is None:
-            self.config = dicebox.docker_config.DockerConfig(config_file)
+            self.config = DiceboxConfig(config_file)
 
         """Initialize our network.
 
@@ -65,11 +65,11 @@ class Network:
         if self.fsc is None and create_fcs is True:
             logging.debug('creating a new fsc..')
             logging.info('self.config.DATA_DIRECTORY: (%s)' % self.config.DATA_DIRECTORY)
-            self.fsc = dicebox.filesystem_connecter.FileSystemConnector(self.config.DATA_DIRECTORY, disable_data_indexing, config_file)
+            self.fsc = FileSystemConnector(self.config.DATA_DIRECTORY, disable_data_indexing, config_file)
 
         if self.ssc is None:
             logging.debug('creating a new ssc..')
-            self.ssc = dicebox.sensory_interface.SensoryInterface('client', config_file)
+            self.ssc = SensoryServiceConnector('client', config_file)
 
     def create_random(self):
         """Create a random network."""
@@ -162,7 +162,8 @@ class Network:
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
-    def compile_model(self, network, nb_classes, input_shape):
+    @staticmethod
+    def compile_model(network, nb_classes, input_shape):
         # Get our network parameters.
         nb_layers = network['nb_layers']
         nb_neurons = network['nb_neurons']

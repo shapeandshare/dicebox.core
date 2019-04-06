@@ -1,8 +1,8 @@
 import os
 from PIL import Image
 import logging
-import dicebox.docker_config
-import dicebox.filesystem_connecter
+from dicebox.config.dicebox_config import DiceboxConfig
+from dicebox.connectors.filesystem_connecter import FileSystemConnector
 import requests
 import json
 from datetime import datetime
@@ -10,7 +10,7 @@ import pika
 import errno
 
 
-class SensoryInterface:
+class SensoryServiceConnector:
 
     fsc = None  # file system connector
     interface_role = None
@@ -20,7 +20,7 @@ class SensoryInterface:
         logging.debug('Three wise monkeys')
 
         if self.config is None:
-            self.config = dicebox.docker_config.DockerConfig(config_file)
+            self.config = DiceboxConfig(config_file)
 
         if self.interface_role is None:
             self.interface_role = role
@@ -32,7 +32,7 @@ class SensoryInterface:
         if role == 'server':
             if self.fsc is None:
                 logging.debug("[%s] creating a new fsc..", self.interface_role)
-                self.fsc = dicebox.filesystem_connecter.FileSystemConnector(self.config.DATA_DIRECTORY)
+                self.fsc = FileSystemConnector(self.config.DATA_DIRECTORY)
 
     def get_batch(self, batch_size=0, noise=0):
         logging.debug('-' * 80)

@@ -12,9 +12,10 @@ Credit:
 from functools import reduce
 from operator import add
 import random
-import dicebox.network
+from dicebox.dicebox_network import DiceboxNetwork
 
-class Optimizer:
+
+class EvolutionaryOptimizer:
     """Class that implements genetic algorithm for MLP optimization."""
 
     config_file = None
@@ -58,7 +59,7 @@ class Optimizer:
         pop = []
         for _ in range(0, count):
             # Create a random network.
-            network = dicebox.network.Network(self.nn_param_choices, self.config_file)
+            network = DiceboxNetwork(self.nn_param_choices, self.config_file)
             network.create_random()
 
             # Add the network to our population.
@@ -80,7 +81,7 @@ class Optimizer:
         pop = []
         for _ in range(0, count):
             # Create a random network.
-            network = dicebox.network.Network(self.nn_param_choices, self.config_file)
+            network = DiceboxNetwork(self.nn_param_choices, self.config_file)
             network.create_lonestar()
 
             # Add the network to our population.
@@ -129,18 +130,18 @@ class Optimizer:
                 )
 
             # Now create a network object.
-            network = dicebox.network.Network(self.nn_param_choices, self.config_file)
+            network = DiceboxNetwork(self.nn_param_choices, self.config_file)
             network.create_set(child)
 
             children.append(network)
 
         return children
 
-    def mutate(self, network):
+    def mutate(self, individual):
         """Randomly mutate one part of the network.
 
         Args:
-            network (dict): The network parameters to mutate
+            individual (dict): The network parameters to mutate
 
         Returns:
             (Network): A randomly mutated network object
@@ -150,9 +151,9 @@ class Optimizer:
         mutation = random.choice(list(self.nn_param_choices.keys()))
 
         # Mutate one of the params.
-        network.network[mutation] = random.choice(self.nn_param_choices[mutation])
+        individual.network[mutation] = random.choice(self.nn_param_choices[mutation])
 
-        return network
+        return individual
 
     def evolve(self, pop):
         """Evolve a population of networks.
