@@ -96,20 +96,40 @@ class DiceboxNetwork:
         # }
 
         self.network_v2 = {}
+        self.network_v2['layers'] = []
 
         # Set unchange-ables
         self.network_v2['input_shape'] = self.config.INPUT_SHAPE
         self.network_v2['output_size'] = self.config.NB_CLASSES
 
         # Select an optimizer
-        # optimizer_index = helpers.random_index(len(self.nn_param_choices['optimizer']))
         optimizer_index = helpers.random_index(len(self.config.TAXONOMY['optimizer']))
         optimizer = self.config.TAXONOMY['optimizer'](optimizer_index)
         self.network_v2['optimizer'] = optimizer
 
+        # Determine the number of layers..
+        layer_count = helpers.random_index_between(self.config.TAXONOMY['min_layers'],
+                                                   self.config.TAXONOMY['max_layers'])
+        for layer_index in range(1, layer_count):
+            # add a new layer
+            # determine what the layer type wil be
+            layer_type_index = helpers.random_index(len(self.config.TAXONOMY['layer_types']))
+            layer_type = self.config.TAXONOMY['layer_types'](layer_type_index)
 
+            new_layer = {}
+            new_layer['type'] = layer_type
+            if layer_type == 'dropout':
+                # get a dropout rate..
+                new_layer['rate'] = helpers.random()
+            else:
+                # determine the size and activation function to use.
+                new_layer['size'] = helpers.random_index_between(self.config.TAXONOMY['min_neurons'],
+                                                                 self.config.TAXONOMY['max_neurons'])
+                activation_index = helpers.random_index(len(self.config.TAXONOMY['activation']))
+                new_layer['activation'] = self.config.TAXONOMY['activation'](activation_index)
 
-        raise Exception('Not yet implemented!')
+            # add the layer to the network
+            self.network_v2['layers'].append(new_layer)
 
     def create_lonestar(self, create_model=False, weights_filename=None):
         logging.debug('-' * 80)
