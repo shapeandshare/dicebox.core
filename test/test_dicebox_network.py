@@ -62,16 +62,15 @@ class Test(unittest.TestCase):
                                                         input_shape=local_input_shape)
         # with open('model.txt', 'w') as f:
         #     f.write(returned_compiled_model.to_json())
-        serialed_result = returned_compiled_model.to_json()
-        self.assertEqual(json.loads(serialed_result), expected_compiled_model)
+        serialized_result = returned_compiled_model.to_json()
+        self.assertEqual(json.loads(serialized_result), expected_compiled_model)
 
 
     def test_multi_layer_size(self):
-        # layer = {
-        #     input_size (number of neurons)
-        #     activation
-        # }
-        # reshape?
+        expected_compiled_model = None
+        with open('%s/multi_model.json' % self.TEST_DATA_BASE) as json_file:
+            expected_compiled_model = json.load(json_file)
+        self.assertIsNotNone(expected_compiled_model)
 
         local_dicebox_model = [
             {
@@ -128,10 +127,11 @@ class Test(unittest.TestCase):
                                                            input_shape=local_input_size,
                                                            output_size=local_output_size,
                                                            optimizer=local_optimizer)
-        with open('multi_model.json', 'w') as f:
-            f.write(returned_compiled_model.to_json())
+        # with open('multi_model.json', 'w') as f:
+        #     f.write(returned_compiled_model.to_json())
 
-        self.assertTrue(True)
+        serialized_result = returned_compiled_model.to_json()
+        self.assertEqual(json.loads(serialized_result), expected_compiled_model)
 
 
 
