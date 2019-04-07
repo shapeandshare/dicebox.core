@@ -192,6 +192,37 @@ class Test(unittest.TestCase):
         self.assertEqual(json.loads(returned_model.to_json()), expected_compiled_model)
         dn = None
 
+    def test_create_random(self):
+        local_create_model = False
+        local_weights_file = None
+
+        dn = DiceboxNetwork(nn_param_choices=self.local_nn_param_choices,
+                            create_fcs=self.local_create_fcs,
+                            disable_data_indexing=self.local_disable_data_indexing,
+                            config_file=self.local_config_file,
+                            lonestar_model_file=self.local_lonestar_model_file)
+        self.assertEqual(dn.network, {})
+        dn.create_random()
+        self.assertIsNotNone(dn.network)
+        self.assertIsNot(dn.network, {})
+        dn = None
+
+    def test_create_random_v2(self):
+        local_create_model = False
+        local_weights_file = None
+
+        dn = DiceboxNetwork(nn_param_choices=self.local_nn_param_choices,
+                            create_fcs=self.local_create_fcs,
+                            disable_data_indexing=self.local_disable_data_indexing,
+                            config_file=self.local_config_file,
+                            lonestar_model_file=self.local_lonestar_model_file)
+        self.assertEqual(dn.network_v2, {})
+        dn.create_random_v2()
+        self.assertIsNotNone(dn.network_v2)
+        self.assertIsNot(dn.network_v2, {})
+        dn = None
+
+
 
 if __name__ == '__main__':
     # begin the unittest.main()
