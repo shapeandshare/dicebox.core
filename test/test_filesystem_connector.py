@@ -17,7 +17,6 @@ handler.setFormatter(formatter)
 root.addHandler(handler)
 
 
-
 class Test(unittest.TestCase):
     """
     The basic class that inherits unittest.TestCase
@@ -107,7 +106,6 @@ class Test(unittest.TestCase):
     def test_get_data_set(self):
         returned_data_set = self.fsc.get_data_set()
         self.assertEqual(returned_data_set, self.EXPECTED_DATASET_INDEX)
-
 
 
 if __name__ == '__main__':

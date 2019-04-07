@@ -14,6 +14,7 @@ import logging
 import numpy
 from datetime import datetime
 import os
+import json
 from dicebox.config.dicebox_config import DiceboxConfig
 from dicebox.connectors.filesystem_connecter import FileSystemConnector
 from dicebox.connectors.sensory_service_connector import SensoryServiceConnector
@@ -81,6 +82,10 @@ class DiceboxNetwork:
         for key in self.nn_param_choices:
             self.network[key] = random.choice(self.nn_param_choices[key])
 
+    # TODO:
+    def create_random_v2(self):
+        raise Exception('Not yet implemented!')
+
     def create_lonestar(self, create_model=False, weights_filename=None):
         logging.debug('-' * 80)
         logging.debug('create_lonestar(create_model, weights_filename)')
@@ -133,21 +138,18 @@ class DiceboxNetwork:
             #     logging.info('model already compiled, skipping.')
 
     def create_set(self, network):
-        """Set network properties.
-
-        Args:
-            network (dict): The network parameters
-
-        """
         self.network = network
 
+    def create_set_v2(self, network_v2):
+        self.network_v2 = network_v2
+
     def train(self):
-        """Train the network and record the accuracy.
-
-
-        """
         if self.accuracy == 0.:
             self.accuracy = self.train_and_score(self.network)
+
+    def train_v2(self):
+        if self.accuracy == 0.:
+            self.accuracy = self.train_and_score_v2(self.network_v2)
 
     def train_and_save(self, dataset):
         # if self.accuracy == 0.:
@@ -157,9 +159,22 @@ class DiceboxNetwork:
         logging.debug('-' * 80)
         self.accuracy = self.train_and_score_and_save(dataset)
 
+    def train_and_save_v2(self, dataset):
+        # if self.accuracy == 0.:
+        logging.debug('-' * 80)
+        logging.debug("train_and_save_v2(dataset)")
+        logging.debug("train_and_save_v2(dataset=%s)" % dataset)
+        logging.debug('-' * 80)
+        self.accuracy = self.train_and_score_and_save_v2(dataset)
+
     def print_network(self):
         """Print out a network."""
         logging.info(self.network)
+        logging.info("Network accuracy: %.2f%%" % (self.accuracy * 100))
+
+    def print_network_v2(self):
+        """Print out a network."""
+        logging.info(self.network_v2)
         logging.info("Network accuracy: %.2f%%" % (self.accuracy * 100))
 
     def train_and_score(self, network):
@@ -180,6 +195,32 @@ class DiceboxNetwork:
 
         model.fit(x_train, y_train,
                   batch_size=batch_size,
+                  epochs=10000,  # using early stopping, so no real limit
+                  verbose=1,
+                  validation_data=(x_test, y_test),
+                  callbacks=[self.early_stopper])
+
+        score = model.evaluate(x_test, y_test, verbose=0)
+
+        return score[1]  # 1 is accuracy. 0 is loss.
+
+    def train_and_score_v2(self, network_v2):
+        if self.config.DICEBOX_COMPLIANT_DATASET is True:
+            x_train, x_test, y_train, y_test = self.get_dicebox_filesystem_v2()
+        else:
+            raise Exception('Unknown dataset type!  Please define, or correct.')
+
+        model = self.compile_model_v2(network_v2)
+
+        logging.info('batch size (model.fit): %s' % self.config.BATCH_SIZE)
+
+        logging.info('Fitting network:')
+        logging.info(network_v2)
+        logging.info('compiled model:')
+        logging.info(json.dumps(json.loads(model.to_json())))
+
+        model.fit(x_train, y_train,
+                  batch_size=self.config.BATCH_SIZE,
                   epochs=10000,  # using early stopping, so no real limit
                   verbose=1,
                   validation_data=(x_test, y_test),
@@ -282,6 +323,10 @@ class DiceboxNetwork:
         y_test = test_image_labels
         return nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test
 
+    # TODO:
+    def get_dicebox_filesystem_v2(self):
+        raise Exception('Not yet implemented!')
+
     def get_dicebox_sensory_data(self):
         logging.debug('-' * 80)
         logging.debug('get_dicebox_sensory_data(self)')
@@ -359,6 +404,10 @@ class DiceboxNetwork:
         y_test = test_image_labels
         return nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test
 
+    # TODO:
+    def get_dicebox_sensory_data_v2(self):
+        raise Exception('Not yet implemented!')
+
     def train_and_score_and_save(self, dataset):
         logging.debug('-' * 80)
         logging.debug("train_and_score_and_save(dataset)")
@@ -409,6 +458,10 @@ class DiceboxNetwork:
         logging.debug('-' * 80)
 
         return score[1]  # 1 is accuracy. 0 is loss.
+
+    # TODO:
+    def train_and_score_and_save_v2(self, dataset):
+        raise Exception('Not yet implemented!')
 
     def save_model(self, filename):
         logging.info('saving model weights to file..')
