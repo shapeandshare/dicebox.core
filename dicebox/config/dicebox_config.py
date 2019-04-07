@@ -92,6 +92,22 @@ class DiceboxConfig(object):
             'optimizer': json.loads(self.OPTIMIZER)
         }
 
+        self.MIN_NEURONS = self.dc.MIN_NEURONS
+        self.MAX_NEURONS = self.dc.MAX_NEURONS
+        self.MIN_LAYERS = self.dc.MIN_LAYERS
+        self.MAX_LAYERS = self.dc.MAX_LAYERS
+        self.LAYER_TYPES = self.dc.LAYER_TYPES
+
+        self.TAXONOMY = {
+            'min_neurons': self.MIN_NEURONS,
+            'max_neurons': self.MAX_NEURONS,
+            'min_layers': self.MIN_LAYERS,
+            'max_layers': self.MAX_NEURONS,
+            'layer_types': json.loads(self.LAYER_TYPES),
+            'activation': json.loads(self.ACTIVATION),
+            'optimizer': json.loads(self.OPTIMIZER)
+        }
+
 
         ###############################################################################
         # Lonestar Options

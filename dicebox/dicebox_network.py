@@ -18,6 +18,7 @@ import json
 from dicebox.config.dicebox_config import DiceboxConfig
 from dicebox.connectors.filesystem_connecter import FileSystemConnector
 from dicebox.connectors.sensory_service_connector import SensoryServiceConnector
+import dicebox.utils.helpers as helpers
 
 
 class DiceboxNetwork:
@@ -57,11 +58,14 @@ class DiceboxNetwork:
                 activation (list): ['relu', 'elu']
                 optimizer (list): ['rmsprop', 'adam']
         """
-        self.accuracy = 0.
         self.nn_param_choices = nn_param_choices
+        self.accuracy = 0.
         self.network = {}  # (dic): represents MLP network parameters
-        self.network_v2 = {}  # (dic): represents MLP network parameters
         self.model = None
+
+        self.accuracy_v2 = 0.
+        self.network_v2 = {}  # (the dicebox object)
+        self.model_v2 = None # the compiled network.
 
         if self.fsc is None and create_fcs is True:
             logging.debug('creating a new fsc..')
@@ -84,6 +88,27 @@ class DiceboxNetwork:
 
     # TODO:
     def create_random_v2(self):
+        # self.NN_PARAM_CHOICES = {
+        #     'nb_neurons': json.loads(self.NB_NEURONS),
+        #     'nb_layers': json.loads(self.NB_LAYERS),
+        #     'activation': json.loads(self.ACTIVATION),
+        #     'optimizer': json.loads(self.OPTIMIZER)
+        # }
+
+        self.network_v2 = {}
+
+        # Set unchange-ables
+        self.network_v2['input_shape'] = self.config.INPUT_SHAPE
+        self.network_v2['output_size'] = self.config.NB_CLASSES
+
+        # Select an optimizer
+        # optimizer_index = helpers.random_index(len(self.nn_param_choices['optimizer']))
+        optimizer_index = helpers.random_index(len(self.config.TAXONOMY['optimizer']))
+        optimizer = self.config.TAXONOMY['optimizer'](optimizer_index)
+        self.network_v2['optimizer'] = optimizer
+
+
+
         raise Exception('Not yet implemented!')
 
     def create_lonestar(self, create_model=False, weights_filename=None):
@@ -128,12 +153,12 @@ class DiceboxNetwork:
         logging.debug('-' * 80)
 
         if create_model is True:
-            if self.model is None:
+            if self.model_v2 is None:
                 logging.debug('compiling model')
-                self.model = self.compile_model_v2(self.network_v2)
+                self.model_v2 = self.compile_model_v2(self.network_v2)
                 if weights_filename is not None:
                     logging.debug("loading weights file: (%s)" % weights_filename)
-                    self.load_model(weights_filename)
+                    self.load_model_v2(weights_filename)
             # else:
             #     logging.info('model already compiled, skipping.')
 
@@ -148,8 +173,8 @@ class DiceboxNetwork:
             self.accuracy = self.train_and_score(self.network)
 
     def train_v2(self):
-        if self.accuracy == 0.:
-            self.accuracy = self.train_and_score_v2(self.network_v2)
+        if self.accuracy_v2 == 0.:
+            self.accuracy_v2 = self.train_and_score_v2(self.network_v2)
 
     def train_and_save(self, dataset):
         # if self.accuracy == 0.:
@@ -160,12 +185,12 @@ class DiceboxNetwork:
         self.accuracy = self.train_and_score_and_save(dataset)
 
     def train_and_save_v2(self, dataset):
-        # if self.accuracy == 0.:
+        # if self.accuracy_v2 == 0.:
         logging.debug('-' * 80)
         logging.debug("train_and_save_v2(dataset)")
         logging.debug("train_and_save_v2(dataset=%s)" % dataset)
         logging.debug('-' * 80)
-        self.accuracy = self.train_and_score_and_save_v2(dataset)
+        self.accuracy_v2 = self.train_and_score_and_save_v2(dataset)
 
     def print_network(self):
         """Print out a network."""
@@ -175,7 +200,7 @@ class DiceboxNetwork:
     def print_network_v2(self):
         """Print out a network."""
         logging.info(self.network_v2)
-        logging.info("Network accuracy: %.2f%%" % (self.accuracy * 100))
+        logging.info("Network accuracy: %.2f%%" % (self.accuracy_v2 * 100))
 
     def train_and_score(self, network):
         if self.config.DICEBOX_COMPLIANT_DATASET is True:
@@ -467,6 +492,10 @@ class DiceboxNetwork:
         logging.info('saving model weights to file..')
         self.model.save(str(filename))   # https://github.com/keras-team/keras/issues/11269
 
+    # TODO:
+    def save_model_v2(self, filename):
+        raise Exception('Not yet implemented!')
+
     def load_model(self, filename):
         if self.model is None:
             logging.error('no model! :(  compile the model first.')
@@ -478,6 +507,10 @@ class DiceboxNetwork:
             logging.error('Unable to load weights file.')
             logging.error(e)
             raise e
+
+    # TODO:
+    def load_model_v2(self, filename):
+        raise Exception('Not yet implemented!')
 
     def classify(self, network_input):
         if self.config.DICEBOX_COMPLIANT_DATASET is True:
@@ -494,6 +527,10 @@ class DiceboxNetwork:
         logging.info(model_prediction)
 
         return model_prediction
+
+    #TODO:
+    def classify_v2(self, network_input):
+        raise Exception('Not yet implemented!')
 
     def get_dicebox_raw(self, raw_image_data):
         # ugh dump to file for the time being
@@ -517,3 +554,4 @@ class DiceboxNetwork:
         x_test = numpy.array(x_test)
 
         return x_test
+

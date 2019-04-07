@@ -184,7 +184,7 @@ class Test(unittest.TestCase):
                             lonestar_model_file=self.local_lonestar_model_file)
 
         dn.create_lonestar_v2(create_model=local_create_model, weights_filename=local_weights_file)
-        returned_model = dn.model
+        returned_model = dn.model_v2
         self.assertIsNotNone(returned_model)
 
         # with open('%s/lonestar.model_v2.out.json' % self.TEST_DATA_BASE, 'w') as json_file:

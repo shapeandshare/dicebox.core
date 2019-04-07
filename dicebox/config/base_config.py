@@ -71,6 +71,23 @@ class BaseConfig(object):
             'optimizer': json.loads(self.OPTIMIZER)
         }
 
+        self.MIN_NEURONS = local_config.get('TAXONOMY', 'min_neurons')
+        self.MAX_NEURONS = local_config.get('TAXONOMY', 'max_neurons')
+        self.MIN_LAYERS = local_config.get('TAXONOMY', 'min_layers')
+        self.MAX_LAYERS = local_config.get('TAXONOMY', 'max_layers')
+        self.LAYER_TYPES = local_config.get('TAXONOMY', 'layer_types')
+
+        self.TAXONOMY = {
+            'min_neurons': self.MIN_NEURONS,
+            'max_neurons': self.MAX_NEURONS,
+            'min_layers': self.MIN_LAYERS,
+            'max_layers': self.MAX_NEURONS,
+            'layer_types':  json.loads(self.LAYER_TYPES),
+            'activation': json.loads(self.ACTIVATION),
+            'optimizer': json.loads(self.OPTIMIZER)
+        }
+
+
 
         ###############################################################################
         # Lonestar Options
