@@ -4,7 +4,7 @@
     "output_size": 10,
     "layers": [
         {
-            "type": "normal",
+            "type": "dense",
             "size": 987,
             "activation": "elu"
         },
@@ -13,7 +13,7 @@
             "rate": 0.2
         },
         {
-            "type": "normal",
+            "type": "dense",
             "size": 89,
             "activation": "elu"
         },
@@ -22,7 +22,7 @@
             "rate": 0.2
         },
         {
-            "type": "normal",
+            "type": "dense",
             "size": 987,
             "activation": "elu"
         },
@@ -31,7 +31,7 @@
             "rate": 0.2
         },
         {
-            "type": "normal",
+            "type": "dense",
             "size": 987,
             "activation": "elu"
         },
@@ -40,7 +40,7 @@
             "rate": 0.2
         },
         {
-            "type": "normal",
+            "type": "dense",
             "size": 987,
             "activation": "elu"
         },
