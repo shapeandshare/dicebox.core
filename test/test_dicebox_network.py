@@ -70,7 +70,7 @@ class Test(unittest.TestCase):
 
     def test_compile_model_v2(self):
         expected_compiled_model = None
-        with open('%s/multi_model.json' % self.TEST_DATA_BASE) as json_file:
+        with open('%s/model_v2.json' % self.TEST_DATA_BASE) as json_file:
             expected_compiled_model = json.load(json_file)
         self.assertIsNotNone(expected_compiled_model)
 
@@ -136,7 +136,7 @@ class Test(unittest.TestCase):
                             config_file=self.local_config_file)
 
         returned_compiled_model = dn.compile_model_v2(dicebox_model=local_dicebox_model)
-        # with open('multi_model.json', 'w') as f:
+        # with open('model_v2.json', 'w') as f:
         #     f.write(returned_compiled_model.to_json())
 
         serialized_result = returned_compiled_model.to_json()
