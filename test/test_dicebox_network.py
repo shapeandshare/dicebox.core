@@ -47,6 +47,7 @@ class Test(unittest.TestCase):
         expected_compiled_model = None
         with open('%s/model.json' % self.TEST_DATA_BASE) as json_file:
             expected_compiled_model = json.load(json_file)
+        self.assertIsNotNone(expected_compiled_model)
 
         local_network = {}
         local_network['nb_layers'] = 5
@@ -63,6 +64,76 @@ class Test(unittest.TestCase):
         #     f.write(returned_compiled_model.to_json())
         serialed_result = returned_compiled_model.to_json()
         self.assertEqual(json.loads(serialed_result), expected_compiled_model)
+
+
+    def test_multi_layer_size(self):
+        # layer = {
+        #     input_size (number of neurons)
+        #     activation
+        # }
+        # reshape?
+
+        local_dicebox_model = [
+            {
+                'type': 'normal',
+                'size': 987,
+                'activation': 'elu',
+                'input_shape': [784,]
+            },
+            {
+                'type': 'dropout',
+                'rate': 0.2
+            },
+            {
+                'type': 'normal',
+                'size': 89,
+                'activation': 'elu'
+            },
+            {
+                'type': 'dropout',
+                'rate': 0.2
+            },
+            {
+                'type': 'normal',
+                'size': 987,
+                'activation': 'elu'
+            },
+            {
+                'type': 'dropout',
+                'rate': 0.2
+            },
+            {
+                'type': 'normal',
+                'size': 987,
+                'activation': 'elu'
+            },
+            {
+                'type': 'dropout',
+                'rate': 0.2
+            },
+            {
+                'type': 'normal',
+                'size': 987,
+                'activation': 'elu'
+            },
+            {
+                'type': 'dropout',
+                'rate': 0.2
+            }
+        ]
+        local_input_size = 784
+        local_output_size = 10
+        local_optimizer = 'adamax'
+        returned_compiled_model = self.dn.compile_model_v2(dicebox_model=local_dicebox_model,
+                                                           input_shape=local_input_size,
+                                                           output_size=local_output_size,
+                                                           optimizer=local_optimizer)
+        with open('multi_model.json', 'w') as f:
+            f.write(returned_compiled_model.to_json())
+
+        self.assertTrue(True)
+
+
 
 if __name__ == '__main__':
     # begin the unittest.main()
