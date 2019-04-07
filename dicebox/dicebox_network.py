@@ -105,6 +105,44 @@ class DiceboxNetwork:
             # else:
             #     logging.info('model already compiled, skipping.')
 
+    def create_lonestar_v2(self, create_model=False, weights_filename=None):
+        logging.debug('-' * 80)
+        logging.debug('create_lonestar_v2(create_model, weights_filename)')
+        logging.debug(create_model)
+        logging.debug(weights_filename)
+        logging.debug('-' * 80)
+
+        # Load from external definition
+        # self.network['nb_layers'] = self.config.NN_LONESTAR_PARAMS['nb_layers']
+        # self.network['activation'] = self.config.NN_LONESTAR_PARAMS['activation']
+        # self.network['optimizer'] = self.config.NN_LONESTAR_PARAMS['optimizer']
+        # self.network['nb_neurons'] = self.config.NN_LONESTAR_PARAMS['nb_neurons']
+        # logging.debug('-' * 80)
+        # logging.debug("self.network['nb_layers']: %s" % self.network['nb_layers'])
+        # logging.debug("self.network['activation']: %s" % self.network['activation'])
+        # logging.debug("self.network['optimizer']: %s" % self.network['optimizer'])
+        # logging.debug("self.network['nb_neurons']:%s" % self.network['nb_neurons'])
+        # logging.debug('-' * 80)
+
+
+        self.network['optimizer'] = self.config.NN_LONESTAR_PARAMS['optimizer']
+        self.network['input_shape'] = self.config.INPUT_SHAPE
+        self.network['output_size'] = self.config.NB_CLASSES
+        self.network['layers'] = self.config.NN_LONESTAR_PARAMS['nb_layers']
+
+
+
+        if create_model is True:
+            if self.model is None:
+                logging.debug('compiling model')
+                # self.model = self.compile_model(self.network, self.config.NB_CLASSES, self.config.INPUT_SHAPE)
+                self.model = self.compile_model_v2(self.network)
+                if weights_filename is not None:
+                    logging.debug("loading weights file: (%s)" % weights_filename)
+                    self.load_model(weights_filename)
+            # else:
+            #     logging.info('model already compiled, skipping.')
+
     def create_set(self, network):
         """Set network properties.
 
@@ -197,14 +235,11 @@ class DiceboxNetwork:
 
         layers = dicebox_model['layers']
         first_layer = False
-        # add first layer
         for layer in layers:
             # build and add layer
-
             if layer['type'] == 'dropout':
-                # handle dropout?
-                # model.add(Dropout(0.2))  # hard-coded dropout
-                model.add(Dropout(layer['rate']))  # hard-coded dropout
+                # handle dropout
+                model.add(Dropout(layer['rate']))
             else:
                 neurons = layer['size']
                 activation = layer['activation']
@@ -215,7 +250,7 @@ class DiceboxNetwork:
                 else:
                     model.add(Dense(neurons, activation=activation))
 
-        # add final layer | Output layer.
+        # add final output layer.
         model.add(Dense(dicebox_model['output_size'], activation='softmax'))
 
         model.compile(loss='categorical_crossentropy', optimizer=dicebox_model['optimizer'],

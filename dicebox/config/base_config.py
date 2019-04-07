@@ -12,16 +12,31 @@
 import ConfigParser
 import json
 import urllib
+import logging
 
 
 class BaseConfig(object):
 
-    def __init__(self, config_file='./dicebox.config'):
+    def __init__(self, config_file='./dicebox.config', lonetar_model_file='./dicebox.lonestar.json'):
         ###############################################################################
         # Create config objects.
         ###############################################################################
         local_config = ConfigParser.ConfigParser()
         local_config.read(config_file)
+
+        # v2 model support
+        self.LONESTAR_DICEBOX_MODEL = None
+        try:
+            model_file = open(lonetar_model_file)
+        except IOError as e:
+            logging.error(e.message)
+            logging.error('Unable to open (%s).  Will not load a lonestar model.', lonetar_model_file)
+        else:
+            with model_file:
+                self.LONESTAR_DICEBOX_MODEL = json.load(model_file)
+                # Fix the tuple..
+                self.LONESTAR_DICEBOX_MODEL['input_shape'] = [self.LONESTAR_DICEBOX_MODEL['input_shape'], ]
+
 
         ###############################################################################
         # Data Set Options

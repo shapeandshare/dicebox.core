@@ -16,8 +16,8 @@ from dicebox.config.base_config import BaseConfig
 
 class DiceboxConfig(object):
     
-    def __init__(self, config_file='./dicebox.config'):
-        self.dc = BaseConfig(config_file)
+    def __init__(self, config_file='./dicebox.config', lonetar_model_file='./dicebox.lonestar.json'):
+        self.dc = BaseConfig(config_file, lonetar_model_file)
     
         
         ###############################################################################
@@ -118,6 +118,11 @@ class DiceboxConfig(object):
             'activation': self.LONESTAR_ACTIVATION,
             'optimizer': self.LONESTAR_OPTIMIZER
         }
+
+        # support for v2 model
+        self.LONESTAR_DICEBOX_MODEL = self.dc.LONESTAR_DICEBOX_MODEL
+        if 'LONESTAR_DICEBOX_MODEL' in os.environ:
+            self.LONESTAR_DICEBOX_MODEL = json.loads(os.environ['LONESTAR_DICEBOX_MODEL'])
 
 
         ###############################################################################
