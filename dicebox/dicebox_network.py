@@ -192,12 +192,13 @@ class DiceboxNetwork:
         return model
 
     @staticmethod
-    def compile_model_v2(dicebox_model, output_size, input_shape, optimizer):
+    def compile_model_v2(dicebox_model):
         model = Sequential()
 
+        layers = dicebox_model['layers']
         first_layer = False
         # add first layer
-        for layer in dicebox_model:
+        for layer in layers:
             # build and add layer
 
             if layer['type'] == 'dropout':
@@ -210,18 +211,17 @@ class DiceboxNetwork:
 
                 if first_layer is False:
                     first_layer = True
-                    model.add(Dense(neurons, activation=activation, input_shape=layer['input_shape']))
+                    model.add(Dense(neurons, activation=activation, input_shape=dicebox_model['input_shape']))
                 else:
                     model.add(Dense(neurons, activation=activation))
 
         # add final layer | Output layer.
-        model.add(Dense(output_size, activation='softmax'))
+        model.add(Dense(dicebox_model['output_size'], activation='softmax'))
 
-        model.compile(loss='categorical_crossentropy', optimizer=optimizer,
+        model.compile(loss='categorical_crossentropy', optimizer=dicebox_model['optimizer'],
                       metrics=['accuracy'])
 
         return model
-
 
     def get_dicebox_filesystem(self):
         nb_classes = self.config.NB_CLASSES

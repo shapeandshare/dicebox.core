@@ -72,61 +72,63 @@ class Test(unittest.TestCase):
             expected_compiled_model = json.load(json_file)
         self.assertIsNotNone(expected_compiled_model)
 
-        local_dicebox_model = [
-            {
-                'type': 'normal',
-                'size': 987,
-                'activation': 'elu',
-                'input_shape': [784,]
-            },
-            {
-                'type': 'dropout',
-                'rate': 0.2
-            },
-            {
-                'type': 'normal',
-                'size': 89,
-                'activation': 'elu'
-            },
-            {
-                'type': 'dropout',
-                'rate': 0.2
-            },
-            {
-                'type': 'normal',
-                'size': 987,
-                'activation': 'elu'
-            },
-            {
-                'type': 'dropout',
-                'rate': 0.2
-            },
-            {
-                'type': 'normal',
-                'size': 987,
-                'activation': 'elu'
-            },
-            {
-                'type': 'dropout',
-                'rate': 0.2
-            },
-            {
-                'type': 'normal',
-                'size': 987,
-                'activation': 'elu'
-            },
-            {
-                'type': 'dropout',
-                'rate': 0.2
-            }
-        ]
         local_input_size = 784
         local_output_size = 10
         local_optimizer = 'adamax'
-        returned_compiled_model = self.dn.compile_model_v2(dicebox_model=local_dicebox_model,
-                                                           input_shape=local_input_size,
-                                                           output_size=local_output_size,
-                                                           optimizer=local_optimizer)
+        local_dicebox_model = {
+            'optimizer': local_optimizer,
+            'input_shape': [local_input_size, ],
+            'output_size': local_output_size,
+            'layers': [
+                {
+                    'type': 'normal',
+                    'size': 987,
+                    'activation': 'elu'
+                },
+                {
+                    'type': 'dropout',
+                    'rate': 0.2
+                },
+                {
+                    'type': 'normal',
+                    'size': 89,
+                    'activation': 'elu'
+                },
+                {
+                    'type': 'dropout',
+                    'rate': 0.2
+                },
+                {
+                    'type': 'normal',
+                    'size': 987,
+                    'activation': 'elu'
+                },
+                {
+                    'type': 'dropout',
+                    'rate': 0.2
+                },
+                {
+                    'type': 'normal',
+                    'size': 987,
+                    'activation': 'elu'
+                },
+                {
+                    'type': 'dropout',
+                    'rate': 0.2
+                },
+                {
+                    'type': 'normal',
+                    'size': 987,
+                    'activation': 'elu'
+                },
+                {
+                    'type': 'dropout',
+                    'rate': 0.2
+                }
+            ]
+        }
+
+        returned_compiled_model = self.dn.compile_model_v2(dicebox_model=local_dicebox_model)
         # with open('multi_model.json', 'w') as f:
         #     f.write(returned_compiled_model.to_json())
 
