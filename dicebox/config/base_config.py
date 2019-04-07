@@ -17,7 +17,7 @@ import logging
 
 class BaseConfig(object):
 
-    def __init__(self, config_file='./dicebox.config', lonetar_model_file='./dicebox.lonestar.json'):
+    def __init__(self, config_file='./dicebox.config', lonestar_model_file='./dicebox.lonestar.json'):
         ###############################################################################
         # Create config objects.
         ###############################################################################
@@ -27,10 +27,10 @@ class BaseConfig(object):
         # v2 model support
         self.LONESTAR_DICEBOX_MODEL = None
         try:
-            model_file = open(lonetar_model_file)
+            model_file = open(lonestar_model_file)
         except IOError as e:
             logging.error(e.message)
-            logging.error('Unable to open (%s).  Will not load a lonestar model.', lonetar_model_file)
+            logging.error('Unable to open (%s).  Will not load a lonestar model.', lonestar_model_file)
         else:
             with model_file:
                 self.LONESTAR_DICEBOX_MODEL = json.load(model_file)

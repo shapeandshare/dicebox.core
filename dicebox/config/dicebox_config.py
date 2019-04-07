@@ -16,8 +16,8 @@ from dicebox.config.base_config import BaseConfig
 
 class DiceboxConfig(object):
     
-    def __init__(self, config_file='./dicebox.config', lonetar_model_file='./dicebox.lonestar.json'):
-        self.dc = BaseConfig(config_file, lonetar_model_file)
+    def __init__(self, config_file='./dicebox.config', lonestar_model_file='./dicebox.lonestar.json'):
+        self.dc = BaseConfig(config_file=config_file, lonestar_model_file=lonestar_model_file)
     
         
         ###############################################################################

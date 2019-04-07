@@ -28,9 +28,10 @@ class FileSystemConnector(object):
 
     config = None
 
-    def __init__(self, data_directory, disable_data_indexing=False, config_file='./dicebox.config'):
+    def __init__(self, data_directory, disable_data_indexing=False, config_file='./dicebox.config', lonestar_model_file='./dicebox.lonestar.json'):
         if self.config is None:
-            self.config = DiceboxConfig(config_file)
+            self.config = DiceboxConfig(config_file=config_file,
+                                        lonestar_model_file=lonestar_model_file)
 
         if self.data_directory is None:
             self.data_directory = os.path.normpath(data_directory)

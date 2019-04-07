@@ -21,12 +21,11 @@ class Test(unittest.TestCase):
     The basic class that inherits unittest.TestCase
     """
     TEST_DATA_BASE = 'test/data'
+    local_config_file = '%s/dicebox.config' % TEST_DATA_BASE
+    local_lonestar_model_file = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
 
     def setUp(self):
-        local_config_file='./dicebox.config'
-        lonetar_model_file='./dicebox.lonestar.json'
-
-        self.dc = DiceboxConfig(config_file=local_config_file, lonetar_model_file=lonetar_model_file)
+        self.dc = DiceboxConfig(config_file=self.local_config_file, lonestar_model_file=self.local_lonestar_model_file)
 
     def test_lonestar_model_v2(self):
         expected_input_size = 784

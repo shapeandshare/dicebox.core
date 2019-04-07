@@ -43,9 +43,9 @@ class DiceboxNetwork:
 
     callbacks_list = [early_stopper]
 
-    def __init__(self, nn_param_choices=None, create_fcs=True, disable_data_indexing=False, config_file='./dicebox.config'):
+    def __init__(self, nn_param_choices=None, create_fcs=True, disable_data_indexing=False, config_file='./dicebox.config', lonestar_model_file='./dicebox.lonestar.json'):
         if self.config is None:
-            self.config = DiceboxConfig(config_file)
+            self.config = DiceboxConfig(config_file=config_file, lonestar_model_file=lonestar_model_file)
 
         """Initialize our network.
 
@@ -65,11 +65,16 @@ class DiceboxNetwork:
         if self.fsc is None and create_fcs is True:
             logging.debug('creating a new fsc..')
             logging.info('self.config.DATA_DIRECTORY: (%s)' % self.config.DATA_DIRECTORY)
-            self.fsc = FileSystemConnector(self.config.DATA_DIRECTORY, disable_data_indexing, config_file)
+            self.fsc = FileSystemConnector(data_directory=self.config.DATA_DIRECTORY,
+                                           disable_data_indexing=disable_data_indexing,
+                                           config_file=config_file,
+                                           lonestar_model_file=lonestar_model_file)
 
         if self.ssc is None:
             logging.debug('creating a new ssc..')
-            self.ssc = SensoryServiceConnector('client', config_file)
+            self.ssc = SensoryServiceConnector(role='client',
+                                               config_file=config_file,
+                                               lonestar_model_file=lonestar_model_file)
 
     def create_random(self):
         """Create a random network."""

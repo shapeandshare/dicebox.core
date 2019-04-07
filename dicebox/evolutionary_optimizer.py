@@ -19,11 +19,15 @@ class EvolutionaryOptimizer:
     """Class that implements genetic algorithm for MLP optimization."""
 
     config_file = None
+    lonestar_model_file = None
     # config = None
 
-    def __init__(self, nn_param_choices, retain=0.4, random_select=0.1, mutate_chance=0.2, config_file='./dicebox.config'):
+    def __init__(self, nn_param_choices, retain=0.4, random_select=0.1, mutate_chance=0.2, config_file='./dicebox.config', lonestar_model_file='./dicebox.lonestar.json'):
         if self.config_file is None:
             self.config_file = config_file
+
+        if self.lonestar_model_file is None:
+            self.lonestar_model_file = lonestar_model_file
 
         # if self.config is None:
         #     self.config = dicebox.docker_config.DockerConfig(self.config_file)
@@ -59,7 +63,9 @@ class EvolutionaryOptimizer:
         pop = []
         for _ in range(0, count):
             # Create a random network.
-            network = DiceboxNetwork(self.nn_param_choices, self.config_file)
+            network = DiceboxNetwork(nn_param_choices=self.nn_param_choices,
+                                     config_file=self.config_file,
+                                     lonestar_model_file=self.lonestar_model_file)
             network.create_random()
 
             # Add the network to our population.
@@ -81,7 +87,9 @@ class EvolutionaryOptimizer:
         pop = []
         for _ in range(0, count):
             # Create a random network.
-            network = DiceboxNetwork(self.nn_param_choices, self.config_file)
+            network = DiceboxNetwork(nn_param_choices=self.nn_param_choices,
+                                     config_file=self.config_file,
+                                     lonestar_model_file=self.lonestar_model_file)
             network.create_lonestar()
 
             # Add the network to our population.
@@ -130,7 +138,9 @@ class EvolutionaryOptimizer:
                 )
 
             # Now create a network object.
-            network = DiceboxNetwork(self.nn_param_choices, self.config_file)
+            network = DiceboxNetwork(nn_param_choices=self.nn_param_choices,
+                                     config_file=self.config_file,
+                                     lonestar_model_file=self.lonestar_model_file)
             network.create_set(child)
 
             children.append(network)

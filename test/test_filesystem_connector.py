@@ -28,11 +28,15 @@ class Test(unittest.TestCase):
     TEST_DATA_BASE = 'test/data'
     DATASET_LOCATION = '%s/test_dataset/data' % TEST_DATA_BASE
     DICEBOX_CONFIG_FILE = '%s/dicebox.config' % TEST_DATA_BASE
+    LONESTAR_MODEL_FILE = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
     DISABLE_DATA_INDEXING = False
 
     def setUp(self):
         # instantiate the file system connector Class
-        self.fsc = FileSystemConnector(self.DATASET_LOCATION, self.DISABLE_DATA_INDEXING, self.DICEBOX_CONFIG_FILE)
+        self.fsc = FileSystemConnector(data_directory=self.DATASET_LOCATION,
+                                       disable_data_indexing=self.DISABLE_DATA_INDEXING,
+                                       config_file=self.DICEBOX_CONFIG_FILE,
+                                       lonestar_model_file=self.LONESTAR_MODEL_FILE)
 
         with open('%s/DATASET_INDEX.json' % self.TEST_DATA_BASE) as json_file:
             self.EXPECTED_DATASET_INDEX = json.load(json_file)
