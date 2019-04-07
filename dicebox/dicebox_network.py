@@ -43,7 +43,6 @@ class DiceboxNetwork:
 
     callbacks_list = [early_stopper]
 
-
     def __init__(self, nn_param_choices=None, create_fcs=True, disable_data_indexing=False, config_file='./dicebox.config'):
         if self.config is None:
             self.config = DiceboxConfig(config_file)
@@ -60,6 +59,7 @@ class DiceboxNetwork:
         self.accuracy = 0.
         self.nn_param_choices = nn_param_choices
         self.network = {}  # (dic): represents MLP network parameters
+        self.network_v2 = {}  # (dic): represents MLP network parameters
         self.model = None
 
         if self.fsc is None and create_fcs is True:
@@ -112,31 +112,15 @@ class DiceboxNetwork:
         logging.debug(weights_filename)
         logging.debug('-' * 80)
 
-        # Load from external definition
-        # self.network['nb_layers'] = self.config.NN_LONESTAR_PARAMS['nb_layers']
-        # self.network['activation'] = self.config.NN_LONESTAR_PARAMS['activation']
-        # self.network['optimizer'] = self.config.NN_LONESTAR_PARAMS['optimizer']
-        # self.network['nb_neurons'] = self.config.NN_LONESTAR_PARAMS['nb_neurons']
-        # logging.debug('-' * 80)
-        # logging.debug("self.network['nb_layers']: %s" % self.network['nb_layers'])
-        # logging.debug("self.network['activation']: %s" % self.network['activation'])
-        # logging.debug("self.network['optimizer']: %s" % self.network['optimizer'])
-        # logging.debug("self.network['nb_neurons']:%s" % self.network['nb_neurons'])
-        # logging.debug('-' * 80)
-
-
-        self.network['optimizer'] = self.config.NN_LONESTAR_PARAMS['optimizer']
-        self.network['input_shape'] = self.config.INPUT_SHAPE
-        self.network['output_size'] = self.config.NB_CLASSES
-        self.network['layers'] = self.config.NN_LONESTAR_PARAMS['nb_layers']
-
-
+        self.network_v2 = self.config.LONESTAR_DICEBOX_MODEL
+        logging.debug('-' * 80)
+        logging.debug(self.network_v2)
+        logging.debug('-' * 80)
 
         if create_model is True:
             if self.model is None:
                 logging.debug('compiling model')
-                # self.model = self.compile_model(self.network, self.config.NB_CLASSES, self.config.INPUT_SHAPE)
-                self.model = self.compile_model_v2(self.network)
+                self.model = self.compile_model_v2(self.network_v2)
                 if weights_filename is not None:
                     logging.debug("loading weights file: (%s)" % weights_filename)
                     self.load_model(weights_filename)
