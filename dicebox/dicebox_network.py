@@ -204,16 +204,15 @@ class DiceboxNetwork:
                 # handle dropout?
                 # model.add(Dropout(0.2))  # hard-coded dropout
                 model.add(Dropout(layer['rate']))  # hard-coded dropout
-            elif first_layer is False:
-                first_layer = True
-                neurons = layer['size']
-                activation = layer['activation']
-                model.add(Dense(neurons, activation=activation, input_shape=layer['input_shape']))
             else:
                 neurons = layer['size']
                 activation = layer['activation']
-                model.add(Dense(neurons, activation=activation))
 
+                if first_layer is False:
+                    first_layer = True
+                    model.add(Dense(neurons, activation=activation, input_shape=layer['input_shape']))
+                else:
+                    model.add(Dense(neurons, activation=activation))
 
         # add final layer | Output layer.
         model.add(Dense(output_size, activation='softmax'))
