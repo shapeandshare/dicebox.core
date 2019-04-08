@@ -71,10 +71,10 @@ class BaseConfig(object):
             'optimizer': json.loads(self.OPTIMIZER)
         }
 
-        self.MIN_NEURONS = local_config.get('TAXONOMY', 'min_neurons')
-        self.MAX_NEURONS = local_config.get('TAXONOMY', 'max_neurons')
-        self.MIN_LAYERS = local_config.get('TAXONOMY', 'min_layers')
-        self.MAX_LAYERS = local_config.get('TAXONOMY', 'max_layers')
+        self.MIN_NEURONS = local_config.getint('TAXONOMY', 'min_neurons')
+        self.MAX_NEURONS = local_config.getint('TAXONOMY', 'max_neurons')
+        self.MIN_LAYERS = local_config.getint('TAXONOMY', 'min_layers')
+        self.MAX_LAYERS = local_config.getint('TAXONOMY', 'max_layers')
         self.LAYER_TYPES = local_config.get('TAXONOMY', 'layer_types')
 
         self.TAXONOMY = {
