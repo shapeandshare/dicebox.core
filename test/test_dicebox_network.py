@@ -210,6 +210,7 @@ class Test(unittest.TestCase):
         dn.create_random_v2()
         self.assertIsNotNone(dn.network_v2)
         self.assertIsNot(dn.network_v2, {})
+        logging.debug(dn.network_v2)
         dn = None
 
 
