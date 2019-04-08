@@ -102,7 +102,7 @@ class DiceboxConfig(object):
             'min_neurons': self.MIN_NEURONS,
             'max_neurons': self.MAX_NEURONS,
             'min_layers': self.MIN_LAYERS,
-            'max_layers': self.MAX_NEURONS,
+            'max_layers': self.MAX_LAYERS,
             'layer_types': json.loads(self.LAYER_TYPES),
             'activation': json.loads(self.ACTIVATION),
             'optimizer': json.loads(self.OPTIMIZER)
