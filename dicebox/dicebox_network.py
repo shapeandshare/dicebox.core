@@ -101,10 +101,12 @@ class DiceboxNetwork:
         # Set unchange-ables
         self.network_v2['input_shape'] = self.config.INPUT_SHAPE
         self.network_v2['output_size'] = self.config.NB_CLASSES
+        logging.debug("network_v2['input_shape']=(%s)" % self.network_v2['input_shape'])
+        logging.debug("network_v2['output_size']=(%s)" % self.network_v2['output_size'])
 
         # Select an optimizer
         optimizer_index = helpers.random_index(len(self.config.TAXONOMY['optimizer']))
-        optimizer = self.config.TAXONOMY['optimizer'](optimizer_index)
+        optimizer = self.config.TAXONOMY['optimizer'][optimizer_index]
         self.network_v2['optimizer'] = optimizer
 
         # Determine the number of layers..
@@ -114,7 +116,7 @@ class DiceboxNetwork:
             # add a new layer
             # determine what the layer type wil be
             layer_type_index = helpers.random_index(len(self.config.TAXONOMY['layer_types']))
-            layer_type = self.config.TAXONOMY['layer_types'](layer_type_index)
+            layer_type = self.config.TAXONOMY['layer_types'][layer_type_index]
 
             new_layer = {}
             new_layer['type'] = layer_type
@@ -126,7 +128,7 @@ class DiceboxNetwork:
                 new_layer['size'] = helpers.random_index_between(self.config.TAXONOMY['min_neurons'],
                                                                  self.config.TAXONOMY['max_neurons'])
                 activation_index = helpers.random_index(len(self.config.TAXONOMY['activation']))
-                new_layer['activation'] = self.config.TAXONOMY['activation'](activation_index)
+                new_layer['activation'] = self.config.TAXONOMY['activation'][activation_index]
 
             # add the layer to the network
             self.network_v2['layers'].append(new_layer)
