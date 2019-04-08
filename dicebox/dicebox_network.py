@@ -86,7 +86,6 @@ class DiceboxNetwork:
         for key in self.nn_param_choices:
             self.network[key] = random.choice(self.nn_param_choices[key])
 
-    # TODO:
     def create_random_v2(self):
         self.network_v2 = {}
         self.network_v2['layers'] = []
@@ -361,9 +360,36 @@ class DiceboxNetwork:
         y_test = test_image_labels
         return nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test
 
-    # TODO:
     def get_dicebox_filesystem_v2(self):
-        raise Exception('Not yet implemented!')
+        noise = self.config.NOISE
+        test_batch_size = self.config.TEST_BATCH_SIZE
+        train_batch_size = self.config.TRAIN_BATCH_SIZE
+
+        logging.info('noise: %s' % noise)
+        logging.info('train_batch_size: %s' % train_batch_size)
+        logging.info('test_batch_size: %s' % test_batch_size)
+
+        train_image_data, train_image_labels = self.fsc.get_batch(train_batch_size, noise=noise)
+        # train_image_data, train_image_labels = Network.ssc.get_batch(train_batch_size, noise=noise)
+        train_image_data = numpy.array(train_image_data)
+        train_image_data = train_image_data.astype('float32')
+        train_image_data /= 255
+        train_image_labels = numpy.array(train_image_labels)
+
+        test_image_data, test_image_labels = self.fsc.get_batch(test_batch_size, noise=noise)
+        # test_image_data, test_image_labels = Network.ssc.get_batch(test_batch_size, noise=noise)
+        test_image_data = numpy.array(test_image_data)
+        test_image_data = test_image_data.astype('float32')
+        test_image_data /= 255
+        test_image_labels = numpy.array(test_image_labels)
+
+        x_train = train_image_data
+        x_test = test_image_data
+        y_train = train_image_labels
+        y_test = test_image_labels
+
+        return x_train, x_test, y_train, y_test
+
 
     def get_dicebox_sensory_data(self):
         logging.debug('-' * 80)
