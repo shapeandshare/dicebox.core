@@ -108,10 +108,12 @@ class DiceboxNetwork:
         optimizer_index = helpers.random_index(len(self.config.TAXONOMY['optimizer']))
         optimizer = self.config.TAXONOMY['optimizer'][optimizer_index]
         self.network_v2['optimizer'] = optimizer
+        logging.debug("network_v2['optimizer']=(%s)" % self.network_v2['optimizer'])
 
         # Determine the number of layers..
         layer_count = helpers.random_index_between(self.config.TAXONOMY['min_layers'],
                                                    self.config.TAXONOMY['max_layers'])
+        logging.debug('building (%s) layers.' % layer_count)
         for layer_index in range(1, layer_count):
             # add a new layer
             # determine what the layer type wil be
