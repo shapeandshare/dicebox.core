@@ -2,6 +2,7 @@ import logging
 import os
 import struct
 import math
+import errno
 
 
 def lucky(noise=0):
@@ -34,3 +35,16 @@ def random_index_between(min_index=0, max_index=1):
 
 def random():
     return float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
+
+
+###############################################################################
+# Allows for easy directory structure creation
+# https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
+###############################################################################
+def make_sure_path_exists(path):
+    try:
+        if os.path.exists(path) is False:
+            os.makedirs(path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise exception
