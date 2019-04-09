@@ -390,7 +390,6 @@ class DiceboxNetwork:
 
         return x_train, x_test, y_train, y_test
 
-
     def get_dicebox_sensory_data(self):
         logging.debug('-' * 80)
         logging.debug('get_dicebox_sensory_data(self)')
@@ -468,9 +467,75 @@ class DiceboxNetwork:
         y_test = test_image_labels
         return nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test
 
-    # TODO:
     def get_dicebox_sensory_data_v2(self):
-        raise Exception('Not yet implemented!')
+        logging.debug('-' * 80)
+        logging.debug('get_dicebox_sensory_data_v2(self)')
+        logging.debug('-' * 80)
+
+        noise = self.config.NOISE
+        train_batch_size = self.config.TRAIN_BATCH_SIZE
+        test_batch_size = self.config.TEST_BATCH_SIZE
+
+        try:
+            # train_image_data, train_image_labels = Network.fsc.get_batch(train_batch_size, noise=noise)
+            train_image_data, train_image_labels = self.ssc.get_batch(train_batch_size, noise=noise)
+
+            logging.debug('-' * 80)
+            logging.debug('train_image_data to numpy.array')
+            # logging.debug(train_image_data)
+
+            train_image_data = numpy.array(train_image_data)
+            # logging.debug(train_image_data)
+
+            logging.debug('train_image_data astype float32')
+            train_image_data = train_image_data.astype('float32')
+            # logging.debug(train_image_data)
+
+            logging.debug('train_image_data /255')
+            train_image_data /= 255
+            # logging.debug(train_image_data)
+
+            logging.debug('train_image_labels to numpy.array')
+            train_image_labels = numpy.array(train_image_labels)
+            # logging.debug(train_image_labels)
+            logging.debug('-' * 80)
+        except ValueError:
+            logging.debug('Caught ValueError when processing training data.')
+            logging.debug('failing out..')
+            raise ValueError
+
+        try:
+            # test_image_data, test_image_labels = Network.fsc.get_batch(test_batch_size, noise=noise)
+            test_image_data, test_image_labels = self.ssc.get_batch(test_batch_size, noise=noise)
+
+            logging.debug('-' * 80)
+            logging.debug('test_image_data to numpy.array')
+            # logging.debug(test_image_data)
+
+            test_image_data = numpy.array(test_image_data)
+            # logging.debug(test_image_data)
+
+            logging.debug('test_image_data astype float32')
+            test_image_data = test_image_data.astype('float32')
+            # logging.debug(test_image_data)
+
+            logging.debug('test_image_data /255')
+            test_image_data /= 255
+            # logging.debug(test_image_data)
+
+            logging.debug('test_image_labels to numpy.array')
+            test_image_labels = numpy.array(test_image_labels)
+            # logging.debug(test_image_labels)
+        except ValueError:
+            logging.debug('Caught ValueError when processing test data.')
+            logging.debug('failing out..')
+            raise ValueError
+
+        x_train = train_image_data
+        x_test = test_image_data
+        y_train = train_image_labels
+        y_test = test_image_labels
+        return x_train, x_test, y_train, y_test
 
     def train_and_score_and_save(self, dataset):
         logging.debug('-' * 80)
@@ -523,17 +588,75 @@ class DiceboxNetwork:
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
-    # TODO:
     def train_and_score_and_save_v2(self, dataset):
         raise Exception('Not yet implemented!')
+
+        logging.debug('-' * 80)
+        logging.debug("train_and_score_and_save_v2(dataset)")
+        logging.debug("train_and_score_and_save_v2(dataset=%s)" % dataset)
+        logging.debug('-' * 80)
+        if self.config.DICEBOX_COMPLIANT_DATASET is True:
+            logging.debug('-' * 80)
+            logging.debug('loading sensory data..')
+            logging.debug('-' * 80)
+            x_train, x_test, y_train, y_test = self.get_dicebox_sensory_data_v2()
+            # nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_sensory_data()
+            # nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_filesystem()
+            logging.debug('-' * 80)
+            logging.debug('Done!')
+            logging.debug('-' * 80)
+        else:
+            # no support yet!
+            logging.error('UNSUPPORTED dataset supplied to train_and_score_and_save')
+            raise Exception('UNSUPPORTED dataset supplied to train_and_score_and_save')
+
+        logging.debug('-' * 80)
+        logging.debug('Compiling model if need be.')
+        logging.debug('-' * 80)
+        if self.model_v2 is None:
+            self.model_v2 = self.compile_model_v2(self.network_v2)
+        logging.debug('-' * 80)
+        logging.debug('Done!')
+        logging.debug('-' * 80)
+
+        logging.debug('-' * 80)
+        logging.debug('Fitting model.')
+        logging.debug('-' * 80)
+        self.model_v2.fit(x_train, y_train,
+                       batch_size=self.config.BATCH_SIZE,
+                       epochs=10000,  # using early stopping, so no real limit
+                       verbose=1,
+                       validation_data=(x_test, y_test),
+                       callbacks=self.callbacks_list)
+        logging.debug('-' * 80)
+        logging.debug('Done!')
+        logging.debug('-' * 80)
+
+        logging.debug('-' * 80)
+        logging.debug('Scoring model.')
+        logging.debug('-' * 80)
+        score = self.model_v2.evaluate(x_test, y_test, verbose=1)
+        logging.debug('-' * 80)
+        logging.debug('Done!')
+        logging.debug('-' * 80)
+
+        return score[1]  # 1 is accuracy. 0 is loss.
 
     def save_model(self, filename):
         logging.info('saving model weights to file..')
         self.model.save(str(filename))   # https://github.com/keras-team/keras/issues/11269
 
-    # TODO:
     def save_model_v2(self, filename):
-        raise Exception('Not yet implemented!')
+        if self.model_v2 is None:
+            logging.error('no model! :(  compile the model first.')
+            raise Exception('no model! :(  compile the model first.')
+        logging.debug('loading weights file..')
+        try:
+            self.model_v2.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
+        except Exception as e:
+            logging.error('Unable to load weights file.')
+            logging.error(e)
+            raise e
 
     def load_model(self, filename):
         if self.model is None:
@@ -547,8 +670,17 @@ class DiceboxNetwork:
             logging.error(e)
             raise e
 
-    # TODO:
     def load_model_v2(self, filename):
+        if self.model_v2 is None:
+            logging.error('no model! :(  compile the model first.')
+            raise Exception('no model! :(  compile the model first.')
+        logging.debug('loading weights file..')
+        try:
+            self.model_v2.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
+        except Exception as e:
+            logging.error('Unable to load weights file.')
+            logging.error(e)
+            raise e
         raise Exception('Not yet implemented!')
 
     def classify(self, network_input):
@@ -567,9 +699,21 @@ class DiceboxNetwork:
 
         return model_prediction
 
-    #TODO:
     def classify_v2(self, network_input):
-        raise Exception('Not yet implemented!')
+        if self.config.DICEBOX_COMPLIANT_DATASET is True:
+            x_test = self.get_dicebox_raw_v2(network_input)
+        else:
+            logging.error("UNKNOWN DATASET (%s) passed to classify" % self.config.NETWORK_NAME)
+            raise Exception("UNKNOWN DATASET (%s) passed to classify" % self.config.NETWORK_NAME)
+
+        if self.model_v2 is None:
+            logging.error('Unable to classify without a model. :(')
+            raise Exception('Unable to classify without a model. :(')
+
+        model_prediction = self.model_v2.predict_classes(x_test, batch_size=1, verbose=0)
+        logging.info(model_prediction)
+
+        return model_prediction
 
     def get_dicebox_raw(self, raw_image_data):
         # ugh dump to file for the time being
