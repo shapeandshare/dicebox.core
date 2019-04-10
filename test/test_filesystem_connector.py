@@ -73,13 +73,6 @@ class Test(unittest.TestCase):
         except Exception as e:
             self.assertEqual(e.message, 'Max batch size: 2, but 3 was specified!')
 
-    def test_lucky(self):
-        noise = 0
-        self.assertFalse(self.fsc.lucky(noise))
-
-        noise = 1
-        self.assertTrue(self.fsc.lucky(noise))
-
     def test_process_image(self):
         filename = '%s/0/mnist_testing_0_28x28_3.png' % self.DATASET_LOCATION
 
