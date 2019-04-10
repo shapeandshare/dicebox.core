@@ -26,7 +26,6 @@ class EvolutionaryOptimizer:
     config = None
 
     def __init__(self,
-                 # nn_param_choices,
                  retain=0.4,
                  random_select=0.1,
                  mutate_chance=0.2,
@@ -45,7 +44,6 @@ class EvolutionaryOptimizer:
         """Create an optimizer.
 
         Args:
-            nn_param_choices (dict): Possible network paremters
             retain (float): Percentage of population to retain after
                 each generation
             random_select (float): Probability of a rejected network
@@ -57,7 +55,6 @@ class EvolutionaryOptimizer:
         self.mutate_chance = mutate_chance
         self.random_select = random_select
         self.retain = retain
-        # self.nn_param_choices = nn_param_choices
 
     def create_population(self, count):
         """Create a population of random networks.
@@ -73,8 +70,7 @@ class EvolutionaryOptimizer:
         pop = []
         for _ in range(0, count):
             # Create a random network.
-            network = DiceboxNetwork(nn_param_choices=self.nn_param_choices,
-                                     config_file=self.config_file,
+            network = DiceboxNetwork(config_file=self.config_file,
                                      lonestar_model_file=self.lonestar_model_file)
             network.create_random_v2()
 
@@ -139,23 +135,24 @@ class EvolutionaryOptimizer:
         """
         children = []
         for _ in range(2):
+            # v1
+            # child = {}
+            ## Loop through the parameters and pick params for the kid.
+            # for param in self.nn_param_choices:
+            #     child[param] = random.choice(
+            #         [mother.network[param], father.network[param]]
+            #     )
 
-            child = {}
 
-            # Loop through the parameters and pick params for the kid.
-            for param in self.nn_param_choices:
-                child[param] = random.choice(
-                    [mother.network[param], father.network[param]]
-                )
+            # v2
+
+
 
             # Now create a network object.
-            network = DiceboxNetwork(nn_param_choices=self.nn_param_choices,
-                                     config_file=self.config_file,
+            network = DiceboxNetwork(config_file=self.config_file,
                                      lonestar_model_file=self.lonestar_model_file)
-            network.create_set(child)
-
+            network.create_set_v2(child)
             children.append(network)
-
         return children
 
     def mutate(self, individual):
