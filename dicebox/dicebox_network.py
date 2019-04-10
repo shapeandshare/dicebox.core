@@ -45,9 +45,15 @@ class DiceboxNetwork:
 
     callbacks_list = [early_stopper]
 
-    def __init__(self, nn_param_choices=None, create_fcs=True, disable_data_indexing=False, config_file='./dicebox.config', lonestar_model_file='./dicebox.lonestar.json'):
+    def __init__(self,
+                 nn_param_choices=None,
+                 create_fcs=True,
+                 disable_data_indexing=False,
+                 config_file='./dicebox.config',
+                 lonestar_model_file='./dicebox.lonestar.json'):
         if self.config is None:
-            self.config = DiceboxConfig(config_file=config_file, lonestar_model_file=lonestar_model_file)
+            self.config = DiceboxConfig(config_file=config_file,
+                                        lonestar_model_file=lonestar_model_file)
 
         """Initialize our network.
 

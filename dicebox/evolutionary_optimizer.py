@@ -12,6 +12,9 @@ Credit:
 from functools import reduce
 from operator import add
 import random
+import logging
+import dicebox.utils.helpers as helpers
+from dicebox.config.dicebox_config import DiceboxConfig
 from dicebox.dicebox_network import DiceboxNetwork
 
 
@@ -20,17 +23,24 @@ class EvolutionaryOptimizer:
 
     config_file = None
     lonestar_model_file = None
-    # config = None
+    config = None
 
-    def __init__(self, nn_param_choices, retain=0.4, random_select=0.1, mutate_chance=0.2, config_file='./dicebox.config', lonestar_model_file='./dicebox.lonestar.json'):
+    def __init__(self,
+                 # nn_param_choices,
+                 retain=0.4,
+                 random_select=0.1,
+                 mutate_chance=0.2,
+                 config_file='./dicebox.config',
+                 lonestar_model_file='./dicebox.lonestar.json'):
         if self.config_file is None:
             self.config_file = config_file
 
         if self.lonestar_model_file is None:
             self.lonestar_model_file = lonestar_model_file
 
-        # if self.config is None:
-        #     self.config = dicebox.docker_config.DockerConfig(self.config_file)
+        if self.config is None:
+            self.config = DiceboxConfig(config_file=config_file,
+                                        lonestar_model_file=lonestar_model_file)
 
         """Create an optimizer.
 
@@ -47,7 +57,7 @@ class EvolutionaryOptimizer:
         self.mutate_chance = mutate_chance
         self.random_select = random_select
         self.retain = retain
-        self.nn_param_choices = nn_param_choices
+        # self.nn_param_choices = nn_param_choices
 
     def create_population(self, count):
         """Create a population of random networks.
@@ -66,41 +76,41 @@ class EvolutionaryOptimizer:
             network = DiceboxNetwork(nn_param_choices=self.nn_param_choices,
                                      config_file=self.config_file,
                                      lonestar_model_file=self.lonestar_model_file)
-            network.create_random()
+            network.create_random_v2()
 
             # Add the network to our population.
             pop.append(network)
 
         return pop
 
-    def create_lonestar(self, count):
-        """Create a population of random networks.
-
-        Args:
-            count (int): Number of networks to generate, aka the
-                size of the population
-
-        Returns:
-            (list): Population of network objects
-
-        """
-        pop = []
-        for _ in range(0, count):
-            # Create a random network.
-            network = DiceboxNetwork(nn_param_choices=self.nn_param_choices,
-                                     config_file=self.config_file,
-                                     lonestar_model_file=self.lonestar_model_file)
-            network.create_lonestar()
-
-            # Add the network to our population.
-            pop.append(network)
-
-        return pop
+    # def create_lonestar(self, count):
+    #     """Create a population of random networks.
+    #
+    #     Args:
+    #         count (int): Number of networks to generate, aka the
+    #             size of the population
+    #
+    #     Returns:
+    #         (list): Population of network objects
+    #
+    #     """
+    #     pop = []
+    #     for _ in range(0, count):
+    #         # Create a random network.
+    #         network = DiceboxNetwork(nn_param_choices=self.nn_param_choices,
+    #                                  config_file=self.config_file,
+    #                                  lonestar_model_file=self.lonestar_model_file)
+    #         network.create_lonestar_v2()
+    #
+    #         # Add the network to our population.
+    #         pop.append(network)
+    #
+    #     return pop
 
     @staticmethod
     def fitness(network):
         """Return the accuracy, which is our fitness function."""
-        return network.accuracy
+        return network.accuracy_v2
 
     def grade(self, pop):
         """Find average fitness for a population.
@@ -115,6 +125,7 @@ class EvolutionaryOptimizer:
         summed = reduce(add, (self.fitness(network) for network in pop))
         return summed / float((len(pop)))
 
+    # TODO:
     def breed(self, mother, father):
         """Make two children as parts of their parents.
 
@@ -148,20 +159,68 @@ class EvolutionaryOptimizer:
         return children
 
     def mutate(self, individual):
-        """Randomly mutate one part of the network.
+        # """Randomly mutate one part of the network.
+        #
+        # Args:
+        #     individual (dict): The network parameters to mutate
+        #
+        # Returns:
+        #     (Network): A randomly mutated network object
+        #
+        # """
 
-        Args:
-            individual (dict): The network parameters to mutate
+        # v1 mutate
+        # # Choose a random key.
+        # mutation = random.choice(list(self.nn_param_choices.keys()))
+        #
+        # # Mutate one of the params.
+        # individual.network[mutation] = random.choice(self.nn_param_choices[mutation])
+        #
+        # return individual
 
-        Returns:
-            (Network): A randomly mutated network object
 
-        """
-        # Choose a random key.
-        mutation = random.choice(list(self.nn_param_choices.keys()))
+        # v2 mutate
+        local_noise = self.mutate_chance
 
-        # Mutate one of the params.
-        individual.network[mutation] = random.choice(self.nn_param_choices[mutation])
+        # see if the optimizer is mutated
+        if helpers.lucky(local_noise):
+            # yep..  Select an optimizer
+            optimizer_index = helpers.random_index(len(individual.config.TAXONOMY['optimizer']))
+            optimizer = individual.config.TAXONOMY['optimizer'][optimizer_index]
+            individual.network_v2['optimizer'] = optimizer
+
+        # Determine the number of layers..
+        layer_count = len(individual.layers)
+
+        # now mess around within the layers
+        for index in range(1, layer_count):
+            layer = individual.layers[index - 1]
+            # see if the layer is mutated
+            if helpers.lucky(local_noise):
+                # then change the layer type
+                # how does this affect the weights, etc? :/
+                logging.error('network layer type was mutated.')
+                raise Exception('Not yet implemented!')
+            else:
+                # keep checking the individual layer attributes
+                if layer.type == 'dropout' and helpers.lucky(local_noise):
+                    # mutate the dropout rate
+                    layer['rate'] = helpers.random()
+
+                elif layer.type == 'dense':
+                    if helpers.lucky(local_noise):
+                        # mutate the layer size
+                        logging.debug('Mutating layer size')
+                        raise Exception('Not yet implemented!')
+
+                    if helpers.lucky(local_noise):
+                        # mutate activation function
+                        activation_index = helpers.random_index(len(individual.config.TAXONOMY['activation']))
+                        layer['activation'] = individual.config.TAXONOMY['activation'][activation_index - 1]
+                else:
+                    logging.debug('Unknown layer type')
+                    raise Exception('Not yet implemented!')
+
 
         return individual
 

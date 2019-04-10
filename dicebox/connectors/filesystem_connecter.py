@@ -16,6 +16,7 @@ import array
 import logging
 import numpy
 from PIL import Image
+from dicebox.utils.helpers import lucky
 from dicebox.config.dicebox_config import DiceboxConfig
 
 
@@ -105,7 +106,7 @@ class FileSystemConnector(object):
             # Help prevent over-fitting, and allow for new
             # sensory data to enter the cache, even when a cache
             # hit would occur.
-            if self.pixel_cache.has_key(filename) and not self.lucky(noise):
+            if self.pixel_cache.has_key(filename) and not lucky(noise):
                 del self.pixel_cache[filename]
 
             # use pixel cache if possible
@@ -121,18 +122,6 @@ class FileSystemConnector(object):
 
             image_data.append(pixel_data)
         return [image_data, image_labels]
-
-    @staticmethod
-    def lucky(noise=0):
-        """Simple function to determine whether or not a thing occurs.
-
-        :param noise: floating point value for noise
-        :return: boolean
-        """
-        if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
-            logging.debug('luck bestowed')
-            return True
-        return False
 
     def process_image(self, filename, noise=0):
         """For a given filename, and noise level, will return a numpy array of pixel data.

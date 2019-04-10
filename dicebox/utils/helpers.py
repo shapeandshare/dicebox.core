@@ -12,7 +12,7 @@ def lucky(noise=0):
     :return: boolean
     """
     if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
-        logging.debug('luck bestowed')
+        # logging.debug('luck bestowed')
         return True
     return False
 
