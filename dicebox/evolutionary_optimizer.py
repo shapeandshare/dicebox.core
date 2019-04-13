@@ -201,9 +201,7 @@ class EvolutionaryOptimizer:
         # see if the optimizer is mutated
         if helpers.lucky(local_noise):
             # yep..  Select an optimizer
-            optimizer_index = helpers.random_index(len(individual.config.TAXONOMY['optimizer']))
-            optimizer = individual.config.TAXONOMY['optimizer'][optimizer_index]
-            individual.network_v2['optimizer'] = optimizer
+            individual.network_v2['optimizer'] = individual.select_random_optimizer()
 
         # Determine the number of layers..
         layer_count = len(individual.layers)
@@ -216,7 +214,7 @@ class EvolutionaryOptimizer:
                 # then change the layer type
                 # how does this affect the weights, etc? :/
                 logging.error('network layer type was mutated.')
-                raise Exception('Not yet implemented!')
+                layer = individual.nework_v2.build_random_layer()
             else:
                 # keep checking the individual layer attributes
                 if layer.type == 'dropout' and helpers.lucky(local_noise):
@@ -227,7 +225,8 @@ class EvolutionaryOptimizer:
                     if helpers.lucky(local_noise):
                         # mutate the layer size
                         logging.debug('Mutating layer size')
-                        raise Exception('Not yet implemented!')
+                        layer['size'] = helpers.random_index_between(individual.config.TAXONOMY['min_neurons'],
+                                                                     individual.config.TAXONOMY['max_neurons'])
 
                     if helpers.lucky(local_noise):
                         # mutate activation function
@@ -236,7 +235,6 @@ class EvolutionaryOptimizer:
                 else:
                     logging.debug('Unknown layer type')
                     raise Exception('Not yet implemented!')
-
 
         return individual
 
