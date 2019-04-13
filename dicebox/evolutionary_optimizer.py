@@ -204,17 +204,17 @@ class EvolutionaryOptimizer:
             individual.network_v2['optimizer'] = individual.select_random_optimizer()
 
         # Determine the number of layers..
-        layer_count = len(individual.layers)
+        layer_count = len(individual.network_v2)
 
         # now mess around within the layers
         for index in range(1, layer_count):
-            layer = individual.layers[index - 1]
+            layer = individual.network_v2[index - 1]
             # see if the layer is mutated
             if helpers.lucky(local_noise):
                 # then change the layer type
                 # how does this affect the weights, etc? :/
                 logging.error('network layer type was mutated.')
-                layer = individual.nework_v2.build_random_layer()
+                layer = individual.build_random_layer()
             else:
                 # keep checking the individual layer attributes
                 if layer.type == 'dropout' and helpers.lucky(local_noise):
