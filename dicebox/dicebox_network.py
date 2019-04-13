@@ -102,7 +102,7 @@ class DiceboxNetwork:
 
         # Select an optimizer
         optimizer_index = helpers.random_index(len(self.config.TAXONOMY['optimizer']))
-        optimizer = self.config.TAXONOMY['optimizer'][optimizer_index]
+        optimizer = self.config.TAXONOMY['optimizer'][optimizer_index - 1]
         self.network_v2['optimizer'] = optimizer
 
         # Determine the number of layers..
