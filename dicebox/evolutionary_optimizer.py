@@ -121,7 +121,6 @@ class EvolutionaryOptimizer:
         summed = reduce(add, (self.fitness(network) for network in pop))
         return summed / float((len(pop)))
 
-    # TODO:
     def breed(self, mother, father):
         """Make two children as parts of their parents.
 
@@ -145,8 +144,28 @@ class EvolutionaryOptimizer:
 
 
             # v2
+            child = {}
+            child.network_v2 = {}
+            child.network_v2['layers'] = []
 
+            # Pick which parent's optimization function is passed on to offspring
+            if helpers.lucky(0.5):
+                child.network_v2['optimizer'] = mother.network_v2['optimizer']
+            else:
+                child.network_v2['optimizer'] = father.network_v2['optimizer']
 
+            # Determine the number of layers
+            if helpers.lucky(0.5):
+                layer_count = len(mother['layers'])
+            else:
+                layer_count = len(father['layers'])
+
+            for layer_index in range(1, layer_count):
+                # Pick which parent's layer is passed on to the offspring
+                if helpers.lucky(0.5) and len(mother.network_v2['layers']) <= (layer_index):
+                    child['network_v2']['layers'].append(mother.network_v2['layers'][layer_index - 1])
+                else:
+                    child['network_v2']['layers'].append(father.network_v2['layers'][layer_index - 1])
 
             # Now create a network object.
             network = DiceboxNetwork(config_file=self.config_file,
