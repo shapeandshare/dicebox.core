@@ -109,25 +109,31 @@ class DiceboxNetwork:
         layer_count = helpers.random_index_between(self.config.TAXONOMY['min_layers'],
                                                    self.config.TAXONOMY['max_layers'])
         for layer_index in range(1, layer_count):
-            # add a new layer
-            # determine what the layer type wil be
-            layer_type_index = helpers.random_index(len(self.config.TAXONOMY['layer_types']))
-            layer_type = self.config.TAXONOMY['layer_types'][layer_type_index - 1]
+            # add new random layer to the network
+            self.network_v2['layers'].append(self.build_random_layer())
 
-            new_layer = {}
-            new_layer['type'] = layer_type
-            if layer_type == 'dropout':
-                # get a dropout rate..
-                new_layer['rate'] = helpers.random()
-            else:
-                # determine the size and activation function to use.
-                new_layer['size'] = helpers.random_index_between(self.config.TAXONOMY['min_neurons'],
-                                                                 self.config.TAXONOMY['max_neurons'])
-                activation_index = helpers.random_index(len(self.config.TAXONOMY['activation']))
-                new_layer['activation'] = self.config.TAXONOMY['activation'][activation_index - 1]
+    def select_random_optimizer(self):
+        # Select an optimizer
+        optimizer_index = helpers.random_index(len(self.config.TAXONOMY['optimizer']))
+        return self.config.TAXONOMY['optimizer'][optimizer_index]
 
-            # add the layer to the network
-            self.network_v2['layers'].append(new_layer)
+    def build_random_layer(self):
+        # determine what the layer type will be
+        layer_type_index = helpers.random_index(len(self.config.TAXONOMY['layer_types']))
+        layer_type = self.config.TAXONOMY['layer_types'][layer_type_index - 1]
+
+        random_layer = {}
+        random_layer['type'] = layer_type
+        if layer_type == 'dropout':
+            # get a dropout rate..
+            random_layer['rate'] = helpers.random()
+        else:
+            # determine the size and activation function to use.
+            random_layer['size'] = helpers.random_index_between(self.config.TAXONOMY['min_neurons'],
+                                                             self.config.TAXONOMY['max_neurons'])
+            activation_index = helpers.random_index(len(self.config.TAXONOMY['activation']))
+            random_layer['activation'] = self.config.TAXONOMY['activation'][activation_index - 1]
+        return random_layer
 
     def create_lonestar(self, create_model=False, weights_filename=None):
         logging.debug('-' * 80)
