@@ -144,33 +144,57 @@ class EvolutionaryOptimizer:
 
 
             # v2
-            child = {}
-            child.network_v2 = {}
-            child.network_v2['layers'] = []
+            child = DiceboxNetwork(config_file=self.config_file,
+                                     lonestar_model_file=self.lonestar_model_file)
+            if child.network_v2 is None:
+                child.network_v2 = {}
+            if 'layers' not in child.network_v2:
+                child.network_v2['layers'] = []
+
+            # Set unchange-ables
+            child.network_v2['input_shape'] = child.config.INPUT_SHAPE
+            child.network_v2['output_size'] = child.config.NB_CLASSES
 
             # Pick which parent's optimization function is passed on to offspring
             if helpers.lucky(0.5):
+                logging.debug("child.network_v2['optimizer'] = mother(%s)", mother.network_v2['optimizer'])
                 child.network_v2['optimizer'] = mother.network_v2['optimizer']
             else:
+                logging.debug("child.network_v2['optimizer'] = father(%s)", father.network_v2['optimizer'])
                 child.network_v2['optimizer'] = father.network_v2['optimizer']
 
             # Determine the number of layers
             if helpers.lucky(0.5):
-                layer_count = len(mother['layers'])
+                logging.debug("child layer length = mother(%s)", len(mother.network_v2['layers']))
+                layer_count = len(mother.network_v2['layers'])
             else:
-                layer_count = len(father['layers'])
+                logging.debug("child layer length = father(%s)", len(father.network_v2['layers']))
+                layer_count = len(father.network_v2['layers'])
 
-            for layer_index in range(1, layer_count):
-                # Pick which parent's layer is passed on to the offspring
-                if helpers.lucky(0.5) and len(mother.network_v2['layers']) <= (layer_index):
-                    child['network_v2']['layers'].append(mother.network_v2['layers'][layer_index - 1])
+            for layer_index in range(0, layer_count):
+                logging.debug("layer (%s/%s)", layer_index, layer_count)
+                # # Pick which parent's layer is passed on to the offspring
+                if helpers.lucky(0.5):
+                    if layer_index < len(mother.network_v2['layers']):
+                        child.network_v2['layers'].append(mother.network_v2['layers'][layer_index])
+                    elif layer_index < len(father.network_v2['layers']):
+                        child.network_v2['layers'].append(father.network_v2['layers'][layer_index])
+                    else:
+                        raise Exception('wut?')
                 else:
-                    child['network_v2']['layers'].append(father.network_v2['layers'][layer_index - 1])
+                    if layer_index < len(father.network_v2['layers']):
+                        child.network_v2['layers'].append(father.network_v2['layers'][layer_index])
+                    elif layer_index < len(mother.network_v2['layers']):
+                        child.network_v2['layers'].append(mother.network_v2['layers'][layer_index])
+                    else:
+                        raise Exception('wut?')
 
             # Now create a network object.
             network = DiceboxNetwork(config_file=self.config_file,
                                      lonestar_model_file=self.lonestar_model_file)
-            network.create_set_v2(child)
+            network.create_set_v2(child.network_v2)
+            network.print_network_v2()
+            network.model_v2 = network.compile_model_v2(network.network_v2)
             children.append(network)
         return children
 
