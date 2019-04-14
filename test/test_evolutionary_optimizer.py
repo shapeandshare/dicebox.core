@@ -1,5 +1,4 @@
 import unittest
-import logging
 from dicebox.dicebox_network import DiceboxNetwork
 from dicebox.evolutionary_optimizer import EvolutionaryOptimizer
 

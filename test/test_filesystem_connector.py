@@ -1,6 +1,5 @@
 import unittest
 import logging
-import sys
 import json
 import numpy
 import numpy.testing
