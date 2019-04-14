@@ -1,7 +1,7 @@
 import os
 from PIL import Image
 import logging
-import dicebox.helpers as helpers
+import dicebox.utils.helpers as helpers
 from dicebox.config.dicebox_config import DiceboxConfig
 from dicebox.connectors.filesystem_connecter import FileSystemConnector
 import requests
