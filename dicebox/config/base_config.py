@@ -24,7 +24,9 @@ class BaseConfig(object):
         local_config = ConfigParser.ConfigParser()
         local_config.read(config_file)
 
-        # v2 model support
+        ###############################################################################
+        # Lonestar v2 model support - Options
+        ###############################################################################
         self.LONESTAR_DICEBOX_MODEL = None
         try:
             model_file = open(lonestar_model_file)
@@ -59,23 +61,13 @@ class BaseConfig(object):
         ###############################################################################
         # Neural Network Taxonomy Options
         ###############################################################################
-        self.NB_NEURONS = local_config.get('TAXONOMY', 'neurons')
-        self.NB_LAYERS = local_config.get('TAXONOMY', 'layers')
-        self.ACTIVATION = local_config.get('TAXONOMY', 'activation')
-        self.OPTIMIZER = local_config.get('TAXONOMY', 'optimizer')
-
-        self.NN_PARAM_CHOICES = {
-            'nb_neurons': json.loads(self.NB_NEURONS),
-            'nb_layers': json.loads(self.NB_LAYERS),
-            'activation': json.loads(self.ACTIVATION),
-            'optimizer': json.loads(self.OPTIMIZER)
-        }
-
         self.MIN_NEURONS = local_config.getint('TAXONOMY', 'min_neurons')
         self.MAX_NEURONS = local_config.getint('TAXONOMY', 'max_neurons')
         self.MIN_LAYERS = local_config.getint('TAXONOMY', 'min_layers')
         self.MAX_LAYERS = local_config.getint('TAXONOMY', 'max_layers')
         self.LAYER_TYPES = local_config.get('TAXONOMY', 'layer_types')
+        self.ACTIVATION = local_config.get('TAXONOMY', 'activation')
+        self.OPTIMIZER = local_config.get('TAXONOMY', 'optimizer')
 
         self.TAXONOMY = {
             'min_neurons': self.MIN_NEURONS,
@@ -86,24 +78,6 @@ class BaseConfig(object):
             'activation': json.loads(self.ACTIVATION),
             'optimizer': json.loads(self.OPTIMIZER)
         }
-
-
-
-        ###############################################################################
-        # Lonestar Options
-        ###############################################################################
-        self.NB_LONESTAR_NEURONS = local_config.getint('LONESTAR', 'neurons')
-        self.NB_LONESTAR_LAYERS = local_config.getint('LONESTAR', 'layers')
-        self.LONESTAR_ACTIVATION = local_config.get('LONESTAR', 'activation')
-        self.LONESTAR_OPTIMIZER = local_config.get('LONESTAR', 'optimizer')
-
-        self.NN_LONESTAR_PARAMS = {
-            'nb_neurons': self.NB_LONESTAR_NEURONS,
-            'nb_layers': self.NB_LONESTAR_LAYERS,
-            'activation': self.LONESTAR_ACTIVATION,
-            'optimizer': self.LONESTAR_OPTIMIZER
-        }
-
 
         ###############################################################################
         # Evolution Options
