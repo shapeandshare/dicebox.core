@@ -11,8 +11,6 @@ Credit:
 """
 from functools import reduce
 from operator import add
-import random
-import logging
 import copy
 import dicebox.utils.helpers as helpers
 from dicebox.config.dicebox_config import DiceboxConfig
@@ -79,30 +77,6 @@ class EvolutionaryOptimizer:
             pop.append(network)
 
         return pop
-
-    # def create_lonestar(self, count):
-    #     """Create a population of random networks.
-    #
-    #     Args:
-    #         count (int): Number of networks to generate, aka the
-    #             size of the population
-    #
-    #     Returns:
-    #         (list): Population of network objects
-    #
-    #     """
-    #     pop = []
-    #     for _ in range(0, count):
-    #         # Create a random network.
-    #         network = DiceboxNetwork(nn_param_choices=self.nn_param_choices,
-    #                                  config_file=self.config_file,
-    #                                  lonestar_model_file=self.lonestar_model_file)
-    #         network.create_lonestar_v2()
-    #
-    #         # Add the network to our population.
-    #         pop.append(network)
-    #
-    #     return pop
 
     @staticmethod
     def fitness(network):
@@ -180,12 +154,6 @@ class EvolutionaryOptimizer:
                     else:
                         raise Exception('wut?')
 
-            # Now create a network object.
-            # network = DiceboxNetwork(config_file=self.config_file,
-            #                          lonestar_model_file=self.lonestar_model_file)
-            # network.create_set_v2(child.network_v2)
-            # network.model_v2 = network.compile_model_v2(network.network_v2)
-            # children.append(network)
             child.model_v2 = child.compile_model_v2(child.network_v2)
             children.append(child)
         return children
@@ -274,7 +242,7 @@ class EvolutionaryOptimizer:
 
         # For those we aren't keeping, randomly keep some anyway.
         for individual in graded[retain_length:]:
-            if self.random_select > random.random():
+            if self.random_select > helpers.random():
                 parents.append(copy.deepcopy(individual))
 
         # Randomly mutate some of the networks we're keeping.
@@ -291,13 +259,13 @@ class EvolutionaryOptimizer:
         while len(children) < desired_length:
 
             # Get a random mom and dad.
-            male = random.randint(0, parents_length-1)
-            female = random.randint(0, parents_length-1)
+            male_index = helpers.random_index_between(0, parents_length - 1)
+            female_index = helpers.random_index_between(0, parents_length - 1)
 
             # Assuming they aren't the same network...
-            if male != female:
-                male = parents[male]
-                female = parents[female]
+            if male_index != female_index:
+                male = parents[male_index]
+                female = parents[female_index]
 
                 # Breed them.
                 babies = self.breed(male, female)
