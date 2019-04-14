@@ -2,6 +2,7 @@ import os
 import struct
 import math
 import errno
+import logging
 
 
 def lucky(noise=0):
@@ -10,8 +11,11 @@ def lucky(noise=0):
     :param noise: floating point value for noise
     :return: boolean
     """
+    if noise == 1:
+        return True
+    if noise == 0:
+        return False
     if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
-        # logging.debug('luck bestowed')
         return True
     return False
 
