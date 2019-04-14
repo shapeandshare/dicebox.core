@@ -18,15 +18,10 @@ class Test(unittest.TestCase):
         mother = DiceboxNetwork(config_file=self.local_config_file,
                                  lonestar_model_file=self.local_lonestar_model_file)
         mother.create_random_v2()
-        logging.info("*******************************************")
-        logging.info(mother.print_network_v2())
-        logging.info("*******************************************")
+
         father = DiceboxNetwork(config_file=self.local_config_file,
                                  lonestar_model_file=self.local_lonestar_model_file)
         father.create_random_v2()
-        logging.info("*******************************************")
-        logging.info(father.print_network_v2())
-        logging.info("*******************************************")
 
         op = EvolutionaryOptimizer(retain=0.4,
                                    random_select=0.1,
@@ -37,10 +32,9 @@ class Test(unittest.TestCase):
         # Breed them.
         babies = op.breed(mother, father)
         self.assertTrue(len(babies) == 2)
-        logging.info("*******************************************")
         for child in babies:
             child.print_network_v2()
-        logging.info("*******************************************")
+
 
 
 

@@ -134,16 +134,6 @@ class EvolutionaryOptimizer:
         """
         children = []
         for _ in range(2):
-            # v1
-            # child = {}
-            ## Loop through the parameters and pick params for the kid.
-            # for param in self.nn_param_choices:
-            #     child[param] = random.choice(
-            #         [mother.network[param], father.network[param]]
-            #     )
-
-
-            # v2
             child = DiceboxNetwork(config_file=self.config_file,
                                      lonestar_model_file=self.lonestar_model_file)
             if child.network_v2 is None:
@@ -157,23 +147,23 @@ class EvolutionaryOptimizer:
 
             # Pick which parent's optimization function is passed on to offspring
             if helpers.lucky(0.5):
-                logging.debug("child.network_v2['optimizer'] = mother(%s)", mother.network_v2['optimizer'])
+                # logging.debug("child.network_v2['optimizer'] = mother(%s)", mother.network_v2['optimizer'])
                 child.network_v2['optimizer'] = mother.network_v2['optimizer']
             else:
-                logging.debug("child.network_v2['optimizer'] = father(%s)", father.network_v2['optimizer'])
+                # logging.debug("child.network_v2['optimizer'] = father(%s)", father.network_v2['optimizer'])
                 child.network_v2['optimizer'] = father.network_v2['optimizer']
 
             # Determine the number of layers
             if helpers.lucky(0.5):
-                logging.debug("child layer length = mother(%s)", len(mother.network_v2['layers']))
+                # logging.debug("child layer length = mother(%s)", len(mother.network_v2['layers']))
                 layer_count = len(mother.network_v2['layers'])
             else:
-                logging.debug("child layer length = father(%s)", len(father.network_v2['layers']))
+                # logging.debug("child layer length = father(%s)", len(father.network_v2['layers']))
                 layer_count = len(father.network_v2['layers'])
 
             for layer_index in range(0, layer_count):
-                logging.debug("layer (%s/%s)", layer_index, layer_count)
-                # # Pick which parent's layer is passed on to the offspring
+                # logging.debug("layer (%s/%s)", layer_index, layer_count)
+                # Pick which parent's layer is passed on to the offspring
                 if helpers.lucky(0.5):
                     if layer_index < len(mother.network_v2['layers']):
                         child.network_v2['layers'].append(mother.network_v2['layers'][layer_index])
@@ -193,7 +183,6 @@ class EvolutionaryOptimizer:
             network = DiceboxNetwork(config_file=self.config_file,
                                      lonestar_model_file=self.lonestar_model_file)
             network.create_set_v2(child.network_v2)
-            network.print_network_v2()
             network.model_v2 = network.compile_model_v2(network.network_v2)
             children.append(network)
         return children
@@ -209,17 +198,6 @@ class EvolutionaryOptimizer:
         #
         # """
 
-        # v1 mutate
-        # # Choose a random key.
-        # mutation = random.choice(list(self.nn_param_choices.keys()))
-        #
-        # # Mutate one of the params.
-        # individual.network[mutation] = random.choice(self.nn_param_choices[mutation])
-        #
-        # return individual
-
-
-        # v2 mutate
         local_noise = self.mutate_chance
 
         # see if the optimizer is mutated
