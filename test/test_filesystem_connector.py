@@ -1,21 +1,9 @@
 import unittest
 import logging
-import sys
 import json
 import numpy
 import numpy.testing
-from dicebox.connectors .filesystem_connecter import FileSystemConnector
-
-
-root = logging.getLogger()
-root.setLevel(logging.DEBUG)
-
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-root.addHandler(handler)
-
+from dicebox.connectors.filesystem_connecter import FileSystemConnector
 
 
 class Test(unittest.TestCase):
@@ -28,11 +16,15 @@ class Test(unittest.TestCase):
     TEST_DATA_BASE = 'test/data'
     DATASET_LOCATION = '%s/test_dataset/data' % TEST_DATA_BASE
     DICEBOX_CONFIG_FILE = '%s/dicebox.config' % TEST_DATA_BASE
+    LONESTAR_MODEL_FILE = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
     DISABLE_DATA_INDEXING = False
 
     def setUp(self):
         # instantiate the file system connector Class
-        self.fsc = FileSystemConnector(self.DATASET_LOCATION, self.DISABLE_DATA_INDEXING, self.DICEBOX_CONFIG_FILE)
+        self.fsc = FileSystemConnector(data_directory=self.DATASET_LOCATION,
+                                       disable_data_indexing=self.DISABLE_DATA_INDEXING,
+                                       config_file=self.DICEBOX_CONFIG_FILE,
+                                       lonestar_model_file=self.LONESTAR_MODEL_FILE)
 
         with open('%s/DATASET_INDEX.json' % self.TEST_DATA_BASE) as json_file:
             self.EXPECTED_DATASET_INDEX = json.load(json_file)
@@ -80,13 +72,6 @@ class Test(unittest.TestCase):
         except Exception as e:
             self.assertEqual(e.message, 'Max batch size: 2, but 3 was specified!')
 
-    def test_lucky(self):
-        noise = 0
-        self.assertFalse(self.fsc.lucky(noise))
-
-        noise = 1
-        self.assertTrue(self.fsc.lucky(noise))
-
     def test_process_image(self):
         filename = '%s/0/mnist_testing_0_28x28_3.png' % self.DATASET_LOCATION
 
@@ -103,7 +88,6 @@ class Test(unittest.TestCase):
     def test_get_data_set(self):
         returned_data_set = self.fsc.get_data_set()
         self.assertEqual(returned_data_set, self.EXPECTED_DATASET_INDEX)
-
 
 
 if __name__ == '__main__':

@@ -5,7 +5,6 @@
 ##############################################################################
 
 """Class that represents the network to be evolved."""
-import random
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.callbacks import EarlyStopping
@@ -14,9 +13,11 @@ import logging
 import numpy
 from datetime import datetime
 import os
+import json
 from dicebox.config.dicebox_config import DiceboxConfig
 from dicebox.connectors.filesystem_connecter import FileSystemConnector
 from dicebox.connectors.sensory_service_connector import SensoryServiceConnector
+import dicebox.utils.helpers as helpers
 
 
 class DiceboxNetwork:
@@ -43,10 +44,15 @@ class DiceboxNetwork:
 
     callbacks_list = [early_stopper]
 
-
-    def __init__(self, nn_param_choices=None, create_fcs=True, disable_data_indexing=False, config_file='./dicebox.config'):
+    def __init__(self,
+                 nn_param_choices=None,
+                 create_fcs=True,
+                 disable_data_indexing=False,
+                 config_file='./dicebox.config',
+                 lonestar_model_file='./dicebox.lonestar.json'):
         if self.config is None:
-            self.config = DiceboxConfig(config_file)
+            self.config = DiceboxConfig(config_file=config_file,
+                                        lonestar_model_file=lonestar_model_file)
 
         """Initialize our network.
 
@@ -57,102 +63,127 @@ class DiceboxNetwork:
                 activation (list): ['relu', 'elu']
                 optimizer (list): ['rmsprop', 'adam']
         """
-        self.accuracy = 0.
-        self.nn_param_choices = nn_param_choices
-        self.network = {}  # (dic): represents MLP network parameters
-        self.model = None
+
+        self.accuracy_v2 = 0.
+        self.network_v2 = {}  # (the dicebox object)
+        self.model_v2 = None # the compiled network.
 
         if self.fsc is None and create_fcs is True:
             logging.debug('creating a new fsc..')
             logging.info('self.config.DATA_DIRECTORY: (%s)' % self.config.DATA_DIRECTORY)
-            self.fsc = FileSystemConnector(self.config.DATA_DIRECTORY, disable_data_indexing, config_file)
+            self.fsc = FileSystemConnector(data_directory=self.config.DATA_DIRECTORY,
+                                           disable_data_indexing=disable_data_indexing,
+                                           config_file=config_file,
+                                           lonestar_model_file=lonestar_model_file)
 
         if self.ssc is None:
             logging.debug('creating a new ssc..')
-            self.ssc = SensoryServiceConnector('client', config_file)
+            self.ssc = SensoryServiceConnector(role='client',
+                                               config_file=config_file,
+                                               lonestar_model_file=lonestar_model_file)
 
-    def create_random(self):
-        """Create a random network."""
-        for key in self.nn_param_choices:
-            self.network[key] = random.choice(self.nn_param_choices[key])
+    def create_random_v2(self):
+        self.network_v2 = {}
+        self.network_v2['layers'] = []
 
-    def create_lonestar(self, create_model=False, weights_filename=None):
+        # Set unchange-ables
+        self.network_v2['input_shape'] = self.config.INPUT_SHAPE
+        self.network_v2['output_size'] = self.config.NB_CLASSES
+
+        # Select an optimizer
+        optimizer_index = helpers.random_index(len(self.config.TAXONOMY['optimizer']))
+        optimizer = self.config.TAXONOMY['optimizer'][optimizer_index - 1]
+        self.network_v2['optimizer'] = optimizer
+
+        # Determine the number of layers..
+        layer_count = helpers.random_index_between(self.config.TAXONOMY['min_layers'],
+                                                   self.config.TAXONOMY['max_layers'])
+        for layer_index in range(1, layer_count):
+            # add new random layer to the network
+            self.network_v2['layers'].append(self.build_random_layer())
+
+    def select_random_optimizer(self):
+        # Select an optimizer
+        optimizer_index = helpers.random_index(len(self.config.TAXONOMY['optimizer']))
+        return self.config.TAXONOMY['optimizer'][optimizer_index - 1]
+
+    def build_random_layer(self):
+        # determine what the layer type will be
+        layer_type_index = helpers.random_index(len(self.config.TAXONOMY['layer_types']))
+        layer_type = self.config.TAXONOMY['layer_types'][layer_type_index - 1]
+
+        random_layer = {}
+        random_layer['type'] = layer_type
+        if layer_type == 'dropout':
+            # get a dropout rate..
+            random_layer['rate'] = helpers.random()
+        else:
+            # determine the size and activation function to use.
+            random_layer['size'] = helpers.random_index_between(self.config.TAXONOMY['min_neurons'],
+                                                             self.config.TAXONOMY['max_neurons'])
+            activation_index = helpers.random_index(len(self.config.TAXONOMY['activation']))
+            random_layer['activation'] = self.config.TAXONOMY['activation'][activation_index - 1]
+        return random_layer
+
+    def create_lonestar_v2(self, create_model=False, weights_filename=None):
         logging.debug('-' * 80)
-        logging.debug('create_lonestar(create_model, weights_filename)')
+        logging.debug('create_lonestar_v2(create_model, weights_filename)')
         logging.debug(create_model)
         logging.debug(weights_filename)
         logging.debug('-' * 80)
 
-        # Load from external definition
-        self.network['nb_layers'] = self.config.NN_LONESTAR_PARAMS['nb_layers']
-        self.network['activation'] = self.config.NN_LONESTAR_PARAMS['activation']
-        self.network['optimizer'] = self.config.NN_LONESTAR_PARAMS['optimizer']
-        self.network['nb_neurons'] = self.config.NN_LONESTAR_PARAMS['nb_neurons']
+        self.network_v2 = self.config.LONESTAR_DICEBOX_MODEL
         logging.debug('-' * 80)
-        logging.debug("self.network['nb_layers']: %s" % self.network['nb_layers'])
-        logging.debug("self.network['activation']: %s" % self.network['activation'])
-        logging.debug("self.network['optimizer']: %s" % self.network['optimizer'])
-        logging.debug("self.network['nb_neurons']:%s" % self.network['nb_neurons'])
+        logging.debug(self.network_v2)
         logging.debug('-' * 80)
 
         if create_model is True:
-            if self.model is None:
+            if self.model_v2 is None:
                 logging.debug('compiling model')
-                self.model = self.compile_model(self.network, self.config.NB_CLASSES, self.config.INPUT_SHAPE)
+                self.model_v2 = self.compile_model_v2(self.network_v2)
                 if weights_filename is not None:
                     logging.debug("loading weights file: (%s)" % weights_filename)
-                    self.load_model(weights_filename)
+                    self.load_model_v2(weights_filename)
             # else:
             #     logging.info('model already compiled, skipping.')
 
-    def create_set(self, network):
-        """Set network properties.
+    def create_set_v2(self, network_v2):
+        self.network_v2 = network_v2
 
-        Args:
-            network (dict): The network parameters
+    def train_v2(self):
+        if self.accuracy_v2 == 0.:
+            self.accuracy_v2 = self.train_and_score_v2(self.network_v2)
 
-        """
-        self.network = network
-
-    def train(self):
-        """Train the network and record the accuracy.
-
-
-        """
-        if self.accuracy == 0.:
-            self.accuracy = self.train_and_score(self.network)
-
-    def train_and_save(self, dataset):
-        # if self.accuracy == 0.:
+    def train_and_save_v2(self, dataset):
+        # if self.accuracy_v2 == 0.:
         logging.debug('-' * 80)
-        logging.debug("train_and_save(dataset)")
-        logging.debug("train_and_save(dataset=%s)" % dataset)
+        logging.debug("train_and_save_v2(dataset)")
+        logging.debug("train_and_save_v2(dataset=%s)" % dataset)
         logging.debug('-' * 80)
-        self.accuracy = self.train_and_score_and_save(dataset)
+        self.accuracy_v2 = self.train_and_score_and_save_v2(dataset)
 
-    def print_network(self):
+    def print_network_v2(self):
         """Print out a network."""
-        logging.info(self.network)
-        logging.info("Network accuracy: %.2f%%" % (self.accuracy * 100))
+        logging.info(self.network_v2)
+        logging.info("Network accuracy: %.2f%%" % (self.accuracy_v2 * 100))
 
-    def train_and_score(self, network):
+    def train_and_score_v2(self, network_v2):
         if self.config.DICEBOX_COMPLIANT_DATASET is True:
-            nb_classes, batch_size, input_shape, x_train, \
-                x_test, y_train, y_test = self.get_dicebox_filesystem()
+            x_train, x_test, y_train, y_test = self.get_dicebox_filesystem_v2()
         else:
             raise Exception('Unknown dataset type!  Please define, or correct.')
 
-        model = self.compile_model(network, nb_classes, input_shape)
+        model = self.compile_model_v2(network_v2)
 
-        logging.info('Fitting model:')
-        logging.info(network)
+        logging.info('batch size (model.fit): %s' % self.config.BATCH_SIZE)
 
-        logging.info('batch_size: %s' % batch_size)
-        logging.info('nb_classes: %s' % nb_classes)
-        logging.info('input_shape: %s' % input_shape)
+        logging.info('Fitting network:')
+        logging.info(network_v2)
+        logging.info('compiled model:')
+        logging.info(json.dumps(json.loads(model.to_json())))
 
         model.fit(x_train, y_train,
-                  batch_size=batch_size,
+                  batch_size=self.config.BATCH_SIZE,
                   epochs=10000,  # using early stopping, so no real limit
                   verbose=1,
                   validation_data=(x_test, y_test),
@@ -163,45 +194,39 @@ class DiceboxNetwork:
         return score[1]  # 1 is accuracy. 0 is loss.
 
     @staticmethod
-    def compile_model(network, nb_classes, input_shape):
-        # Get our network parameters.
-        nb_layers = network['nb_layers']
-        nb_neurons = network['nb_neurons']
-        activation = network['activation']
-        optimizer = network['optimizer']
-
+    def compile_model_v2(dicebox_model):
         model = Sequential()
 
-        # Add each layer.
-        for i in range(nb_layers):
-
-            # Need input shape for first layer.
-            if i == 0:
-                model.add(Dense(nb_neurons, activation=activation, input_shape=input_shape))
+        layers = dicebox_model['layers']
+        first_layer = False
+        for layer in layers:
+            # build and add layer
+            if layer['type'] == 'dropout':
+                # handle dropout
+                model.add(Dropout(layer['rate']))
             else:
-                model.add(Dense(nb_neurons, activation=activation))
+                neurons = layer['size']
+                activation = layer['activation']
 
-            model.add(Dropout(0.2))  # hard-coded dropout
+                if first_layer is False:
+                    first_layer = True
+                    model.add(Dense(neurons, activation=activation, input_shape=dicebox_model['input_shape']))
+                else:
+                    model.add(Dense(neurons, activation=activation))
 
-        # Output layer.
-        model.add(Dense(nb_classes, activation='softmax'))
+        # add final output layer.
+        model.add(Dense(dicebox_model['output_size'], activation='softmax'))
 
-        model.compile(loss='categorical_crossentropy', optimizer=optimizer,
+        model.compile(loss='categorical_crossentropy', optimizer=dicebox_model['optimizer'],
                       metrics=['accuracy'])
 
         return model
 
-    def get_dicebox_filesystem(self):
-        nb_classes = self.config.NB_CLASSES
-        batch_size = self.config.BATCH_SIZE
-        input_shape = self.config.INPUT_SHAPE
+    def get_dicebox_filesystem_v2(self):
         noise = self.config.NOISE
-        train_batch_size = self.config.TRAIN_BATCH_SIZE
         test_batch_size = self.config.TEST_BATCH_SIZE
+        train_batch_size = self.config.TRAIN_BATCH_SIZE
 
-        logging.info('nb_classes: %s' % nb_classes)
-        logging.info('batch_size: %s' % batch_size)
-        logging.info('input_shape: %s' % input_shape)
         logging.info('noise: %s' % noise)
         logging.info('train_batch_size: %s' % train_batch_size)
         logging.info('test_batch_size: %s' % test_batch_size)
@@ -224,16 +249,14 @@ class DiceboxNetwork:
         x_test = test_image_data
         y_train = train_image_labels
         y_test = test_image_labels
-        return nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test
 
-    def get_dicebox_sensory_data(self):
+        return x_train, x_test, y_train, y_test
+
+    def get_dicebox_sensory_data_v2(self):
         logging.debug('-' * 80)
-        logging.debug('get_dicebox_sensory_data(self)')
+        logging.debug('get_dicebox_sensory_data_v2(self)')
         logging.debug('-' * 80)
 
-        nb_classes = self.config.NB_CLASSES
-        batch_size = self.config.BATCH_SIZE
-        input_shape = self.config.INPUT_SHAPE
         noise = self.config.NOISE
         train_batch_size = self.config.TRAIN_BATCH_SIZE
         test_batch_size = self.config.TEST_BATCH_SIZE
@@ -244,22 +267,22 @@ class DiceboxNetwork:
 
             logging.debug('-' * 80)
             logging.debug('train_image_data to numpy.array')
-            #logging.debug(train_image_data)
+            # logging.debug(train_image_data)
 
             train_image_data = numpy.array(train_image_data)
-            #logging.debug(train_image_data)
+            # logging.debug(train_image_data)
 
             logging.debug('train_image_data astype float32')
             train_image_data = train_image_data.astype('float32')
-            #logging.debug(train_image_data)
+            # logging.debug(train_image_data)
 
             logging.debug('train_image_data /255')
             train_image_data /= 255
-            #logging.debug(train_image_data)
+            # logging.debug(train_image_data)
 
             logging.debug('train_image_labels to numpy.array')
             train_image_labels = numpy.array(train_image_labels)
-            #logging.debug(train_image_labels)
+            # logging.debug(train_image_labels)
             logging.debug('-' * 80)
         except ValueError:
             logging.debug('Caught ValueError when processing training data.')
@@ -272,47 +295,46 @@ class DiceboxNetwork:
 
             logging.debug('-' * 80)
             logging.debug('test_image_data to numpy.array')
-            #logging.debug(test_image_data)
+            # logging.debug(test_image_data)
 
             test_image_data = numpy.array(test_image_data)
-            #logging.debug(test_image_data)
+            # logging.debug(test_image_data)
 
             logging.debug('test_image_data astype float32')
             test_image_data = test_image_data.astype('float32')
-            #logging.debug(test_image_data)
+            # logging.debug(test_image_data)
 
             logging.debug('test_image_data /255')
             test_image_data /= 255
-            #logging.debug(test_image_data)
+            # logging.debug(test_image_data)
 
             logging.debug('test_image_labels to numpy.array')
             test_image_labels = numpy.array(test_image_labels)
-            #logging.debug(test_image_labels)
+            # logging.debug(test_image_labels)
         except ValueError:
             logging.debug('Caught ValueError when processing test data.')
             logging.debug('failing out..')
             raise ValueError
 
-        logging.debug("nb_classes: (%i)" % nb_classes)
-        logging.debug("batch_size: (%i)" % batch_size)
-        logging.debug("input_shape: (%s)" % input_shape)
-
         x_train = train_image_data
         x_test = test_image_data
         y_train = train_image_labels
         y_test = test_image_labels
-        return nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test
+        return x_train, x_test, y_train, y_test
 
-    def train_and_score_and_save(self, dataset):
+    def train_and_score_and_save_v2(self, dataset):
+        raise Exception('Not yet implemented!')
+
         logging.debug('-' * 80)
-        logging.debug("train_and_score_and_save(dataset)")
-        logging.debug("train_and_score_and_save(dataset=%s)" % dataset)
+        logging.debug("train_and_score_and_save_v2(dataset)")
+        logging.debug("train_and_score_and_save_v2(dataset=%s)" % dataset)
         logging.debug('-' * 80)
         if self.config.DICEBOX_COMPLIANT_DATASET is True:
             logging.debug('-' * 80)
             logging.debug('loading sensory data..')
             logging.debug('-' * 80)
-            nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_sensory_data()
+            x_train, x_test, y_train, y_test = self.get_dicebox_sensory_data_v2()
+            # nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_sensory_data()
             # nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_filesystem()
             logging.debug('-' * 80)
             logging.debug('Done!')
@@ -325,8 +347,8 @@ class DiceboxNetwork:
         logging.debug('-' * 80)
         logging.debug('Compiling model if need be.')
         logging.debug('-' * 80)
-        if self.model is None:
-            self.model = self.compile_model(self.network, nb_classes, input_shape)
+        if self.model_v2 is None:
+            self.model_v2 = self.compile_model_v2(self.network_v2)
         logging.debug('-' * 80)
         logging.debug('Done!')
         logging.debug('-' * 80)
@@ -334,8 +356,8 @@ class DiceboxNetwork:
         logging.debug('-' * 80)
         logging.debug('Fitting model.')
         logging.debug('-' * 80)
-        self.model.fit(x_train, y_train,
-                       batch_size=batch_size,
+        self.model_v2.fit(x_train, y_train,
+                       batch_size=self.config.BATCH_SIZE,
                        epochs=10000,  # using early stopping, so no real limit
                        verbose=1,
                        validation_data=(x_test, y_test),
@@ -347,41 +369,50 @@ class DiceboxNetwork:
         logging.debug('-' * 80)
         logging.debug('Scoring model.')
         logging.debug('-' * 80)
-        score = self.model.evaluate(x_test, y_test, verbose=1)
+        score = self.model_v2.evaluate(x_test, y_test, verbose=1)
         logging.debug('-' * 80)
         logging.debug('Done!')
         logging.debug('-' * 80)
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
-    def save_model(self, filename):
-        logging.info('saving model weights to file..')
-        self.model.save(str(filename))   # https://github.com/keras-team/keras/issues/11269
-
-    def load_model(self, filename):
-        if self.model is None:
+    def save_model_v2(self, filename):
+        if self.model_v2 is None:
             logging.error('no model! :(  compile the model first.')
             raise Exception('no model! :(  compile the model first.')
         logging.debug('loading weights file..')
         try:
-            self.model.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
+            self.model_v2.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
         except Exception as e:
             logging.error('Unable to load weights file.')
             logging.error(e)
             raise e
 
-    def classify(self, network_input):
+    def load_model_v2(self, filename):
+        if self.model_v2 is None:
+            logging.error('no model! :(  compile the model first.')
+            raise Exception('no model! :(  compile the model first.')
+        logging.debug('loading weights file..')
+        try:
+            self.model_v2.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
+        except Exception as e:
+            logging.error('Unable to load weights file.')
+            logging.error(e)
+            raise e
+        raise Exception('Not yet implemented!')
+
+    def classify_v2(self, network_input):
         if self.config.DICEBOX_COMPLIANT_DATASET is True:
-            x_test = self.get_dicebox_raw(network_input)
+            x_test = self.get_dicebox_raw_v2(network_input)
         else:
             logging.error("UNKNOWN DATASET (%s) passed to classify" % self.config.NETWORK_NAME)
             raise Exception("UNKNOWN DATASET (%s) passed to classify" % self.config.NETWORK_NAME)
 
-        if self.model is None:
+        if self.model_v2 is None:
             logging.error('Unable to classify without a model. :(')
             raise Exception('Unable to classify without a model. :(')
 
-        model_prediction = self.model.predict_classes(x_test, batch_size=1, verbose=0)
+        model_prediction = self.model_v2.predict_classes(x_test, batch_size=1, verbose=0)
         logging.info(model_prediction)
 
         return model_prediction

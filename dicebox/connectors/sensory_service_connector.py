@@ -1,13 +1,13 @@
 import os
 from PIL import Image
 import logging
+import dicebox.utils.helpers as helpers
 from dicebox.config.dicebox_config import DiceboxConfig
 from dicebox.connectors.filesystem_connecter import FileSystemConnector
 import requests
 import json
 from datetime import datetime
 import pika
-import errno
 
 
 class SensoryServiceConnector:
@@ -16,11 +16,11 @@ class SensoryServiceConnector:
     interface_role = None
     config = None
 
-    def __init__(self, role, config_file='./dicebox.config'):
+    def __init__(self, role, config_file='./dicebox.config', lonestar_model_file='./dicebox.lonestar.json'):
         logging.debug('Three wise monkeys')
 
         if self.config is None:
-            self.config = DiceboxConfig(config_file)
+            self.config = DiceboxConfig(config_file=config_file, lonestar_model_file=lonestar_model_file)
 
         if self.interface_role is None:
             self.interface_role = role
@@ -32,7 +32,9 @@ class SensoryServiceConnector:
         if role == 'server':
             if self.fsc is None:
                 logging.debug("[%s] creating a new fsc..", self.interface_role)
-                self.fsc = FileSystemConnector(self.config.DATA_DIRECTORY)
+                self.fsc = FileSystemConnector(data_directory=self.config.DATA_DIRECTORY,
+                                               config_file=config_file,
+                                               lonestar_model_file=lonestar_model_file)
 
     def get_batch(self, batch_size=0, noise=0):
         logging.debug('-' * 80)
@@ -231,20 +233,9 @@ class SensoryServiceConnector:
         path = "%s/%s/" % (data_dir, data_category)
         full_filename = "%s%s" % (path, filename)
         logging.debug("(%s)" % (full_filename))
-        self.make_sure_path_exists(path)
+        helpers.make_sure_path_exists(path)
         image_obj.save(full_filename)
         return True
-
-    # TODO: temporary - we should calculate this using one of the provided methods this is really for testing the threaded-caching
-    # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist
-    @staticmethod
-    def make_sure_path_exists(path):
-        try:
-            if os.path.exists(path) is False:
-                os.makedirs(path)
-        except OSError as exception:
-            if exception.errno != errno.EEXIST:
-                raise
 
     def sensory_batch_poll(self, batch_id):
         # lets try to grab more than one at a time // combine and return

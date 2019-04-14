@@ -1,0 +1,12 @@
+include config/*.config
+include config/*.json
+include docs/*.LICENSE
+include test/data/*.json
+include test/data/test_dataset/data/0/*.png
+include test/data/test_dataset/data/0/*.binary
+include test/data/test_dataset/data/1/*.png
+include *.md
+include LICENSE
+include *.txt
+include *.sh
+include .pylintrc

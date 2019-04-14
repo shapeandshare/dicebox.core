@@ -16,19 +16,18 @@ from dicebox.config.base_config import BaseConfig
 
 class DiceboxConfig(object):
     
-    def __init__(self, config_file='./dicebox.config'):
-        self.dc = BaseConfig(config_file)
-    
-        
+    def __init__(self, config_file='./dicebox.config', lonestar_model_file='./dicebox.lonestar.json'):
+        self.dc = BaseConfig(config_file=config_file, lonestar_model_file=lonestar_model_file)
+
         ###############################################################################
         # Data Set Options
         ###############################################################################
-        
+
         # Load user defined config
         self.DATASET = self.dc.DATASET
         if 'DATASET' in os.environ:
             self.DATASET = os.environ['DATASET']
-        
+
         self.DICEBOX_COMPLIANT_DATASET = self.dc.DICEBOX_COMPLIANT_DATASET
         if 'DICEBOX_COMPLIANT_DATASET' in os.environ:
             self.DICEBOX_COMPLIANT_DATASET = os.environ['DICEBOX_COMPLIANT_DATASET']
@@ -69,13 +68,25 @@ class DiceboxConfig(object):
         ###############################################################################
         # Neural Network Taxonomy Options
         ###############################################################################
-        self.NB_NEURONS = self.dc.NB_NEURONS
-        if 'NB_NEURONS' in os.environ:
-            self.NB_NEURONS = os.environ['NB_NEURONS']
+        self.MIN_NEURONS = self.dc.MIN_NEURONS
+        if 'MIN_NEURONS' in os.environ:
+            self.MIN_NEURONS = os.environ['MIN_NEURONS']
 
-        self.NB_LAYERS = self.dc.NB_LAYERS
-        if 'NB_LAYERS' in os.environ:
-            self.NB_LAYERS = os.environ['NB_LAYERS']
+        self.MAX_NEURONS = self.dc.MAX_NEURONS
+        if 'MAX_NEURONS'  in os.environ:
+            self.MAX_NEURONS = os.environ['MAX_NEURONS']
+
+        self.MIN_LAYERS = self.dc.MIN_LAYERS
+        if 'MIN_LAYERS'  in os.environ:
+            self.MIN_LAYERS = os.environ['MIN_LAYERS']
+
+        self.MAX_LAYERS = self.dc.MAX_LAYERS
+        if 'MAX_LAYERS'  in os.environ:
+            self.MAX_LAYERS = os.environ['MAX_LAYERS']
+
+        self.LAYER_TYPES = self.dc.LAYER_TYPES
+        if 'LAYER_TYPES'  in os.environ:
+            self.LAYER_TYPES = os.environ['LAYER_TYPES']
 
         self.ACTIVATION = self.dc.ACTIVATION
         if 'ACTIVATION' in os.environ:
@@ -85,9 +96,12 @@ class DiceboxConfig(object):
         if 'OPTIMIZER' in os.environ:
             self.OPTIMIZER = os.environ['OPTIMIZER']
 
-        self.NN_PARAM_CHOICES = {
-            'nb_neurons': json.loads(self.NB_NEURONS),
-            'nb_layers': json.loads(self.NB_LAYERS),
+        self.TAXONOMY = {
+            'min_neurons': self.MIN_NEURONS,
+            'max_neurons': self.MAX_NEURONS,
+            'min_layers': self.MIN_LAYERS,
+            'max_layers': self.MAX_LAYERS,
+            'layer_types': json.loads(self.LAYER_TYPES),
             'activation': json.loads(self.ACTIVATION),
             'optimizer': json.loads(self.OPTIMIZER)
         }
@@ -96,28 +110,9 @@ class DiceboxConfig(object):
         ###############################################################################
         # Lonestar Options
         ###############################################################################
-        self.NB_LONESTAR_NEURONS = self.dc.NB_LONESTAR_NEURONS
-        if 'NB_LONESTAR_NEURONS' in os.environ:
-            self.NB_LONESTAR_NEURONS = int(os.environ['NB_LONESTAR_NEURONS'])
-
-        self.NB_LONESTAR_LAYERS = self.dc.NB_LONESTAR_LAYERS
-        if 'NB_LONESTAR_LAYERS' in os.environ:
-            self.NB_LONESTAR_LAYERS = int(os.environ['NB_LONESTAR_LAYERS'])
-
-        self.LONESTAR_ACTIVATION = self.dc.LONESTAR_ACTIVATION
-        if 'LONESTAR_ACTIVATION' in os.environ:
-            self.LONESTAR_ACTIVATION = os.environ['LONESTAR_ACTIVATION']
-
-        self.LONESTAR_OPTIMIZER = self.dc.LONESTAR_OPTIMIZER
-        if 'LONESTAR_OPTIMIZER' in os.environ:
-            self.LONESTAR_OPTIMIZER = os.environ['LONESTAR_OPTIMIZER']
-
-        self.NN_LONESTAR_PARAMS = {
-            'nb_neurons': self.NB_LONESTAR_NEURONS,
-            'nb_layers': self.NB_LONESTAR_LAYERS,
-            'activation': self.LONESTAR_ACTIVATION,
-            'optimizer': self.LONESTAR_OPTIMIZER
-        }
+        self.LONESTAR_DICEBOX_MODEL = self.dc.LONESTAR_DICEBOX_MODEL
+        if 'LONESTAR_DICEBOX_MODEL' in os.environ:
+            self.LONESTAR_DICEBOX_MODEL = json.loads(os.environ['LONESTAR_DICEBOX_MODEL'])
 
 
         ###############################################################################
