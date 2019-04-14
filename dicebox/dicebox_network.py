@@ -5,7 +5,6 @@
 ##############################################################################
 
 """Class that represents the network to be evolved."""
-import random
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.callbacks import EarlyStopping
