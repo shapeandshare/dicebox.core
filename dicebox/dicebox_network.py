@@ -115,7 +115,7 @@ class DiceboxNetwork:
     def select_random_optimizer(self):
         # Select an optimizer
         optimizer_index = helpers.random_index(len(self.config.TAXONOMY['optimizer']))
-        return self.config.TAXONOMY['optimizer'][optimizer_index]
+        return self.config.TAXONOMY['optimizer'][optimizer_index - 1]
 
     def build_random_layer(self):
         # determine what the layer type will be
