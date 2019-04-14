@@ -13,6 +13,7 @@ from functools import reduce
 from operator import add
 import random
 import logging
+import copy
 import dicebox.utils.helpers as helpers
 from dicebox.config.dicebox_config import DiceboxConfig
 from dicebox.dicebox_network import DiceboxNetwork
@@ -180,65 +181,55 @@ class EvolutionaryOptimizer:
                         raise Exception('wut?')
 
             # Now create a network object.
-            network = DiceboxNetwork(config_file=self.config_file,
-                                     lonestar_model_file=self.lonestar_model_file)
-            network.create_set_v2(child.network_v2)
-            network.model_v2 = network.compile_model_v2(network.network_v2)
-            children.append(network)
+            # network = DiceboxNetwork(config_file=self.config_file,
+            #                          lonestar_model_file=self.lonestar_model_file)
+            # network.create_set_v2(child.network_v2)
+            # network.model_v2 = network.compile_model_v2(network.network_v2)
+            # children.append(network)
+            child.model_v2 = child.compile_model_v2(child.network_v2)
+            children.append(child)
         return children
 
     def mutate(self, individual):
-        # """Randomly mutate one part of the network.
-        #
-        # Args:
-        #     individual (dict): The network parameters to mutate
-        #
-        # Returns:
-        #     (Network): A randomly mutated network object
-        #
-        # """
-
         local_noise = self.mutate_chance
 
+        clone = copy.deepcopy(individual)
         # see if the optimizer is mutated
         if helpers.lucky(local_noise):
             # yep..  Select an optimizer
-            individual.network_v2['optimizer'] = individual.select_random_optimizer()
+            clone.network_v2['optimizer'] = clone.select_random_optimizer()
 
         # Determine the number of layers..
-        layer_count = len(individual.network_v2)
+        layer_count = len(clone.network_v2['layers'])
 
         # now mess around within the layers
         for index in range(1, layer_count):
-            layer = individual.network_v2[index - 1]
+            layer = clone.network_v2['layers'][index - 1]
             # see if the layer is mutated
             if helpers.lucky(local_noise):
                 # then change the layer type
                 # how does this affect the weights, etc? :/
-                logging.error('network layer type was mutated.')
-                layer = individual.build_random_layer()
+                layer = clone.build_random_layer()
             else:
                 # keep checking the individual layer attributes
-                if layer.type == 'dropout' and helpers.lucky(local_noise):
-                    # mutate the dropout rate
-                    layer['rate'] = helpers.random()
-
-                elif layer.type == 'dense':
+                if layer['type'] == 'dropout':
+                    if helpers.lucky(local_noise):
+                        # mutate the dropout rate
+                        layer['rate'] = helpers.random()
+                elif layer['type'] == 'dense':
                     if helpers.lucky(local_noise):
                         # mutate the layer size
                         logging.debug('Mutating layer size')
-                        layer['size'] = helpers.random_index_between(individual.config.TAXONOMY['min_neurons'],
-                                                                     individual.config.TAXONOMY['max_neurons'])
-
+                        layer['size'] = helpers.random_index_between(clone.config.TAXONOMY['min_neurons'],
+                                                                     clone.config.TAXONOMY['max_neurons'])
                     if helpers.lucky(local_noise):
                         # mutate activation function
-                        activation_index = helpers.random_index(len(individual.config.TAXONOMY['activation']))
-                        layer['activation'] = individual.config.TAXONOMY['activation'][activation_index - 1]
+                        activation_index = helpers.random_index(len(clone.config.TAXONOMY['activation']))
+                        layer['activation'] = clone.config.TAXONOMY['activation'][activation_index - 1]
                 else:
                     logging.debug('Unknown layer type')
                     raise Exception('Not yet implemented!')
-
-        return individual
+        return clone
 
     def evolve(self, pop):
         """Evolve a population of networks.
@@ -260,16 +251,16 @@ class EvolutionaryOptimizer:
         retain_length = int(len(graded)*self.retain)
 
         # The parents are every network we want to keep.
-        parents = graded[:retain_length]
+        parents = copy.deepcopy(graded[:retain_length])
 
         # For those we aren't keeping, randomly keep some anyway.
         for individual in graded[retain_length:]:
             if self.random_select > random.random():
-                parents.append(individual)
+                parents.append(copy.deepcopy(individual))
 
         # Randomly mutate some of the networks we're keeping.
         for individual in parents:
-            if self.mutate_chance > random.random():
+            if helpers.lucky(self.mutate_chance):
                 individual = self.mutate(individual)
 
         # Now find out how many spots we have left to fill.
