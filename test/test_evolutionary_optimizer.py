@@ -34,12 +34,14 @@ class Test(unittest.TestCase):
         self.assertTrue(len(babies) == 2)
         for child in babies:
             child.print_network_v2()
-
+            self.assertNotEqual(mother, child)
+            self.assertNotEqual(father, child)
+            self.assertNotEqual(mother, father)
 
     def test_mutate(self):
         op = EvolutionaryOptimizer(retain=0.4,
                                    random_select=0.1,
-                                   mutate_chance=1.0,
+                                   mutate_chance=1,
                                    config_file=self.local_config_file,
                                    lonestar_model_file=self.local_lonestar_model_file)
 
@@ -53,8 +55,10 @@ class Test(unittest.TestCase):
 
         mutant.model_v2 = mutant.compile_model_v2(mutant.network_v2)
         after_network = mutant.network_v2
+        self.assertNotEqual(id(individual), id(mutant))
+        self.assertNotEqual(id(individual.network_v2), id(mutant.network_v2))
+        self.assertNotEqual(id(before_network), id(after_network))
         self.assertNotEqual(before_network, after_network)
-
 
 if __name__ == '__main__':
     # begin the unittest.main()
