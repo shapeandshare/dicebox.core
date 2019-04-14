@@ -15,7 +15,7 @@
                             "mode": "fan_avg"
                         }
                     }, 
-                    "name": "dense_19", 
+                    "name": "dense_7", 
                     "kernel_constraint": null, 
                     "bias_regularizer": null, 
                     "bias_constraint": null, 
@@ -43,7 +43,7 @@
                     "noise_shape": null, 
                     "trainable": true, 
                     "seed": null, 
-                    "name": "dropout_16"
+                    "name": "dropout_6"
                 }
             }, 
             {
@@ -58,7 +58,7 @@
                             "mode": "fan_avg"
                         }
                     }, 
-                    "name": "dense_20", 
+                    "name": "dense_8", 
                     "kernel_constraint": null, 
                     "bias_regularizer": null, 
                     "bias_constraint": null, 
@@ -81,7 +81,7 @@
                     "noise_shape": null, 
                     "trainable": true, 
                     "seed": null, 
-                    "name": "dropout_17"
+                    "name": "dropout_7"
                 }
             }, 
             {
@@ -96,7 +96,7 @@
                             "mode": "fan_avg"
                         }
                     }, 
-                    "name": "dense_21", 
+                    "name": "dense_9", 
                     "kernel_constraint": null, 
                     "bias_regularizer": null, 
                     "bias_constraint": null, 
@@ -119,7 +119,7 @@
                     "noise_shape": null, 
                     "trainable": true, 
                     "seed": null, 
-                    "name": "dropout_18"
+                    "name": "dropout_8"
                 }
             }, 
             {
@@ -134,7 +134,7 @@
                             "mode": "fan_avg"
                         }
                     }, 
-                    "name": "dense_22", 
+                    "name": "dense_10", 
                     "kernel_constraint": null, 
                     "bias_regularizer": null, 
                     "bias_constraint": null, 
@@ -157,7 +157,7 @@
                     "noise_shape": null, 
                     "trainable": true, 
                     "seed": null, 
-                    "name": "dropout_19"
+                    "name": "dropout_9"
                 }
             }, 
             {
@@ -172,7 +172,7 @@
                             "mode": "fan_avg"
                         }
                     }, 
-                    "name": "dense_23", 
+                    "name": "dense_11", 
                     "kernel_constraint": null, 
                     "bias_regularizer": null, 
                     "bias_constraint": null, 
@@ -195,7 +195,7 @@
                     "noise_shape": null, 
                     "trainable": true, 
                     "seed": null, 
-                    "name": "dropout_20"
+                    "name": "dropout_10"
                 }
             }, 
             {
@@ -210,7 +210,7 @@
                             "mode": "fan_avg"
                         }
                     }, 
-                    "name": "dense_24", 
+                    "name": "dense_12", 
                     "kernel_constraint": null, 
                     "bias_regularizer": null, 
                     "bias_constraint": null, 
@@ -227,7 +227,7 @@
                 }
             }
         ], 
-        "name": "sequential_4"
+        "name": "sequential_2"
     }, 
     "backend": "tensorflow"
 }
