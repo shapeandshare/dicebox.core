@@ -191,44 +191,63 @@ class EvolutionaryOptimizer:
         return children
 
     def mutate(self, individual):
+        # mutations = 0
         local_noise = self.mutate_chance
-
+        # logging.debug("***************************************************")
         clone = copy.deepcopy(individual)
         # see if the optimizer is mutated
         if helpers.lucky(local_noise):
             # yep..  Select an optimizer
+            # logging.debug("optimizer = (%s)", clone.network_v2['optimizer'])
             clone.network_v2['optimizer'] = clone.select_random_optimizer()
+            # mutations += 1
+            # logging.debug("optimizer = (%s)", clone.network_v2['optimizer'])
 
         # Determine the number of layers..
         layer_count = len(clone.network_v2['layers'])
 
         # now mess around within the layers
         for index in range(1, layer_count):
-            layer = clone.network_v2['layers'][index - 1]
             # see if the layer is mutated
             if helpers.lucky(local_noise):
                 # then change the layer type
                 # how does this affect the weights, etc? :/
-                layer = clone.build_random_layer()
+                # logging.debug("layer = (%s)", layer)
+                clone.network_v2['layers'][index - 1] = clone.build_random_layer()
+                # mutations += 1
+                # logging.debug("layer = (%s)", layer)
             else:
+                layer = clone.network_v2['layers'][index - 1]
+
                 # keep checking the individual layer attributes
                 if layer['type'] == 'dropout':
                     if helpers.lucky(local_noise):
                         # mutate the dropout rate
+                        # logging.debug("rate = (%s)", layer['rate'])
                         layer['rate'] = helpers.random()
+                        # mutations += 1
+                        # logging.debug("rate = (%s)", layer['rate'])
                 elif layer['type'] == 'dense':
                     if helpers.lucky(local_noise):
                         # mutate the layer size
-                        logging.debug('Mutating layer size')
+                        # logging.debug('Mutating layer size')
+                        # logging.debug("size = (%s)", layer['size'])
                         layer['size'] = helpers.random_index_between(clone.config.TAXONOMY['min_neurons'],
                                                                      clone.config.TAXONOMY['max_neurons'])
+                        # mutations += 1
+                        # logging.debug("size = (%s)", layer['size'])
                     if helpers.lucky(local_noise):
                         # mutate activation function
+                        # logging.debug("activation = (%s)", layer['activation'])
                         activation_index = helpers.random_index(len(clone.config.TAXONOMY['activation']))
                         layer['activation'] = clone.config.TAXONOMY['activation'][activation_index - 1]
+                        # mutations += 1
+                        # logging.debug("activation = (%s)", layer['activation'])
                 else:
-                    logging.debug('Unknown layer type')
+                    # logging.debug('Unknown layer type')
                     raise Exception('Not yet implemented!')
+        # logging.debug("mutations: (%s)", mutations)
+        # logging.debug("***************************************************")
         return clone
 
     def evolve(self, pop):
