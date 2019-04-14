@@ -36,6 +36,24 @@ class Test(unittest.TestCase):
             child.print_network_v2()
 
 
+    def test_mutate(self):
+        op = EvolutionaryOptimizer(retain=0.4,
+                                   random_select=0.1,
+                                   mutate_chance=1.0,
+                                   config_file=self.local_config_file,
+                                   lonestar_model_file=self.local_lonestar_model_file)
+
+        individual = DiceboxNetwork(config_file=self.local_config_file,
+                                 lonestar_model_file=self.local_lonestar_model_file)
+        individual.create_random_v2()
+        individual.model_v2 = individual.compile_model_v2(individual.network_v2)
+        before_network = individual.network_v2
+
+        mutant = op.mutate(individual)
+
+        mutant.model_v2 = mutant.compile_model_v2(mutant.network_v2)
+        after_network = mutant.network_v2
+        self.assertNotEqual(before_network, after_network)
 
 
 if __name__ == '__main__':
