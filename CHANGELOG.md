@@ -1,6 +1,9 @@
 Change Log
 ==========
 
+2.0.1
+-----
+- Bug fix, removed unimplemented exceptions left after refactoring.
 
 2.0.0
 -----

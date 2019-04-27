@@ -323,8 +323,6 @@ class DiceboxNetwork:
         return x_train, x_test, y_train, y_test
 
     def train_and_score_and_save_v2(self, dataset):
-        raise Exception('Not yet implemented!')
-
         logging.debug('-' * 80)
         logging.debug("train_and_score_and_save_v2(dataset)")
         logging.debug("train_and_score_and_save_v2(dataset=%s)" % dataset)

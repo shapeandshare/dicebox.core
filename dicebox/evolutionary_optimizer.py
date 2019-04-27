@@ -145,14 +145,14 @@ class EvolutionaryOptimizer:
                     elif layer_index < len(father.network_v2['layers']):
                         child.network_v2['layers'].append(father.network_v2['layers'][layer_index])
                     else:
-                        raise Exception('wut?')
+                        raise Exception('impossible breeding event occurred!')
                 else:
                     if layer_index < len(father.network_v2['layers']):
                         child.network_v2['layers'].append(father.network_v2['layers'][layer_index])
                     elif layer_index < len(mother.network_v2['layers']):
                         child.network_v2['layers'].append(mother.network_v2['layers'][layer_index])
                     else:
-                        raise Exception('wut?')
+                        raise Exception('impossible breeding event occurred!')
 
             child.model_v2 = child.compile_model_v2(child.network_v2)
             children.append(child)
