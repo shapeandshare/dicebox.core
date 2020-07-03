@@ -5,6 +5,8 @@
 ##############################################################################
 
 """Class that represents the network to be evolved."""
+from typing import Union, Dict, Any
+
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.callbacks import EarlyStopping
@@ -25,10 +27,10 @@ class DiceboxNetwork:
 
     Currently only works for an MLP.
     """
-    fsc = None  # file system connector
-    ssc = None  # sensory service connector
+    fsc: FileSystemConnector = None  # file system connector
+    ssc: SensoryServiceConnector = None  # sensory service connector
 
-    config = None
+    config: DiceboxConfig = None
 
     # Helper: Early stopping.
     early_stopper = EarlyStopping(patience=25)
@@ -46,10 +48,10 @@ class DiceboxNetwork:
 
     def __init__(self,
                  nn_param_choices=None,
-                 create_fcs=True,
-                 disable_data_indexing=False,
-                 config_file='./dicebox.config',
-                 lonestar_model_file='./dicebox.lonestar.json'):
+                 create_fcs: bool = True,
+                 disable_data_indexing: bool = False,
+                 config_file: str = './dicebox.config',
+                 lonestar_model_file: str = './dicebox.lonestar.json'):
         if self.config is None:
             self.config = DiceboxConfig(config_file=config_file,
                                         lonestar_model_file=lonestar_model_file)
@@ -64,9 +66,9 @@ class DiceboxNetwork:
                 optimizer (list): ['rmsprop', 'adam']
         """
 
-        self.accuracy = 0.
+        self.accuracy: float = 0.
         self.network = {}  # (the dicebox object)
-        self.model = None # the compiled network.
+        self.model: Sequential | None = None  # the compiled network.
 
         if self.fsc is None and create_fcs is True:
             logging.debug('creating a new fsc..')
@@ -91,48 +93,48 @@ class DiceboxNetwork:
         self.network['output_size'] = self.config.NB_CLASSES
 
         # Select an optimizer
-        optimizer_index = random_index(len(self.config.TAXONOMY['optimizer']))
-        optimizer = self.config.TAXONOMY['optimizer'][optimizer_index - 1]
+        optimizer_index: int = random_index(len(self.config.TAXONOMY['optimizer']))
+        optimizer: str = self.config.TAXONOMY['optimizer'][optimizer_index - 1]
         self.network['optimizer'] = optimizer
 
         # Determine the number of layers..
-        layer_count = random_index_between(self.config.TAXONOMY['min_layers'],
-                                                   self.config.TAXONOMY['max_layers'])
+        layer_count: int = random_index_between(self.config.TAXONOMY['min_layers'],
+                                                self.config.TAXONOMY['max_layers'])
         for layer_index in range(1, layer_count):
             # add new random layer to the network
             self.network['layers'].append(self.build_random_layer())
 
-    def select_random_optimizer(self):
+    def select_random_optimizer(self) -> int:
         # Select an optimizer
-        optimizer_index = random_index(len(self.config.TAXONOMY['optimizer']))
+        optimizer_index: int = random_index(len(self.config.TAXONOMY['optimizer']))
         return self.config.TAXONOMY['optimizer'][optimizer_index - 1]
 
-    def build_random_layer(self):
+    def build_random_layer(self) -> Dict[str, Union[str, float, int]]:
         # determine what the layer type will be
         layer_type_index = random_index(len(self.config.TAXONOMY['layer_types']))
         layer_type = self.config.TAXONOMY['layer_types'][layer_type_index - 1]
 
         random_layer = {}
-        random_layer['type'] = layer_type
+        random_layer['type']: str = layer_type
         if layer_type == 'dropout':
             # get a dropout rate..
             random_layer['rate']: float = random_strict()
         else:
             # determine the size and activation function to use.
-            random_layer['size'] = random_index_between(self.config.TAXONOMY['min_neurons'],
-                                                                self.config.TAXONOMY['max_neurons'])
-            activation_index = random_index(len(self.config.TAXONOMY['activation']))
-            random_layer['activation'] = self.config.TAXONOMY['activation'][activation_index - 1]
+            random_layer['size']: int = random_index_between(self.config.TAXONOMY['min_neurons'],
+                                                        self.config.TAXONOMY['max_neurons'])
+            activation_index: int = random_index(len(self.config.TAXONOMY['activation']))
+            random_layer['activation']: str = self.config.TAXONOMY['activation'][activation_index - 1]
         return random_layer
 
-    def create_lonestar(self, create_model=False, weights_filename=None):
+    def create_lonestar(self, create_model: bool = False, weights_filename: str = None) -> None:
         logging.debug('-' * 80)
         logging.debug('create_lonestar(create_model, weights_filename)')
         logging.debug(create_model)
         logging.debug(weights_filename)
         logging.debug('-' * 80)
 
-        self.network = self.config.LONESTAR_DICEBOX_MODEL
+        self.network: Any = self.config.LONESTAR_DICEBOX_MODEL
         logging.debug('-' * 80)
         logging.debug(self.network)
         logging.debug('-' * 80)
@@ -140,21 +142,21 @@ class DiceboxNetwork:
         if create_model is True:
             if self.model is None:
                 logging.debug('compiling model')
-                self.model = DiceboxNetwork.compile_model(self.network)
+                self.model: Sequential = DiceboxNetwork.compile_model(self.network)
                 if weights_filename is not None:
                     logging.debug("loading weights file: (%s)" % weights_filename)
                     self.load_model(weights_filename)
             # else:
             #     logging.info('model already compiled, skipping.')
 
-    def create_set(self, network):
+    def create_set(self, network: Any) -> None:
         self.network = network
 
-    def train(self):
+    def train(self) -> None:
         if self.accuracy == 0.:
             self.accuracy = self.train_and_score(self.network)
 
-    def train_and_save(self, dataset):
+    def train_and_save(self, dataset: Any) -> None:
         # if self.accuracy == 0.:
         logging.debug('-' * 80)
         logging.debug("train_and_save(dataset)")
@@ -162,7 +164,7 @@ class DiceboxNetwork:
         logging.debug('-' * 80)
         self.accuracy = self.train_and_score_and_save(dataset)
 
-    def print_network(self):
+    def print_network(self) -> None:
         """Print out a network."""
         logging.info(self.network)
         logging.info("Network accuracy: %.2f%%" % (self.accuracy * 100))
