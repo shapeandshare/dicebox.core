@@ -140,7 +140,7 @@ class DiceboxNetwork:
         if create_model is True:
             if self.model_v2 is None:
                 logging.debug('compiling model')
-                self.model_v2 = self.compile_model_v2(self.network_v2)
+                self.model_v2 = DiceboxNetwork.compile_model_v2(self.network_v2)
                 if weights_filename is not None:
                     logging.debug("loading weights file: (%s)" % weights_filename)
                     self.load_model_v2(weights_filename)
@@ -173,7 +173,7 @@ class DiceboxNetwork:
         else:
             raise Exception('Unknown dataset type!  Please define, or correct.')
 
-        model = self.compile_model_v2(network_v2)
+        model = DiceboxNetwork.compile_model_v2(network_v2)
 
         logging.info('batch size (model.fit): %s' % self.config.BATCH_SIZE)
 
@@ -346,7 +346,7 @@ class DiceboxNetwork:
         logging.debug('Compiling model if need be.')
         logging.debug('-' * 80)
         if self.model_v2 is None:
-            self.model_v2 = self.compile_model_v2(self.network_v2)
+            self.model_v2 = DiceboxNetwork.compile_model_v2(self.network_v2)
         logging.debug('-' * 80)
         logging.debug('Done!')
         logging.debug('-' * 80)

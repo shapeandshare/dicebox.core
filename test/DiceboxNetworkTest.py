@@ -1,10 +1,11 @@
 import unittest
 import logging
 import json
-from src import DiceboxNetwork
+
+from src.shapeandshare.dicebox.core import DiceboxNetwork
 
 
-class Test(unittest.TestCase):
+class DiceboxNetworkTest(unittest.TestCase):
     """
     The basic class that inherits unittest.TestCase
     """
@@ -16,6 +17,9 @@ class Test(unittest.TestCase):
 
     ACTIVATION = ["softmax", "elu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid", "linear"]
     OPTIMIZER = ["rmsprop", "adam", "sgd", "adagrad", "adadelta", "adamax", "nadam"]
+
+    def setUp(self):
+        self.maxDiff = None
 
     def test_create_random_v2(self):
         local_create_model = False
@@ -50,8 +54,10 @@ class Test(unittest.TestCase):
         returned_model = dn.model_v2
         self.assertIsNotNone(returned_model)
 
+        # generate a sample..
         # with open('%s/lonestar.model_v2.out.json' % self.TEST_DATA_BASE, 'w') as json_file:
         #     json_file.write(json.dumps(json.loads(returned_model.to_json()), indent=4))
+
         self.assertEqual(json.loads(returned_model.to_json()), expected_compiled_model)
         dn = None
 
@@ -123,14 +129,17 @@ class Test(unittest.TestCase):
                             lonestar_model_file=self.local_lonestar_model_file)
 
         returned_compiled_model = dn.compile_model_v2(dicebox_model=local_dicebox_model)
-        # with open('%s/model_v2.out.json' % self.TEST_DATA_BASE, 'w') as json_file:
-        #     json_file.write(json.dumps(json.loads(returned_compiled_model.to_json()), indent=4))
 
         serialized_result = returned_compiled_model.to_json()
+
+        # # generate a sample ..
+        # with open('%s/model_v2.out.json' % self.TEST_DATA_BASE, 'w') as json_file:
+        #     json_file.write(json.dumps(json.loads(serialized_result), indent=4))
+
         self.assertEqual(json.loads(serialized_result), expected_compiled_model)
         dn = None
 
 
 if __name__ == '__main__':
-    # begin the unittest.main()
-    unittest.main()
+    runner = unittest.TextTestRunner()
+    runner.run(DiceboxNetworkTest())
