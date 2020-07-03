@@ -13,7 +13,7 @@ class DiceboxConfigTest(unittest.TestCase):
     def setUp(self):
         self.dc = DiceboxConfig(config_file=self.local_config_file, lonestar_model_file=self.local_lonestar_model_file)
 
-    def test_lonestar_model_v2(self):
+    def test_lonestar_model(self):
         expected_input_size = 784
         expected_output_size = 10
         expected_optimizer = 'adamax'

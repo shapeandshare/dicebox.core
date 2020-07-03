@@ -25,7 +25,7 @@ class BaseConfig(object):
         local_config.read(config_file)
 
         ###############################################################################
-        # Lonestar v2 model support - Options
+        # Lonestar model support - Options
         ###############################################################################
         self.LONESTAR_DICEBOX_MODEL = None
         try:

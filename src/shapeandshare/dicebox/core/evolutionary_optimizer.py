@@ -72,7 +72,7 @@ class EvolutionaryOptimizer:
             # Create a random network.
             network = DiceboxNetwork(config_file=self.config_file,
                                      lonestar_model_file=self.lonestar_model_file)
-            network.create_random_v2()
+            network.create_random()
 
             # Add the network to our population.
             pop.append(network)
@@ -112,50 +112,50 @@ class EvolutionaryOptimizer:
         for _ in range(2):
             child = DiceboxNetwork(config_file=self.config_file,
                                      lonestar_model_file=self.lonestar_model_file)
-            if child.network_v2 is None:
-                child.network_v2 = {}
-            if 'layers' not in child.network_v2:
-                child.network_v2['layers'] = []
+            if child.network is None:
+                child.network = {}
+            if 'layers' not in child.network:
+                child.network['layers'] = []
 
             # Set unchange-ables
-            child.network_v2['input_shape'] = child.config.INPUT_SHAPE
-            child.network_v2['output_size'] = child.config.NB_CLASSES
+            child.network['input_shape'] = child.config.INPUT_SHAPE
+            child.network['output_size'] = child.config.NB_CLASSES
 
             # Pick which parent's optimization function is passed on to offspring
             if lucky(0.5):
-                # logging.debug("child.network_v2['optimizer'] = mother(%s)", mother.network_v2['optimizer'])
-                child.network_v2['optimizer'] = mother.network_v2['optimizer']
+                # logging.debug("child.network['optimizer'] = mother(%s)", mother.network['optimizer'])
+                child.network['optimizer'] = mother.network['optimizer']
             else:
-                # logging.debug("child.network_v2['optimizer'] = father(%s)", father.network_v2['optimizer'])
-                child.network_v2['optimizer'] = father.network_v2['optimizer']
+                # logging.debug("child.network['optimizer'] = father(%s)", father.network['optimizer'])
+                child.network['optimizer'] = father.network['optimizer']
 
             # Determine the number of layers
             if lucky(0.5):
-                # logging.debug("child layer length = mother(%s)", len(mother.network_v2['layers']))
-                layer_count = len(mother.network_v2['layers'])
+                # logging.debug("child layer length = mother(%s)", len(mother.network['layers']))
+                layer_count = len(mother.network['layers'])
             else:
-                # logging.debug("child layer length = father(%s)", len(father.network_v2['layers']))
-                layer_count = len(father.network_v2['layers'])
+                # logging.debug("child layer length = father(%s)", len(father.network['layers']))
+                layer_count = len(father.network['layers'])
 
             for layer_index in range(0, layer_count):
                 # logging.debug("layer (%s/%s)", layer_index, layer_count)
                 # Pick which parent's layer is passed on to the offspring
                 if lucky(0.5):
-                    if layer_index < len(mother.network_v2['layers']):
-                        child.network_v2['layers'].append(mother.network_v2['layers'][layer_index])
-                    elif layer_index < len(father.network_v2['layers']):
-                        child.network_v2['layers'].append(father.network_v2['layers'][layer_index])
+                    if layer_index < len(mother.network['layers']):
+                        child.network['layers'].append(mother.network['layers'][layer_index])
+                    elif layer_index < len(father.network['layers']):
+                        child.network['layers'].append(father.network['layers'][layer_index])
                     else:
                         raise Exception('impossible breeding event occurred!')
                 else:
-                    if layer_index < len(father.network_v2['layers']):
-                        child.network_v2['layers'].append(father.network_v2['layers'][layer_index])
-                    elif layer_index < len(mother.network_v2['layers']):
-                        child.network_v2['layers'].append(mother.network_v2['layers'][layer_index])
+                    if layer_index < len(father.network['layers']):
+                        child.network['layers'].append(father.network['layers'][layer_index])
+                    elif layer_index < len(mother.network['layers']):
+                        child.network['layers'].append(mother.network['layers'][layer_index])
                     else:
                         raise Exception('impossible breeding event occurred!')
 
-            child.model_v2 = child.compile_model_v2(child.network_v2)
+            child.model = child.compile_model(child.network)
             children.append(child)
         return children
 
@@ -164,7 +164,7 @@ class EvolutionaryOptimizer:
         # It looks like Keras Sequencials no longer support this.
         # so we need to ensure we remove any compiled models on
         # the inbound object before proceeding.
-        individual.model_v2 = {}
+        individual.model = {}
 
         # mutations = 0
         local_noise = self.mutate_chance
@@ -173,13 +173,13 @@ class EvolutionaryOptimizer:
         # see if the optimizer is mutated
         if lucky(local_noise):
             # yep..  Select an optimizer
-            # logging.debug("optimizer = (%s)", clone.network_v2['optimizer'])
-            clone.network_v2['optimizer'] = clone.select_random_optimizer()
+            # logging.debug("optimizer = (%s)", clone.network['optimizer'])
+            clone.network['optimizer'] = clone.select_random_optimizer()
             # mutations += 1
-            # logging.debug("optimizer = (%s)", clone.network_v2['optimizer'])
+            # logging.debug("optimizer = (%s)", clone.network['optimizer'])
 
         # Determine the number of layers..
-        layer_count = len(clone.network_v2['layers'])
+        layer_count = len(clone.network['layers'])
 
         # now mess around within the layers
         for index in range(1, layer_count):
@@ -188,11 +188,11 @@ class EvolutionaryOptimizer:
                 # then change the layer type
                 # how does this affect the weights, etc? :/
                 # logging.debug("layer = (%s)", layer)
-                clone.network_v2['layers'][index - 1] = clone.build_random_layer()
+                clone.network['layers'][index - 1] = clone.build_random_layer()
                 # mutations += 1
                 # logging.debug("layer = (%s)", layer)
             else:
-                layer = clone.network_v2['layers'][index - 1]
+                layer = clone.network['layers'][index - 1]
 
                 # keep checking the individual layer attributes
                 if layer['type'] == 'dropout':
