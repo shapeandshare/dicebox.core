@@ -15,9 +15,11 @@ import struct
 import array
 import logging
 from collections import ValuesView
+from typing import Dict, Any, List, Union
 
 import numpy
 from PIL import Image
+from numpy import ndarray
 
 from ..config import DiceboxConfig
 from ..utils import lucky
@@ -32,7 +34,8 @@ class FileSystemConnector(object):
 
     config = None
 
-    def __init__(self, data_directory, disable_data_indexing=False, config_file='./dicebox.config', lonestar_model_file='./dicebox.lonestar.json'):
+    def __init__(self, data_directory, disable_data_indexing=False, config_file='./dicebox.config',
+                 lonestar_model_file='./dicebox.lonestar.json'):
         if self.config is None:
             self.config = DiceboxConfig(config_file=config_file,
                                         lonestar_model_file=lonestar_model_file)
@@ -80,7 +83,7 @@ class FileSystemConnector(object):
             output.append(value_list[i])
         return output
 
-    def get_batch(self, batch_size, noise=0):
+    def get_batch(self, batch_size: int, noise: int = 0) -> List[Union[list, List[ndarray]]]:
         """For a given batch size and noise level, returns a dictionary of data and labels.
 
         :param batch_size: integer
@@ -90,8 +93,8 @@ class FileSystemConnector(object):
         image_data = []
         image_labels = []
 
-        category_map = self.category_map
-        batch_list = self.get_batch_list(batch_size)
+        category_map: Dict[Any, int] = self.category_map
+        batch_list: [] = self.get_batch_list(batch_size)
 
         # build file path
         for i in range(0, batch_size):
@@ -108,12 +111,12 @@ class FileSystemConnector(object):
             # Help prevent over-fitting, and allow for new
             # sensory data to enter the cache, even when a cache
             # hit would occur.
-            if self.pixel_cache.has_key(filename) and not lucky(noise):
+            if filename in self.pixel_cache and not lucky(noise):
                 del self.pixel_cache[filename]
 
             # use pixel cache if possible
             # [k,v] (filename, pixeldata)
-            if self.pixel_cache.has_key(filename):
+            if filename in self.pixel_cache:
                 # found in cache
                 pixel_data = self.pixel_cache[filename]
                 logging.debug("loaded cached pixel data for (%s)", filename)
@@ -134,7 +137,7 @@ class FileSystemConnector(object):
         """
         pixel_data = array.array('B')
 
-        local_image = Image.open(filename).convert('L') # Load as gray
+        local_image = Image.open(filename).convert('L')  # Load as gray
 
         original_width, original_height = local_image.size
         # original_size = original_width, original_height
@@ -189,13 +192,13 @@ class FileSystemConnector(object):
         logging.debug("new size: (%i, %i)", local_image.size[0], local_image.size[1])
 
         # Ensure the input will match in input tensor
-        #local_image = local_image.resize((original_width, original_height), Image.ANTIALIAS)
+        # local_image = local_image.resize((original_width, original_height), Image.ANTIALIAS)
         local_image = local_image.resize((self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT), Image.ANTIALIAS)
         logging.debug("new size: (%i, %i)", local_image.size[0], local_image.size[1])
 
         # dump to file for manual review
         # filename = datetime.now().strftime('transform_%Y-%m-%d_%H_%M_%S_%f.png')
-        #local_image.save("./tmp/%s" % filename)
+        # local_image.save("./tmp/%s" % filename)
 
         pixel = local_image.load()
 

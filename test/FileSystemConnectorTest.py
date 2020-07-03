@@ -73,6 +73,9 @@ class FileSystemConnectorTest(unittest.TestCase):
         except Exception as e:
             self.assertEqual(str(e), 'Max batch size: 2, but 3 was specified!')
 
+    def test_get_batch(self):
+        returned_batch = self.fsc.get_batch(2, 0)
+
     def test_process_image(self):
         filename = '%s/0/mnist_testing_0_28x28_3.png' % self.DATASET_LOCATION
 
