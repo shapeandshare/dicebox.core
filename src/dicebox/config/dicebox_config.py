@@ -2,7 +2,7 @@
 
 ###############################################################################
 # Local Config File Handler
-# Copyright (c) 2017-2019 Joshua Burt
+# Copyright (c) 2017-2020 Joshua Burt
 ###############################################################################
 """
 
@@ -11,7 +11,7 @@
 ###############################################################################
 import os
 import json
-from src.dicebox.config import BaseConfig
+from .base_config import BaseConfig
 
 
 class DiceboxConfig(object):

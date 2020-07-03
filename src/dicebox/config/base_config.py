@@ -2,16 +2,16 @@
 
 ###############################################################################
 # Local Config File Handler
-# Copyright (c) 2017-2019 Joshua Burt
+# Copyright (c) 2017-2020 Joshua Burt
 ###############################################################################
 """
 
 ###############################################################################
 # Dependencies
 ###############################################################################
-import ConfigParser
+import configparser
 import json
-import urllib
+from urllib.parse import quote_plus
 import logging
 
 
@@ -21,7 +21,7 @@ class BaseConfig(object):
         ###############################################################################
         # Create config objects.
         ###############################################################################
-        local_config = ConfigParser.ConfigParser()
+        local_config = configparser.ConfigParser()
         local_config.read(config_file)
 
         ###############################################################################
@@ -137,7 +137,7 @@ class BaseConfig(object):
         self.SENSORY_SERVICE_RABBITMQ_PASSWORD = local_config.get('SENSORY_SERVICE', 'rabbitmq_password')
         self.SENSORY_SERVICE_RABBITMQ_SERVER = local_config.get('SENSORY_SERVICE', 'rabbitmq_server')
         self.SENSORY_SERVICE_RABBITMQ_PORT = local_config.get('SENSORY_SERVICE', 'rabbitmq_port')
-        self.SENSORY_SERVICE_RABBITMQ_VHOST = urllib.quote_plus(
+        self.SENSORY_SERVICE_RABBITMQ_VHOST = quote_plus(
             local_config.get('SENSORY_SERVICE', 'rabbitmq_vhost'))
 
         self.SENSORY_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
@@ -166,7 +166,7 @@ class BaseConfig(object):
         self.TRAINING_SERVICE_RABBITMQ_PASSWORD = local_config.get('TRAINING_SERVICE', 'rabbitmq_password')
         self.TRAINING_SERVICE_RABBITMQ_SERVER = local_config.get('TRAINING_SERVICE', 'rabbitmq_server')
         self.TRAINING_SERVICE_RABBITMQ_PORT = local_config.get('TRAINING_SERVICE', 'rabbitmq_port')
-        self.TRAINING_SERVICE_RABBITMQ_VHOST = urllib.quote_plus(
+        self.TRAINING_SERVICE_RABBITMQ_VHOST = quote_plus(
             local_config.get('TRAINING_SERVICE', 'rabbitmq_vhost'))
         self.TRAINING_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
             self.TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI,
@@ -199,7 +199,7 @@ class BaseConfig(object):
             'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_server')
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT = local_config.get(
             'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_port')
-        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST = urllib.quote_plus(
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST = quote_plus(
             local_config.get('TRAINING_PROCESSOR_SERVICE', 'rabbitmq_vhost'))
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
             self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI,

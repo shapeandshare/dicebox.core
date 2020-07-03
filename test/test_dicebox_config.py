@@ -4,14 +4,14 @@ import sys
 import json
 import numpy
 import numpy.testing
-from src.dicebox.config import DiceboxConfig
+from dicebox import DiceboxConfig
 
 
 class Test(unittest.TestCase):
     """
     The basic class that inherits unittest.TestCase
     """
-    TEST_DATA_BASE = 'test/data'
+    TEST_DATA_BASE = 'test/fictures'
     local_config_file = '%s/dicebox.config' % TEST_DATA_BASE
     local_lonestar_model_file = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
 
@@ -77,3 +77,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(self.dc.LONESTAR_DICEBOX_MODEL, expected_dicebox_model)
 
+
+if __name__ == '__main__':
+    runner = unittest.TextTestRunner()
+    runner.run(Test())

@@ -12,9 +12,9 @@ Credit:
 from functools import reduce
 from operator import add
 import copy
-import src.dicebox.utils.helpers as helpers
-from src.dicebox.config import DiceboxConfig
-from src.dicebox.dicebox_network import DiceboxNetwork
+import src as helpers
+from src import DiceboxConfig
+from src import DiceboxNetwork
 
 
 class EvolutionaryOptimizer:

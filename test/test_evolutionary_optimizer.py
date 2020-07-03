@@ -1,13 +1,13 @@
 import unittest
-from src.dicebox.dicebox_network import DiceboxNetwork
-from src.dicebox.evolutionary_optimizer import EvolutionaryOptimizer
+from src import DiceboxNetwork
+from src import EvolutionaryOptimizer
 
 
 class Test(unittest.TestCase):
     """
     The basic class that inherits unittest.TestCase
     """
-    TEST_DATA_BASE = 'test/data'
+    TEST_DATA_BASE = 'test/fictures'
     local_config_file = '%s/dicebox.config' % TEST_DATA_BASE
     local_lonestar_model_file = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
 

@@ -1,14 +1,14 @@
 import unittest
 import logging
 import json
-from src.dicebox.dicebox_network import DiceboxNetwork
+from src import DiceboxNetwork
 
 
 class Test(unittest.TestCase):
     """
     The basic class that inherits unittest.TestCase
     """
-    TEST_DATA_BASE = 'test/data'
+    TEST_DATA_BASE = 'test/fictures'
     local_create_fcs = False
     local_disable_data_indexing = True
     local_config_file = '%s/dicebox.config' % TEST_DATA_BASE

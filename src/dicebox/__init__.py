@@ -1,2 +1,2 @@
-# __init__.py
-__version__ = "2.0.1"
+from .config.base_config import BaseConfig
+from .config.dicebox_config import DiceboxConfig

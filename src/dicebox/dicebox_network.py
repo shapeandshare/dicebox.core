@@ -14,10 +14,10 @@ import numpy
 from datetime import datetime
 import os
 import json
-from src.dicebox.config import DiceboxConfig
-from src.dicebox.connectors import FileSystemConnector
-from src.dicebox.connectors import SensoryServiceConnector
-import src.dicebox.utils.helpers as helpers
+from src import DiceboxConfig
+from src import FileSystemConnector
+from src import SensoryServiceConnector
+import src as helpers
 
 
 class DiceboxNetwork:

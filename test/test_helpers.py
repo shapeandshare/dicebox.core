@@ -1,5 +1,6 @@
 import unittest
-import src.dicebox.utils.helpers as helpers
+import src as helpers
+
 
 class Test(unittest.TestCase):
     """
