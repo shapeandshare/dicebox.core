@@ -1,2 +1,3 @@
-coverage run -m unittest discover -s test -p '*Test.py'
-coverage report
+coverage run --branch -m unittest discover -s test -p '*Test.py'
+coverage report -m
+coverage html
