@@ -82,7 +82,7 @@ class EvolutionaryOptimizer:
     @staticmethod
     def fitness(network):
         """Return the accuracy, which is our fitness function."""
-        return network.accuracy_v2
+        return network.accuracy
 
     def grade(self, pop):
         """Find average fitness for a population.
@@ -159,7 +159,7 @@ class EvolutionaryOptimizer:
             children.append(child)
         return children
 
-    def mutate(self, individual: DiceboxNetwork):
+    def mutate(self, individual: DiceboxNetwork) -> DiceboxNetwork:
         # we will be performing a deepcopy on the incoming object.
         # It looks like Keras Sequencials no longer support this.
         # so we need to ensure we remove any compiled models on

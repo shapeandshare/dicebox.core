@@ -64,7 +64,7 @@ class DiceboxNetwork:
                 optimizer (list): ['rmsprop', 'adam']
         """
 
-        self.accuracy_v2 = 0.
+        self.accuracy = 0.
         self.network_v2 = {}  # (the dicebox object)
         self.model_v2 = None # the compiled network.
 
@@ -151,21 +151,21 @@ class DiceboxNetwork:
         self.network_v2 = network_v2
 
     def train_v2(self):
-        if self.accuracy_v2 == 0.:
-            self.accuracy_v2 = self.train_and_score_v2(self.network_v2)
+        if self.accuracy == 0.:
+            self.accuracy = self.train_and_score_v2(self.network_v2)
 
     def train_and_save_v2(self, dataset):
-        # if self.accuracy_v2 == 0.:
+        # if self.accuracy == 0.:
         logging.debug('-' * 80)
         logging.debug("train_and_save_v2(dataset)")
         logging.debug("train_and_save_v2(dataset=%s)" % dataset)
         logging.debug('-' * 80)
-        self.accuracy_v2 = self.train_and_score_and_save_v2(dataset)
+        self.accuracy = self.train_and_score_and_save_v2(dataset)
 
     def print_network_v2(self):
         """Print out a network."""
         logging.info(self.network_v2)
-        logging.info("Network accuracy: %.2f%%" % (self.accuracy_v2 * 100))
+        logging.info("Network accuracy: %.2f%%" % (self.accuracy * 100))
 
     def train_and_score_v2(self, network_v2):
         if self.config.DICEBOX_COMPLIANT_DATASET is True:
