@@ -13,8 +13,8 @@ class Test(unittest.TestCase):
 
     EXPECTED_DATASET_INDEX = None
     EXPECTED_CATEGORY_MAP = None
-    TEST_DATA_BASE = 'test/fictures'
-    DATASET_LOCATION = '%s/test_dataset/fictures' % TEST_DATA_BASE
+    TEST_DATA_BASE = 'test/fixtures'
+    DATASET_LOCATION = '%s/test_dataset/fixtures' % TEST_DATA_BASE
     DICEBOX_CONFIG_FILE = '%s/dicebox.config' % TEST_DATA_BASE
     LONESTAR_MODEL_FILE = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
     DISABLE_DATA_INDEXING = False
@@ -78,7 +78,7 @@ class Test(unittest.TestCase):
         noise = 0
         expected_data = numpy.fromfile('%s/0/mnist_testing_0_28x28_3.png.nbarray.binary' % self.DATASET_LOCATION, dtype=numpy.uint8)
         returned_data = self.fsc.process_image(filename, noise)
-        # returned_data.tofile('test/fictures/test_dataset/data/0/mnist_testing_0_28x28_3.png.nbarray.binary')
+        # returned_data.tofile('test/fixtures/test_dataset/data/0/mnist_testing_0_28x28_3.png.nbarray.binary')
         numpy.testing.assert_array_equal(returned_data, expected_data)
 
     def test_get_data_set_categories(self):

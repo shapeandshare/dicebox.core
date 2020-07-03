@@ -1,12 +1,13 @@
 from PIL import Image
 import logging
 import src as helpers
-from src import DiceboxConfig
-from src import FileSystemConnector
 import requests
 import json
 from datetime import datetime
 import pika
+
+from ..config import DiceboxConfig
+from .filesystem_connecter import FileSystemConnector
 
 
 class SensoryServiceConnector:

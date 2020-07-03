@@ -8,7 +8,7 @@ class Test(unittest.TestCase):
     """
     The basic class that inherits unittest.TestCase
     """
-    TEST_DATA_BASE = 'test/fictures'
+    TEST_DATA_BASE = 'test/fixtures'
     local_create_fcs = False
     local_disable_data_indexing = True
     local_config_file = '%s/dicebox.config' % TEST_DATA_BASE

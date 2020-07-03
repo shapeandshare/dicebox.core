@@ -5,19 +5,19 @@
 ##############################################################################
 
 """Class that represents the network to be evolved."""
-from keras.models import Sequential
-from keras.layers import Dense, Dropout
-from keras.callbacks import EarlyStopping
-# from keras.callbacks import ModelCheckpoint
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.callbacks import EarlyStopping
+# from tensorflow.keras.callbacks import ModelCheckpoint
 import logging
 import numpy
 from datetime import datetime
 import os
 import json
-from src import DiceboxConfig
-from src import FileSystemConnector
-from src import SensoryServiceConnector
-import src as helpers
+
+from .config import DiceboxConfig
+from .connectors import FileSystemConnector, SensoryServiceConnector
+from .utils import random_index, random_index_between, random
 
 
 class DiceboxNetwork:
@@ -91,12 +91,12 @@ class DiceboxNetwork:
         self.network_v2['output_size'] = self.config.NB_CLASSES
 
         # Select an optimizer
-        optimizer_index = helpers.random_index(len(self.config.TAXONOMY['optimizer']))
+        optimizer_index = random_index(len(self.config.TAXONOMY['optimizer']))
         optimizer = self.config.TAXONOMY['optimizer'][optimizer_index - 1]
         self.network_v2['optimizer'] = optimizer
 
         # Determine the number of layers..
-        layer_count = helpers.random_index_between(self.config.TAXONOMY['min_layers'],
+        layer_count = random_index_between(self.config.TAXONOMY['min_layers'],
                                                    self.config.TAXONOMY['max_layers'])
         for layer_index in range(1, layer_count):
             # add new random layer to the network
@@ -104,24 +104,24 @@ class DiceboxNetwork:
 
     def select_random_optimizer(self):
         # Select an optimizer
-        optimizer_index = helpers.random_index(len(self.config.TAXONOMY['optimizer']))
+        optimizer_index = random_index(len(self.config.TAXONOMY['optimizer']))
         return self.config.TAXONOMY['optimizer'][optimizer_index - 1]
 
     def build_random_layer(self):
         # determine what the layer type will be
-        layer_type_index = helpers.random_index(len(self.config.TAXONOMY['layer_types']))
+        layer_type_index = random_index(len(self.config.TAXONOMY['layer_types']))
         layer_type = self.config.TAXONOMY['layer_types'][layer_type_index - 1]
 
         random_layer = {}
         random_layer['type'] = layer_type
         if layer_type == 'dropout':
             # get a dropout rate..
-            random_layer['rate'] = helpers.random()
+            random_layer['rate'] = random()
         else:
             # determine the size and activation function to use.
-            random_layer['size'] = helpers.random_index_between(self.config.TAXONOMY['min_neurons'],
+            random_layer['size'] = random_index_between(self.config.TAXONOMY['min_neurons'],
                                                                 self.config.TAXONOMY['max_neurons'])
-            activation_index = helpers.random_index(len(self.config.TAXONOMY['activation']))
+            activation_index = random_index(len(self.config.TAXONOMY['activation']))
             random_layer['activation'] = self.config.TAXONOMY['activation'][activation_index - 1]
         return random_layer
 
@@ -401,7 +401,7 @@ class DiceboxNetwork:
 
     def classify_v2(self, network_input):
         if self.config.DICEBOX_COMPLIANT_DATASET is True:
-            x_test = self.get_dicebox_raw_v2(network_input)
+            x_test = self.get_dicebox_raw(network_input)
         else:
             logging.error("UNKNOWN DATASET (%s) passed to classify" % self.config.NETWORK_NAME)
             raise Exception("UNKNOWN DATASET (%s) passed to classify" % self.config.NETWORK_NAME)

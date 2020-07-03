@@ -12,9 +12,10 @@ Credit:
 from functools import reduce
 from operator import add
 import copy
-import src as helpers
-from src import DiceboxConfig
-from src import DiceboxNetwork
+
+from .config import DiceboxConfig
+from .dicebox_network import DiceboxNetwork
+from .utils import lucky, random_index, random_index_between, random
 
 
 class EvolutionaryOptimizer:
@@ -121,7 +122,7 @@ class EvolutionaryOptimizer:
             child.network_v2['output_size'] = child.config.NB_CLASSES
 
             # Pick which parent's optimization function is passed on to offspring
-            if helpers.lucky(0.5):
+            if lucky(0.5):
                 # logging.debug("child.network_v2['optimizer'] = mother(%s)", mother.network_v2['optimizer'])
                 child.network_v2['optimizer'] = mother.network_v2['optimizer']
             else:
@@ -129,7 +130,7 @@ class EvolutionaryOptimizer:
                 child.network_v2['optimizer'] = father.network_v2['optimizer']
 
             # Determine the number of layers
-            if helpers.lucky(0.5):
+            if lucky(0.5):
                 # logging.debug("child layer length = mother(%s)", len(mother.network_v2['layers']))
                 layer_count = len(mother.network_v2['layers'])
             else:
@@ -139,7 +140,7 @@ class EvolutionaryOptimizer:
             for layer_index in range(0, layer_count):
                 # logging.debug("layer (%s/%s)", layer_index, layer_count)
                 # Pick which parent's layer is passed on to the offspring
-                if helpers.lucky(0.5):
+                if lucky(0.5):
                     if layer_index < len(mother.network_v2['layers']):
                         child.network_v2['layers'].append(mother.network_v2['layers'][layer_index])
                     elif layer_index < len(father.network_v2['layers']):
@@ -164,7 +165,7 @@ class EvolutionaryOptimizer:
         # logging.debug("***************************************************")
         clone = copy.deepcopy(individual)
         # see if the optimizer is mutated
-        if helpers.lucky(local_noise):
+        if lucky(local_noise):
             # yep..  Select an optimizer
             # logging.debug("optimizer = (%s)", clone.network_v2['optimizer'])
             clone.network_v2['optimizer'] = clone.select_random_optimizer()
@@ -177,7 +178,7 @@ class EvolutionaryOptimizer:
         # now mess around within the layers
         for index in range(1, layer_count):
             # see if the layer is mutated
-            if helpers.lucky(local_noise):
+            if lucky(local_noise):
                 # then change the layer type
                 # how does this affect the weights, etc? :/
                 # logging.debug("layer = (%s)", layer)
@@ -189,25 +190,25 @@ class EvolutionaryOptimizer:
 
                 # keep checking the individual layer attributes
                 if layer['type'] == 'dropout':
-                    if helpers.lucky(local_noise):
+                    if lucky(local_noise):
                         # mutate the dropout rate
                         # logging.debug("rate = (%s)", layer['rate'])
-                        layer['rate'] = helpers.random()
+                        layer['rate'] = random()
                         # mutations += 1
                         # logging.debug("rate = (%s)", layer['rate'])
                 elif layer['type'] == 'dense':
-                    if helpers.lucky(local_noise):
+                    if lucky(local_noise):
                         # mutate the layer size
                         # logging.debug('Mutating layer size')
                         # logging.debug("size = (%s)", layer['size'])
-                        layer['size'] = helpers.random_index_between(clone.config.TAXONOMY['min_neurons'],
+                        layer['size'] = random_index_between(clone.config.TAXONOMY['min_neurons'],
                                                                      clone.config.TAXONOMY['max_neurons'])
                         # mutations += 1
                         # logging.debug("size = (%s)", layer['size'])
-                    if helpers.lucky(local_noise):
+                    if lucky(local_noise):
                         # mutate activation function
                         # logging.debug("activation = (%s)", layer['activation'])
-                        activation_index = helpers.random_index(len(clone.config.TAXONOMY['activation']))
+                        activation_index = random_index(len(clone.config.TAXONOMY['activation']))
                         layer['activation'] = clone.config.TAXONOMY['activation'][activation_index - 1]
                         # mutations += 1
                         # logging.debug("activation = (%s)", layer['activation'])
@@ -242,12 +243,12 @@ class EvolutionaryOptimizer:
 
         # For those we aren't keeping, randomly keep some anyway.
         for individual in graded[retain_length:]:
-            if self.random_select > helpers.random():
+            if self.random_select > random():
                 parents.append(copy.deepcopy(individual))
 
         # Randomly mutate some of the networks we're keeping.
         for individual in parents:
-            if helpers.lucky(self.mutate_chance):
+            if lucky(self.mutate_chance):
                 individual = self.mutate(individual)
 
         # Now find out how many spots we have left to fill.
@@ -259,8 +260,8 @@ class EvolutionaryOptimizer:
         while len(children) < desired_length:
 
             # Get a random mom and dad.
-            male_index = helpers.random_index_between(0, parents_length - 1)
-            female_index = helpers.random_index_between(0, parents_length - 1)
+            male_index = random_index_between(0, parents_length - 1)
+            female_index = random_index_between(0, parents_length - 1)
 
             # Assuming they aren't the same network...
             if male_index != female_index:

@@ -2,7 +2,7 @@
 
 ###############################################################################
 # Filesystem Connector for Neural Network Input Data
-# Copyright (c) 2017-2019 Joshua Burt
+# Copyright (c) 2017-2020 Joshua Burt
 ###############################################################################
 """
 
@@ -16,8 +16,9 @@ import array
 import logging
 import numpy
 from PIL import Image
-from src import lucky
-from src import DiceboxConfig
+
+from ..config import DiceboxConfig
+from ..utils import lucky
 
 
 class FileSystemConnector(object):

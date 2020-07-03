@@ -7,7 +7,7 @@ class Test(unittest.TestCase):
     """
     The basic class that inherits unittest.TestCase
     """
-    TEST_DATA_BASE = 'test/fictures'
+    TEST_DATA_BASE = 'test/fixtures'
     local_config_file = '%s/dicebox.config' % TEST_DATA_BASE
     local_lonestar_model_file = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
 
