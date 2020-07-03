@@ -40,6 +40,14 @@ def random():
     return float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
 
 
+# A dropout layer can is [0, 1), we can not actually use a '1' value.
+def random_strict():
+    new_random_number: float = random()
+    while new_random_number >= 1.0:
+        new_random_number = random()
+    return new_random_number
+
+
 ###############################################################################
 # Allows for easy directory structure creation
 # https://stackoverflow.com/questions/273192/how-can-i-create-a-directory-if-it-does-not-exist

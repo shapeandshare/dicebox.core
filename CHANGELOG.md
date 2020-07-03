@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+2.1.0 (07/03/2020)
+-----
+- Refactored from Python 2.7 to 3.7.
+- Added support for distribution as a wheel package.
+
 2.0.1
 -----
 - Bug fix, removed unimplemented exceptions left after refactoring.

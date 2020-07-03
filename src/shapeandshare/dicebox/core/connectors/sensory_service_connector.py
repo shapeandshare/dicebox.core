@@ -1,13 +1,13 @@
-import os
 from PIL import Image
 import logging
-import dicebox.utils.helpers as helpers
-from dicebox.config.dicebox_config import DiceboxConfig
-from dicebox.connectors.filesystem_connecter import FileSystemConnector
+import src as helpers
 import requests
 import json
 from datetime import datetime
 import pika
+
+from ..config import DiceboxConfig
+from .filesystem_connecter import FileSystemConnector
 
 
 class SensoryServiceConnector:
