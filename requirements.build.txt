@@ -4,3 +4,5 @@ autopep8==1.5.3
 wheel
 setuptools
 build
+
+coverage==5.1
