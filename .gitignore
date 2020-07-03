@@ -25,3 +25,6 @@ dist/
 __pycache__/
 *.so
 *~
+
+.coverage
+htmlcov/
