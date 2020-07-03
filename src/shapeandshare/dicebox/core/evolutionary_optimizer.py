@@ -15,7 +15,7 @@ import copy
 
 from .config import DiceboxConfig
 from .dicebox_network import DiceboxNetwork
-from .utils import lucky, random_index, random_index_between, random
+from .utils import lucky, random_index, random_index_between, random, random_strict
 
 
 class EvolutionaryOptimizer:
@@ -159,7 +159,13 @@ class EvolutionaryOptimizer:
             children.append(child)
         return children
 
-    def mutate(self, individual):
+    def mutate(self, individual: DiceboxNetwork):
+        # we will be performing a deepcopy on the incoming object.
+        # It looks like Keras Sequencials no longer support this.
+        # so we need to ensure we remove any compiled models on
+        # the inbound object before proceeding.
+        individual.model_v2 = {}
+
         # mutations = 0
         local_noise = self.mutate_chance
         # logging.debug("***************************************************")
@@ -193,7 +199,7 @@ class EvolutionaryOptimizer:
                     if lucky(local_noise):
                         # mutate the dropout rate
                         # logging.debug("rate = (%s)", layer['rate'])
-                        layer['rate'] = random()
+                        layer['rate'] = random_strict()
                         # mutations += 1
                         # logging.debug("rate = (%s)", layer['rate'])
                 elif layer['type'] == 'dense':

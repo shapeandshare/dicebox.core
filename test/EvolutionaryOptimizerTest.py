@@ -1,17 +1,15 @@
 import unittest
-from src import DiceboxNetwork
-from src import EvolutionaryOptimizer
+
+from src.shapeandshare.dicebox.core import DiceboxNetwork, EvolutionaryOptimizer
 
 
-class Test(unittest.TestCase):
+class EvolutionaryOptimizerTest(unittest.TestCase):
     """
     The basic class that inherits unittest.TestCase
     """
     TEST_DATA_BASE = 'test/fixtures'
     local_config_file = '%s/dicebox.config' % TEST_DATA_BASE
     local_lonestar_model_file = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
-
-    # def setUp(self):
 
     def test_breed(self):
         mother = DiceboxNetwork(config_file=self.local_config_file,
@@ -59,6 +57,7 @@ class Test(unittest.TestCase):
         self.assertNotEqual(id(before_network), id(after_network))
         self.assertNotEqual(before_network, after_network)
 
+
 if __name__ == '__main__':
-    # begin the unittest.main()
-    unittest.main()
+    runner = unittest.TextTestRunner()
+    runner.run(EvolutionaryOptimizerTest())

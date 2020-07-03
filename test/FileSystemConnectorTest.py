@@ -3,10 +3,11 @@ import logging
 import json
 import numpy
 import numpy.testing
-from src import FileSystemConnector
+
+from src.shapeandshare.dicebox.core.connectors import FileSystemConnector
 
 
-class Test(unittest.TestCase):
+class FileSystemConnectorTest(unittest.TestCase):
     """
     The basic class that inherits unittest.TestCase
     """
@@ -91,5 +92,5 @@ class Test(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # begin the unittest.main()
-    unittest.main()
+    runner = unittest.TextTestRunner()
+    runner.run(FileSystemConnectorTest())

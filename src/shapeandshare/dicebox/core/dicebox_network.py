@@ -17,7 +17,7 @@ import json
 
 from .config import DiceboxConfig
 from .connectors import FileSystemConnector, SensoryServiceConnector
-from .utils import random_index, random_index_between, random
+from .utils import random_index, random_index_between, random, random_strict
 
 
 class DiceboxNetwork:
@@ -116,7 +116,7 @@ class DiceboxNetwork:
         random_layer['type'] = layer_type
         if layer_type == 'dropout':
             # get a dropout rate..
-            random_layer['rate'] = random()
+            random_layer['rate']: float = random_strict()
         else:
             # determine the size and activation function to use.
             random_layer['size'] = random_index_between(self.config.TAXONOMY['min_neurons'],
