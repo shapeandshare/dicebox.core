@@ -16,8 +16,8 @@ import array
 import logging
 import numpy
 from PIL import Image
-from dicebox.utils.helpers import lucky
-from dicebox.config.dicebox_config import DiceboxConfig
+from src.dicebox.utils.helpers import lucky
+from src.dicebox.config import DiceboxConfig
 
 
 class FileSystemConnector(object):

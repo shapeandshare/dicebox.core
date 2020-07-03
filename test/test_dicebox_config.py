@@ -4,7 +4,7 @@ import sys
 import json
 import numpy
 import numpy.testing
-from dicebox.config.dicebox_config import DiceboxConfig
+from src.dicebox.config import DiceboxConfig
 
 
 class Test(unittest.TestCase):

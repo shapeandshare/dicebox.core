@@ -1,9 +1,9 @@
 import os
 from PIL import Image
 import logging
-import dicebox.utils.helpers as helpers
-from dicebox.config.dicebox_config import DiceboxConfig
-from dicebox.connectors.filesystem_connecter import FileSystemConnector
+import src.dicebox.utils.helpers as helpers
+from src.dicebox.config import DiceboxConfig
+from src.dicebox.connectors import FileSystemConnector
 import requests
 import json
 from datetime import datetime

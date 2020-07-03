@@ -1,6 +1,6 @@
 import unittest
-from dicebox.dicebox_network import DiceboxNetwork
-from dicebox.evolutionary_optimizer import EvolutionaryOptimizer
+from src.dicebox.dicebox_network import DiceboxNetwork
+from src.dicebox.evolutionary_optimizer import EvolutionaryOptimizer
 
 
 class Test(unittest.TestCase):

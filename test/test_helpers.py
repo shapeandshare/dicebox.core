@@ -1,5 +1,5 @@
 import unittest
-import dicebox.utils.helpers as helpers
+import src.dicebox.utils.helpers as helpers
 
 class Test(unittest.TestCase):
     """

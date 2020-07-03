@@ -3,7 +3,7 @@ import logging
 import json
 import numpy
 import numpy.testing
-from dicebox.connectors.filesystem_connecter import FileSystemConnector
+from src.dicebox.connectors import FileSystemConnector
 
 
 class Test(unittest.TestCase):

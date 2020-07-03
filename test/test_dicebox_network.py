@@ -1,7 +1,7 @@
 import unittest
 import logging
 import json
-from dicebox.dicebox_network import DiceboxNetwork
+from src.dicebox.dicebox_network import DiceboxNetwork
 
 
 class Test(unittest.TestCase):

@@ -1,7 +1,7 @@
 ##############################################################################
 # Derived from https://github.com/harvitronix/neural-network-genetic-algorithm
 # Derived source copyright: Matt Harvey, 2017, Derived source license: The MIT License
-# See docs/Matt Harvey.LICENSE
+# See docs/Matt Harvey.LICENSE.txt
 ##############################################################################
 
 """Class that represents the network to be evolved."""
@@ -14,10 +14,10 @@ import numpy
 from datetime import datetime
 import os
 import json
-from dicebox.config.dicebox_config import DiceboxConfig
-from dicebox.connectors.filesystem_connecter import FileSystemConnector
-from dicebox.connectors.sensory_service_connector import SensoryServiceConnector
-import dicebox.utils.helpers as helpers
+from src.dicebox.config import DiceboxConfig
+from src.dicebox.connectors import FileSystemConnector
+from src.dicebox.connectors import SensoryServiceConnector
+import src.dicebox.utils.helpers as helpers
 
 
 class DiceboxNetwork:
@@ -120,7 +120,7 @@ class DiceboxNetwork:
         else:
             # determine the size and activation function to use.
             random_layer['size'] = helpers.random_index_between(self.config.TAXONOMY['min_neurons'],
-                                                             self.config.TAXONOMY['max_neurons'])
+                                                                self.config.TAXONOMY['max_neurons'])
             activation_index = helpers.random_index(len(self.config.TAXONOMY['activation']))
             random_layer['activation'] = self.config.TAXONOMY['activation'][activation_index - 1]
         return random_layer

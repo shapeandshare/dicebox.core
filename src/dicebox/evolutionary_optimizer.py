@@ -1,6 +1,6 @@
 # Derived from https://github.com/harvitronix/neural-network-genetic-algorithm
 # Derived source copyright: Matt Harvey, 2017, Derived source license: The MIT License
-# See docs/Matt Harvey.LICENSE
+# See docs/Matt Harvey.LICENSE.txt
 
 """
 Class that holds a genetic algorithm for evolving a network.
@@ -12,9 +12,9 @@ Credit:
 from functools import reduce
 from operator import add
 import copy
-import dicebox.utils.helpers as helpers
-from dicebox.config.dicebox_config import DiceboxConfig
-from dicebox.dicebox_network import DiceboxNetwork
+import src.dicebox.utils.helpers as helpers
+from src.dicebox.config import DiceboxConfig
+from src.dicebox.dicebox_network import DiceboxNetwork
 
 
 class EvolutionaryOptimizer:

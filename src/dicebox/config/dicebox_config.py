@@ -11,7 +11,7 @@
 ###############################################################################
 import os
 import json
-from dicebox.config.base_config import BaseConfig
+from src.dicebox.config import BaseConfig
 
 
 class DiceboxConfig(object):
