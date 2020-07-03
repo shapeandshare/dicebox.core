@@ -14,6 +14,8 @@ import fnmatch
 import struct
 import array
 import logging
+from collections import ValuesView
+
 import numpy
 from PIL import Image
 
@@ -52,16 +54,15 @@ class FileSystemConnector(object):
         else:
             logging.info('File System Connector Data Indexing Disabled.')
 
-    def get_batch_list(self, batch_size):
+    def get_batch_list(self, batch_size: int):
         """For a given batch size, returns a random selection of indices
 
         :param batch_size: integer value
         :return: array of indices in the batch size (each index appearing only once).
         """
         output = []
-        set_size = len(self.dataset_index)
-        value_list = self.dataset_index.values()
-
+        set_size: int = len(self.dataset_index)
+        value_list = list(self.dataset_index.values())
         if batch_size > set_size:
             raise Exception('Max batch size: %s, but %s was specified!' % (set_size, batch_size))
 
@@ -71,7 +72,7 @@ class FileSystemConnector(object):
 
         output_list = []
         while len(output_list) < batch_size:
-            index = int(round((float(ord(struct.unpack('c', os.urandom(1))[0])) / 255) * (len(set_indices) - 1)))
+            index: int = int(round((float(ord(struct.unpack('c', os.urandom(1))[0])) / 255) * (len(set_indices) - 1)))
             output_list.append(set_indices[index])
             set_indices.remove(set_indices[index])
 
@@ -222,6 +223,8 @@ class FileSystemConnector(object):
         natural_categories = []
         category_map = {}
         value_list = self.dataset_index.values()
+        # print(self.dataset_index)
+        # print(value_list)
         for item in value_list:
             # logging.info(item)
             # logging.info("natural category label: (%s)" % item[1])
@@ -235,7 +238,7 @@ class FileSystemConnector(object):
         # logging.info(category_map)
         return category_map
 
-    def get_data_set(self):
+    def get_data_set(self) -> dict:
         """
         Returns a dictionary of [k:filename, v:array of filename and category] for the entire data set.
 

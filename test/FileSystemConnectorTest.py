@@ -15,7 +15,7 @@ class FileSystemConnectorTest(unittest.TestCase):
     EXPECTED_DATASET_INDEX = None
     EXPECTED_CATEGORY_MAP = None
     TEST_DATA_BASE = 'test/fixtures'
-    DATASET_LOCATION = '%s/test_dataset/fixtures' % TEST_DATA_BASE
+    DATASET_LOCATION = '%s/test_dataset/data' % TEST_DATA_BASE
     DICEBOX_CONFIG_FILE = '%s/dicebox.config' % TEST_DATA_BASE
     LONESTAR_MODEL_FILE = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
     DISABLE_DATA_INDEXING = False
@@ -71,7 +71,7 @@ class FileSystemConnectorTest(unittest.TestCase):
         try:
             returned_batch = self.fsc.get_batch_list(batch_size)
         except Exception as e:
-            self.assertEqual(e.message, 'Max batch size: 2, but 3 was specified!')
+            self.assertEqual(str(e), 'Max batch size: 2, but 3 was specified!')
 
     def test_process_image(self):
         filename = '%s/0/mnist_testing_0_28x28_3.png' % self.DATASET_LOCATION
