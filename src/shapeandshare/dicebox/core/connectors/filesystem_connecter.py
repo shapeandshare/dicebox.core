@@ -251,9 +251,9 @@ class FileSystemConnector(object):
         for root, _, filenames in os.walk(self.data_directory):
             for filename in fnmatch.filter(filenames, '*.png'):
                 new_entry = str(os.path.join(root, filename))
-                new_entry = new_entry.replace('%s/' % self.data_directory, '')
+                new_entry = new_entry.replace('%s%s' % (self.data_directory, os.path.sep), '')
                 new_entry = os.path.normpath(new_entry)
-                category, filename = new_entry.split('/')
+                category, filename = new_entry.split(os.path.sep)
                 # logging.info("category: (%s), filename: (%s)" % (category, filename))
                 data_set[new_entry] = [filename, category]
         # logging.info(data_set)
