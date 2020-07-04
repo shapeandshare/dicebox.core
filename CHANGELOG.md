@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+2.1.1 (07/04/2020)
+-----
+- Address old import.
+
 2.1.0 (07/03/2020)
 -----
 - Refactored from Python 2.7 to 3.7.
