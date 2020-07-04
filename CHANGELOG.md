@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+2.1.2 (07/04/2020)
+-----
+- Addressed a cross-platform seperator bug.
+
 2.1.1 (07/04/2020)
 -----
 - Address old import.
