@@ -1,6 +1,5 @@
 from PIL import Image
 import logging
-import src as helpers
 import requests
 import json
 from datetime import datetime
@@ -8,6 +7,7 @@ import pika
 
 from ..config import DiceboxConfig
 from .filesystem_connecter import FileSystemConnector
+from ..utils import make_sure_path_exists
 
 
 class SensoryServiceConnector:
@@ -233,7 +233,7 @@ class SensoryServiceConnector:
         path = "%s/%s/" % (data_dir, data_category)
         full_filename = "%s%s" % (path, filename)
         logging.debug("(%s)" % (full_filename))
-        helpers.make_sure_path_exists(path)
+        make_sure_path_exists(path)
         image_obj.save(full_filename)
         return True
 
