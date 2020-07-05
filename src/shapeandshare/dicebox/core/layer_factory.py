@@ -50,9 +50,9 @@ class LayerFactory:
 
     @staticmethod
     def decompile_layer(layer: Union[DenseLayer, DropoutLayer]) -> Union[DenseLayerConfigure, DropoutLayerConfigure]:
-        if layer.layer_type == LayerType.DENSE.value:
+        if layer.layer_type == LayerType.DENSE:
             return DenseLayerConfigure(size=layer.size, activation=layer.activation)
-        elif layer.layer_type == LayerType.DROPOUT.value:
+        elif layer.layer_type == LayerType.DROPOUT:
             return DropoutLayerConfigure(rate=layer.rate)
         else:
             raise

@@ -44,6 +44,7 @@ class NetworkFactory:
             else:
                 raise
 
+        new_network.compile()
         return new_network
 
     def create_random_network(self) -> Network:
@@ -63,5 +64,6 @@ class NetworkFactory:
             # add new random layer to the network
             network.add_layer(self.layer_factory.build_random_layer_config())
 
+        network.compile()
         return network
 

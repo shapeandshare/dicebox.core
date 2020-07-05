@@ -1,6 +1,7 @@
 import unittest
 
 from src.shapeandshare.dicebox.core import DiceboxNetwork, EvolutionaryOptimizer
+from src.shapeandshare.dicebox.core.config import DiceboxConfig
 
 
 class EvolutionaryOptimizerTest(unittest.TestCase):
@@ -8,21 +9,22 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
     The basic class that inherits unittest.TestCase
     """
     TEST_DATA_BASE = 'test/fixtures'
-    local_config_file = '%s/dicebox.__config' % TEST_DATA_BASE
+    local_config_file = '%s/dicebox.config' % TEST_DATA_BASE
     local_lonestar_model_file = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
 
     def test_breed(self):
-        mother = DiceboxNetwork(config_file=self.local_config_file)
+        dc: DiceboxConfig = DiceboxConfig(config_file=self.local_config_file)
+
+        mother = DiceboxNetwork(config=dc, create_fsc=True, disable_data_indexing=True)
         mother.generate_random_network()
 
-        father = DiceboxNetwork(config_file=self.local_config_file)
+        father = DiceboxNetwork(config=dc, create_fsc=True, disable_data_indexing=True)
         father.generate_random_network()
 
-        op = EvolutionaryOptimizer(retain=0.4,
+        op = EvolutionaryOptimizer(config=dc,
+                                   retain=0.4,
                                    random_select=0.1,
-                                   mutate_chance=0.2,
-                                   config_file=self.local_config_file,
-                                   lonestar_model_file=self.local_lonestar_model_file)
+                                   mutate_chance=0.2)
 
         # Breed them.
         babies = op.breed(mother, father)

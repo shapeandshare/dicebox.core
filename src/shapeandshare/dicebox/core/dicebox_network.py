@@ -19,7 +19,8 @@ import json
 
 from .config import DiceboxConfig
 from .connectors import FileSystemConnector, SensoryServiceConnector
-from .models.layer import DropoutLayer, DenseLayer
+from .layer_factory import LayerFactory
+from .models.layer import DropoutLayer, DenseLayer, DropoutLayerConfigure, DenseLayerConfigure, LayerType
 from .models.network import Network, Optimizers
 from .network_factory import NetworkFactory
 
@@ -61,7 +62,7 @@ class DiceboxNetwork:
 
         self.__network_factory = NetworkFactory(config=self.__config)
         self.__network: Union[Network, None] = None   # the network object
-        self.__model: Union[Sequential, None] = None  # the compiled network (model).
+        # self.__model: Union[Sequential, None] = None  # the compiled network (model).
 
         if create_fsc is True:
             logging.debug('creating a new fsc..')
@@ -149,8 +150,8 @@ class DiceboxNetwork:
         logging.debug('-' * 80)
         logging.debug('Compiling model if need be.')
         logging.debug('-' * 80)
-        if self.__model is None:
-            self.__model = self.__network.compile()
+        if self.__network.model is None:
+            self.__network.compile()
         logging.debug('-' * 80)
         logging.debug('Done!')
         logging.debug('-' * 80)
@@ -158,7 +159,7 @@ class DiceboxNetwork:
         logging.debug('-' * 80)
         logging.debug('Fitting model.')
         logging.debug('-' * 80)
-        self.__model.fit(x_train, y_train,
+        self.__network.model.fit(x_train, y_train,
                          batch_size=self.__config.BATCH_SIZE,
                          epochs=10000,  # using early stopping, so no real limit
                          verbose=1,
@@ -169,9 +170,9 @@ class DiceboxNetwork:
         logging.debug('-' * 80)
 
         logging.debug('-' * 80)
-        logging.debug('Scoring __model.')
+        logging.debug('Scoring model.')
         logging.debug('-' * 80)
-        score = self.__model.evaluate(x_test, y_test, verbose=1)
+        score = self.__network.model.evaluate(x_test, y_test, verbose=1)
         logging.debug('-' * 80)
         logging.debug('Done!')
         logging.debug('-' * 80)
@@ -190,11 +191,11 @@ class DiceboxNetwork:
             logging.error("UNKNOWN DATASET (%s) passed to classify" % self.__config.NETWORK_NAME)
             raise Exception("UNKNOWN DATASET (%s) passed to classify" % self.__config.NETWORK_NAME)
 
-        if self.__model is None:
+        if self.__network.model is None:
             logging.error('Unable to classify without a model.')
             raise Exception('Unable to classify without a model.')
 
-        model_prediction: ndarray = self.__model.predict_classes(x_test, batch_size=1, verbose=0)
+        model_prediction: ndarray = self.__network.model.predict_classes(x_test, batch_size=1, verbose=0)
         logging.info(model_prediction)
 
         return model_prediction
@@ -203,26 +204,26 @@ class DiceboxNetwork:
     ## Weights Storage Functions
 
     def save_model_weights(self, filename: str) -> None:
-        if self.__model is None:
+        if self.__network.model is None:
             logging.error('No model! Compile the network first.')
             raise Exception('No model! Compile the network first.')
 
         logging.debug('loading weights file..')
         try:
-            self.__model.save_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
+            self.__network.model.save_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
         except Exception as e:
             logging.error('Unable to save weights file.')
             logging.error(e)
             raise e
 
     def load_model_weights(self, filename: str) -> None:
-        if self.__model is None:
+        if self.__network.model is None:
             logging.error('No model! Compile the network first.')
             raise Exception('No model! Compile the network first.')
 
         logging.debug('loading weights file..')
         try:
-            self.__model.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
+            self.__network.model.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
         except Exception as e:
             logging.error('Unable to load weights file.')
             logging.error(e)
@@ -361,18 +362,9 @@ class DiceboxNetwork:
 
     def load_network(self, network_definition: Any) -> None:
         self.__network = self.__network_factory.create_network(network_definition=network_definition)
-        self.__model = self.__network.compile()
 
     def generate_random_network(self) -> None:
         self.__network = self.__network_factory.create_random_network()
-        self.__model = self.__network.compile()
-
-    # def network_loaded(self) -> bool:
-    #     if self.__network and self.__network is not None:
-    #         return True
-    #     else:
-    #         return False
-
 
     ## For Evolutionary Optimizer
 
@@ -382,6 +374,21 @@ class DiceboxNetwork:
     def get_layer_count(self) -> int:
         return len(self.__network.layers)
 
-    def get_layer_definition(self, layer_index):
-        layer: Union[DropoutLayer, DenseLayer] = self.__network.layers[layer_index]
-        # self.__network_factory.decompile_layer(layer)
+    def get_layer_definition(self, layer_index) -> Any:
+        layer: Union[DropoutLayer, DenseLayer] = self.__network.get_layer_definition(layer_index)
+        layer_factory: LayerFactory = LayerFactory(config=self.__config)
+        layer_config: Union[DenseLayerConfigure, DropoutLayerConfigure] = layer_factory.decompile_layer(layer)
+
+        definition = {}
+
+        if layer_config.layer_type == LayerType.DROPOUT:
+            definition['type'] = LayerType.DROPOUT.value
+            definition['rate'] = layer_config.rate
+        elif layer_config.layer_type == LayerType.DENSE:
+            definition['type'] = LayerType.DENSE.value
+            definition['size'] = layer_config.size
+            definition['activation'] = layer_config.activation.value
+        else:
+            raise
+
+        return definition

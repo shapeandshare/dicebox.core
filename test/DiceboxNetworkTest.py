@@ -4,6 +4,7 @@ import json
 from typing import Any
 
 from src.shapeandshare.dicebox.core import DiceboxNetwork
+from src.shapeandshare.dicebox.core.config import DiceboxConfig
 from src.shapeandshare.dicebox.core.models.network import Network
 
 
@@ -24,9 +25,11 @@ class DiceboxNetworkTest(unittest.TestCase):
         self.maxDiff = None
 
     def test_create_random(self):
-        dn = DiceboxNetwork(create_fsc=True,
-                            disable_data_indexing=True,
-                            config_file=self.local_config_file)
+        dc: DiceboxConfig = DiceboxConfig(config_file=self.local_config_file)
+
+        dn: DiceboxNetwork = DiceboxNetwork(dc,
+                            create_fsc=True,
+                            disable_data_indexing=True)
         dn.generate_random_network()
 
         # self.assertEqual(dn.__network, {})
@@ -38,6 +41,7 @@ class DiceboxNetworkTest(unittest.TestCase):
         # dn = None
 
     def test_load_network(self):
+        dc = DiceboxConfig(config_file=self.local_config_file)
         expected_dicebox_serialized_model = json.load(open(self.local_lonestar_model_file))
 
         expected_compiled_model: Any = None
@@ -101,9 +105,9 @@ class DiceboxNetworkTest(unittest.TestCase):
         }
 
 
-        dn = DiceboxNetwork(create_fsc=True,
-                            disable_data_indexing=True,
-                            config_file=self.local_config_file)
+        dn = DiceboxNetwork(config=dc,
+                            create_fsc=True,
+                            disable_data_indexing=True)
 
         dn.load_network(network_definition=local_network_definition)
         # dn.__network_factory.create_network(network_definition=)

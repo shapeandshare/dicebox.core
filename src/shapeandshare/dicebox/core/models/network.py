@@ -36,20 +36,27 @@ class Network(ABC):
 
         self.layer_factory: LayerFactory = LayerFactory(self.config)
         self.layers: List[Union[DropoutLayer, DenseLayer]] = []
+        self.model: Union[Sequential, None] = None
 
     def add_layer(self, layer_config: Union[DropoutLayerConfigure, DenseLayerConfigure]) -> None:
         self.layers.append(self.layer_factory.compile_layer(layer_config=layer_config))
 
-    def compile(self) -> Sequential:
+    def clear_model(self):
+        if self.model:
+            del self.model
+        self.model: Union[Sequential, None] = None
+
+    def compile(self) -> None:
+        self.clear_model()
         model = Sequential()
 
         first_layer: bool = True
         for layer in self.layers:
             # build and add layer
-            if layer.layer_type == LayerType.DROPOUT.value:
+            if layer.layer_type == LayerType.DROPOUT:
                 # handle dropout
                 model.add(Dropout(layer.rate))
-            elif layer.layer_type == LayerType.DENSE.value:
+            elif layer.layer_type == LayerType.DENSE:
                 neurons: int = layer.size
                 activation: ActivationFunction = layer.activation
                 if first_layer is True:
@@ -64,14 +71,11 @@ class Network(ABC):
                         activation='softmax'))  # TODO: Make it possible to define with from the enum...
         model.compile(loss='categorical_crossentropy', optimizer=self.optimizer.value, metrics=['accuracy'])
 
-        return model
+        # return model
+        self.model = model
 
-    # def compile_layer(self, layer_config: Union[DenseLayerConfigure, DropoutLayerConfigure]):
+    def get_layer_definition(self, layer_index: int) -> Union[DenseLayer, DropoutLayer]:
+        return self.layers[layer_index]
 
-
-    def decompile_layer(self, layer: Union[DenseLayer, DropoutLayer]) -> Union[DenseLayerConfigure, DropoutLayerConfigure]:
-        return self.layer_factory.decompile_layer(layer)
-
-    def get_layer_definition(self, layer_index: int):
-        layer: Union[DenseLayer, DropoutLayer] = self.layers[layer_index]
-        config: Union[DenseLayerConfigure, DropoutLayerConfigure] = self.decompile_layer(layer)
+    def get_layer(self, layer_index: int) -> Union[DenseLayer, DropoutLayer]:
+        return self.layers[layer_index]

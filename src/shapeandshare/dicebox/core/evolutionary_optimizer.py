@@ -72,16 +72,8 @@ class EvolutionaryOptimizer:
         return summed / float((len(pop)))
 
     def breed(self, mother: DiceboxNetwork, father: DiceboxNetwork) -> List[DiceboxNetwork]:
-        """Make two children as parts of their parents.
+        # Creates two offspring.
 
-        Args:
-            mother (dict): Network parameters
-            father (dict): Network parameters
-
-        Returns:
-            (list): Two network objects
-
-        """
         children = []
         for _ in range(2):
             child = DiceboxNetwork(config=self.config)
@@ -125,23 +117,27 @@ class EvolutionaryOptimizer:
                 # logging.debug("layer (%s/%s)", layer_index, layer_count)
                 # Pick which parent's layer is passed on to the offspring
                 if lucky(0.5):
-                    if layer_index < len(mother.network['layers']):
+                    if layer_index < mother.get_layer_count():
                         # child.__network['layers'].append(mother.network['layers'][layer_index])
                         network_definition['layers'].append(mother.get_layer_definition(layer_index))
 
-                    elif layer_index < len(father.network['layers']):
-                        child.__network['layers'].append(father.network['layers'][layer_index])
+                    elif layer_index < father.get_layer_count():
+                        # child.__network['layers'].append(father.network['layers'][layer_index])
+                        network_definition['layers'].append(father.get_layer_definition(layer_index))
                     else:
                         raise Exception('impossible breeding event occurred!')
                 else:
-                    if layer_index < len(father.network['layers']):
-                        child.__network['layers'].append(father.network['layers'][layer_index])
-                    elif layer_index < len(mother.network['layers']):
-                        child.__network['layers'].append(mother.network['layers'][layer_index])
+                    if layer_index < father.get_layer_count():
+                        # child.__network['layers'].append(father.network['layers'][layer_index])
+                        network_definition['layers'].append(father.get_layer_definition(layer_index))
+                    elif layer_index < mother.get_layer_count():
+                        # child.__network['layers'].append(mother.network['layers'][layer_index])
+                        network_definition['layers'].append(mother.get_layer_definition(layer_index))
                     else:
                         raise Exception('impossible breeding event occurred!')
 
-            child.__model = child.compile_model(child.__network)
+            # child.__model = child.compile_model(child.__network)
+            child.load_network(network_definition=network_definition)
             children.append(child)
         return children
 
