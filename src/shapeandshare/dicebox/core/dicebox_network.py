@@ -8,7 +8,6 @@
 from typing import Union, Any
 
 from numpy import ndarray
-from tensorflow.keras.models import Sequential
 from tensorflow.keras.callbacks import EarlyStopping
 # from tensorflow.keras.callbacks import ModelCheckpoint
 import logging
@@ -19,8 +18,7 @@ import json
 
 from .config import DiceboxConfig
 from .connectors import FileSystemConnector, SensoryServiceConnector
-from .layer_factory import LayerFactory
-from .models.layer import DropoutLayer, DenseLayer, DropoutLayerConfigure, DenseLayerConfigure, LayerType
+from .models.layer import DropoutLayer, DenseLayer
 from .models.network import Network, Optimizers
 from .network_factory import NetworkFactory
 
@@ -360,11 +358,14 @@ class DiceboxNetwork:
 
     ## Network Functions
 
-    def load_network(self, network_definition: Any) -> None:
-        self.__network = self.__network_factory.create_network(network_definition=network_definition)
+    # def load_network(self, network_definition: Any) -> None:
+    #     self.__network = self.__network_factory.create_network(network_definition=network_definition)
 
-    def generate_random_network(self) -> None:
-        self.__network = self.__network_factory.create_random_network()
+    def load_network(self, network: Network) -> None:
+        self.__network = network
+
+    # def generate_random_network(self) -> None:
+    #     self.__network = self.__network_factory.create_random_network()
 
     ## For Evolutionary Optimizer
 
@@ -374,21 +375,12 @@ class DiceboxNetwork:
     def get_layer_count(self) -> int:
         return len(self.__network.layers)
 
-    def get_layer_definition(self, layer_index) -> Any:
-        layer: Union[DropoutLayer, DenseLayer] = self.__network.get_layer_definition(layer_index)
-        layer_factory: LayerFactory = LayerFactory(config=self.__config)
-        layer_config: Union[DenseLayerConfigure, DropoutLayerConfigure] = layer_factory.decompile_layer(layer)
+    def get_layer(self, layer_index: int) -> Union[DenseLayer, DropoutLayer]:
+        return self.__network.get_layer_definition(layer_index)
 
-        definition = {}
+    # def get_layer_definition(self, layer_index) -> Any:
+    #     layer: Union[DropoutLayer, DenseLayer] = self.__network.get_layer_definition(layer_index)
+    #     return self.__network_factory.decompile_layer(layer)
 
-        if layer_config.layer_type == LayerType.DROPOUT:
-            definition['type'] = LayerType.DROPOUT.value
-            definition['rate'] = layer_config.rate
-        elif layer_config.layer_type == LayerType.DENSE:
-            definition['type'] = LayerType.DENSE.value
-            definition['size'] = layer_config.size
-            definition['activation'] = layer_config.activation.value
-        else:
-            raise
-
-        return definition
+    def get_config(self) -> DiceboxConfig:
+        return self.__config

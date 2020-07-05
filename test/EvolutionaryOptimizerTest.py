@@ -2,6 +2,7 @@ import unittest
 
 from src.shapeandshare.dicebox.core import DiceboxNetwork, EvolutionaryOptimizer
 from src.shapeandshare.dicebox.core.config import DiceboxConfig
+from src.shapeandshare.dicebox.core.network_factory import NetworkFactory
 
 
 class EvolutionaryOptimizerTest(unittest.TestCase):
@@ -14,12 +15,13 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
 
     def test_breed(self):
         dc: DiceboxConfig = DiceboxConfig(config_file=self.local_config_file)
+        nf = NetworkFactory(config=dc)
 
         mother = DiceboxNetwork(config=dc, create_fsc=True, disable_data_indexing=True)
-        mother.generate_random_network()
+        mother.load_network(network=nf.create_random_network())
 
         father = DiceboxNetwork(config=dc, create_fsc=True, disable_data_indexing=True)
-        father.generate_random_network()
+        father.load_network(network=nf.create_random_network())
 
         op = EvolutionaryOptimizer(config=dc,
                                    retain=0.4,

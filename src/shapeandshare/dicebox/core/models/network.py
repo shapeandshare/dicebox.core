@@ -27,19 +27,18 @@ class NetworkConfig:
         self.optimizer: Optimizers = optimizer
 
 
-class Network(ABC):
+class Network(LayerFactory):
     def __init__(self, config: DiceboxConfig, network_config: NetworkConfig):
-        self.config: DiceboxConfig = config
+        super().__init__(config=config)
         self.input_shape: int = network_config.input_shape
         self.output_size: int = network_config.output_size
         self.optimizer: Optimizers = network_config.optimizer
 
-        self.layer_factory: LayerFactory = LayerFactory(self.config)
         self.layers: List[Union[DropoutLayer, DenseLayer]] = []
         self.model: Union[Sequential, None] = None
 
     def add_layer(self, layer_config: Union[DropoutLayerConfigure, DenseLayerConfigure]) -> None:
-        self.layers.append(self.layer_factory.compile_layer(layer_config=layer_config))
+        self.layers.append(self.compile_layer(layer_config=layer_config))
 
     def clear_model(self):
         if self.model:

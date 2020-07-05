@@ -6,6 +6,7 @@ from typing import Any
 from src.shapeandshare.dicebox.core import DiceboxNetwork
 from src.shapeandshare.dicebox.core.config import DiceboxConfig
 from src.shapeandshare.dicebox.core.models.network import Network
+from src.shapeandshare.dicebox.core.network_factory import NetworkFactory
 
 
 class DiceboxNetworkTest(unittest.TestCase):
@@ -26,11 +27,13 @@ class DiceboxNetworkTest(unittest.TestCase):
 
     def test_create_random(self):
         dc: DiceboxConfig = DiceboxConfig(config_file=self.local_config_file)
+        nf: NetworkFactory = NetworkFactory(config=dc)
+        nf.create_random_network()
 
-        dn: DiceboxNetwork = DiceboxNetwork(dc,
-                            create_fsc=True,
-                            disable_data_indexing=True)
-        dn.generate_random_network()
+        # dn: DiceboxNetwork = DiceboxNetwork(dc,
+        #                     create_fsc=True,
+        #                     disable_data_indexing=True)
+        # dn.generate_random_network()
 
         # self.assertEqual(dn.__network, {})
         # dn.__network = dn.__network_factory.create_random_network()
@@ -104,12 +107,9 @@ class DiceboxNetworkTest(unittest.TestCase):
             ]
         }
 
+        nf = NetworkFactory(config=dc)
+        dn = nf.create_network(network_definition=local_network_definition)
 
-        dn = DiceboxNetwork(config=dc,
-                            create_fsc=True,
-                            disable_data_indexing=True)
-
-        dn.load_network(network_definition=local_network_definition)
         # dn.__network_factory.create_network(network_definition=)
         # dn.create_lonestar(create_model=local_create_model, weights_filename=local_weights_file)
         # returned_model = dn.__model

@@ -1,4 +1,5 @@
-from typing import Union
+from abc import ABC
+from typing import Union, Any
 
 from .config import DiceboxConfig
 from .models.layer import DenseLayerConfigure, DropoutLayerConfigure, ActivationFunction, LayerType, DropoutLayer, \
@@ -6,7 +7,7 @@ from .models.layer import DenseLayerConfigure, DropoutLayerConfigure, Activation
 from .utils import random_index, random_index_between, random_strict
 
 
-class LayerFactory:
+class LayerFactory(ABC):
     config: DiceboxConfig = None
 
     def __init__(self, config: DiceboxConfig):
@@ -49,10 +50,17 @@ class LayerFactory:
             raise
 
     @staticmethod
-    def decompile_layer(layer: Union[DenseLayer, DropoutLayer]) -> Union[DenseLayerConfigure, DropoutLayerConfigure]:
-        if layer.layer_type == LayerType.DENSE:
-            return DenseLayerConfigure(size=layer.size, activation=layer.activation)
-        elif layer.layer_type == LayerType.DROPOUT:
-            return DropoutLayerConfigure(rate=layer.rate)
+    def decompile_layer(layer: Union[DenseLayer, DropoutLayer]) -> Any:
+        definition = {}
+
+        if layer.layer_type == LayerType.DROPOUT:
+            definition['type'] = LayerType.DROPOUT.value
+            definition['rate'] = layer.rate
+        elif layer.layer_type == LayerType.DENSE:
+            definition['type'] = LayerType.DENSE.value
+            definition['size'] = layer.size
+            definition['activation'] = layer.activation.value
         else:
             raise
+
+        return definition

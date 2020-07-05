@@ -1,25 +1,18 @@
-from typing import Any
-
-from tensorflow.python.keras.layers import Dense, Dropout
-from tensorflow.python.keras.models import Sequential
+from typing import Any, Union
 
 from .config import DiceboxConfig
 from .layer_factory import LayerFactory
-from .models.layer import LayerType, ActivationFunction
+from .models.layer import LayerType, ActivationFunction, DenseLayer, DropoutLayer
 from .models.network import Network, NetworkConfig, Optimizers
 from .utils import random_index, random_index_between
 
 
 # The birthing chambers ...
 
-class NetworkFactory:
-    config: DiceboxConfig
-    layer_factory: LayerFactory
-
+class NetworkFactory(LayerFactory):
     # TODO: lonestar should not exist, make it the responsiblity of the caller during create
     def __init__(self, config: DiceboxConfig):
-        self.config = config
-        self.layer_factory = LayerFactory(config=self.config)
+        super().__init__(config=config)
 
     # Processes the network which we store externally
     def create_network(self, network_definition: Any) -> Network:
@@ -35,11 +28,11 @@ class NetworkFactory:
             if layer['type'] == LayerType.DENSE.value:
                 size: int = layer['size']
                 activation: ActivationFunction = ActivationFunction(layer['activation'])
-                new_layer_config = self.layer_factory.build_dense_layer_config(size=size, activation=activation)
+                new_layer_config = self.build_dense_layer_config(size=size, activation=activation)
                 new_network.add_layer(new_layer_config)
             elif layer['type'] == LayerType.DROPOUT.value:
                 rate: float = layer['rate']
-                new_layer_config = self.layer_factory.build_dropout_layer_config(rate=rate)
+                new_layer_config = self.build_dropout_layer_config(rate=rate)
                 new_network.add_layer(new_layer_config)
             else:
                 raise
@@ -62,8 +55,7 @@ class NetworkFactory:
                                                 self.config.TAXONOMY['max_layers'])
         for layer_index in range(1, layer_count):
             # add new random layer to the network
-            network.add_layer(self.layer_factory.build_random_layer_config())
+            network.add_layer(self.build_random_layer_config())
 
         network.compile()
         return network
-

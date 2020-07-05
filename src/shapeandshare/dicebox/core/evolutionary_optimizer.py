@@ -17,23 +17,20 @@ from typing import List
 
 from .config import DiceboxConfig
 from .dicebox_network import DiceboxNetwork
+from .models.network import Network
+from .network_factory import NetworkFactory
 from .utils import lucky, random_index, random_index_between, random, random_strict
 
 
-class EvolutionaryOptimizer:
+class EvolutionaryOptimizer(NetworkFactory):
     """Class that implements genetic algorithm for MLP optimization."""
 
     config_file = None
     lonestar_model_file = None
     config = None
 
-    def __init__(self,
-                 config: DiceboxConfig,
-                 retain=0.4,
-                 random_select=0.1,
-                 mutate_chance=0.2):
-
-        # self.lonestar_model_file: str = lonestar_model_file
+    def __init__(self, config: DiceboxConfig, retain=0.4, random_select=0.1, mutate_chance=0.2):
+        super().__init__(config=config)
         self.config: DiceboxConfig = config
 
         self.mutate_chance: float = mutate_chance
@@ -44,12 +41,12 @@ class EvolutionaryOptimizer:
         # Create a population of random networks.
         population: List[DiceboxNetwork] = []
         for _ in range(0, count):
-            # Create a random __network.
-            network = DiceboxNetwork(self.config)
-            network.generate_random_network()
-
+            # Create a random network.
+            dn = DiceboxNetwork(config=self.config)
+            network: Network = self.create_random_network()
+            dn.load_network(network)
             # Add the network to our population.
-            population.append(network)
+            population.append(dn)
 
         return population
 
@@ -119,25 +116,29 @@ class EvolutionaryOptimizer:
                 if lucky(0.5):
                     if layer_index < mother.get_layer_count():
                         # child.__network['layers'].append(mother.network['layers'][layer_index])
-                        network_definition['layers'].append(mother.get_layer_definition(layer_index))
-
+                        layer = mother.get_layer(layer_index=layer_index)
+                        network_definition['layers'].append(self.decompile_layer(layer))
                     elif layer_index < father.get_layer_count():
                         # child.__network['layers'].append(father.network['layers'][layer_index])
-                        network_definition['layers'].append(father.get_layer_definition(layer_index))
+                        layer = father.get_layer(layer_index=layer_index)
+                        network_definition['layers'].append(self.decompile_layer(layer))
                     else:
                         raise Exception('impossible breeding event occurred!')
                 else:
                     if layer_index < father.get_layer_count():
                         # child.__network['layers'].append(father.network['layers'][layer_index])
-                        network_definition['layers'].append(father.get_layer_definition(layer_index))
+                        layer = father.get_layer(layer_index=layer_index)
+                        network_definition['layers'].append(self.decompile_layer(layer))
                     elif layer_index < mother.get_layer_count():
                         # child.__network['layers'].append(mother.network['layers'][layer_index])
-                        network_definition['layers'].append(mother.get_layer_definition(layer_index))
+                        layer = mother.get_layer(layer_index=layer_index)
+                        network_definition['layers'].append(self.decompile_layer(layer))
                     else:
                         raise Exception('impossible breeding event occurred!')
 
             # child.__model = child.compile_model(child.__network)
-            child.load_network(network_definition=network_definition)
+            child_network = self.create_network(network_definition=network_definition)
+            child.load_network(network=child_network)
             children.append(child)
         return children
 
@@ -146,6 +147,9 @@ class EvolutionaryOptimizer:
         # It looks like Keras Sequencials no longer support this.
         # so we need to ensure we remove any compiled models on
         # the inbound object before proceeding.
+
+        mutant = DiceboxNetwork(config=individual.get_config())
+
         individual.__model = {}
 
         # mutations = 0
