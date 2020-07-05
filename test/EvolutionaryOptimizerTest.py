@@ -12,13 +12,11 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
     local_lonestar_model_file = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
 
     def test_breed(self):
-        mother = DiceboxNetwork(config_file=self.local_config_file,
-                                 lonestar_model_file=self.local_lonestar_model_file)
-        mother.create_random()
+        mother = DiceboxNetwork(config_file=self.local_config_file)
+        mother.generate_random_network()
 
-        father = DiceboxNetwork(config_file=self.local_config_file,
-                                 lonestar_model_file=self.local_lonestar_model_file)
-        father.create_random()
+        father = DiceboxNetwork(config_file=self.local_config_file)
+        father.generate_random_network()
 
         op = EvolutionaryOptimizer(retain=0.4,
                                    random_select=0.1,

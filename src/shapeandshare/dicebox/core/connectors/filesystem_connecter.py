@@ -27,33 +27,32 @@ from ..utils import lucky
 
 class FileSystemConnector(object):
     """File System Connector Class"""
-    dataset_index = None
-    data_directory = None
-    category_map = None
+
+    config: DiceboxConfig
+    data_directory: str
+
+    dataset_index: dict
+    category_map: Dict[Any, int]
     pixel_cache = {}
 
     config = None
 
-    def __init__(self, data_directory, disable_data_indexing=False, config_file='./dicebox.__config',
-                 lonestar_model_file='./dicebox.lonestar.json'):
-        if self.config is None:
-            self.config = DiceboxConfig(config_file=config_file,
-                                        lonestar_model_file=lonestar_model_file)
+    def __init__(self, data_directory, config: DiceboxConfig, disable_data_indexing=False):
+        self.config = config
 
-        if self.data_directory is None:
-            self.data_directory = os.path.normpath(data_directory)
-            logging.info('data directory: (%s)', self.data_directory)
+        self.data_directory = os.path.normpath(data_directory)
+        logging.info('data directory: (%s)', self.data_directory)
 
         if disable_data_indexing is False:
-            if self.dataset_index is None:
-                self.dataset_index = self.get_data_set()
-                logging.debug('dataset_index')
-                logging.debug(self.dataset_index)
 
-            if self.category_map is None:
-                self.category_map = self.get_data_set_categories()
-                logging.debug('CATEGORY_MAP')
-                logging.debug(self.category_map)
+            self.dataset_index: dict = self.get_data_set()
+            logging.debug('dataset_index')
+            logging.debug(self.dataset_index)
+
+            self.category_map: Dict[Any, int] = self.get_data_set_categories()
+            logging.debug('CATEGORY_MAP')
+            logging.debug(self.category_map)
+
         else:
             logging.info('File System Connector Data Indexing Disabled.')
 
@@ -218,7 +217,7 @@ class FileSystemConnector(object):
         data = numpy.frombuffer(pixel_data, dtype=numpy.uint8)
         return data
 
-    def get_data_set_categories(self):
+    def get_data_set_categories(self) -> Dict[Any, int]:
         """Returns the dataset index as a dictionary of categories
 
         :return: category map as a dictionary
@@ -247,7 +246,9 @@ class FileSystemConnector(object):
 
         When we move this to python 3, there are much better libraries to handle this.  Checkout PurePath..
         """
-        data_set = {}
+        data_set: Dict[str, List[Union[str, Dict[str, Any]]]] = {}
+        category: Dict[str, Any]
+        # filename: str
         for root, _, filenames in os.walk(self.data_directory):
             for filename in fnmatch.filter(filenames, '*.png'):
                 new_entry = str(os.path.join(root, filename))
@@ -255,6 +256,6 @@ class FileSystemConnector(object):
                 new_entry = os.path.normpath(new_entry)
                 category, filename = new_entry.split(os.path.sep)
                 # logging.info("category: (%s), filename: (%s)" % (category, filename))
-                data_set[new_entry] = [filename, category]
+                data_set[new_entry]: Union[str, Dict[str, Any]] = [filename, category]
         # logging.info(data_set)
         return data_set

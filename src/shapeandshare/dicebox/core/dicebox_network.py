@@ -19,7 +19,8 @@ import json
 
 from .config import DiceboxConfig
 from .connectors import FileSystemConnector, SensoryServiceConnector
-from .models.network import Network
+from .models.layer import DropoutLayer, DenseLayer
+from .models.network import Network, Optimizers
 from .network_factory import NetworkFactory
 
 
@@ -50,24 +51,24 @@ class DiceboxNetwork:
     __callbacks_list = [__early_stopper]
 
     def __init__(self,
-                 create_fcs: bool = True,
-                 disable_data_indexing: bool = False,
-                 config_file: str = './dicebox.config'):
+                 config: DiceboxConfig,
+                 create_fsc: bool = True,
+                 disable_data_indexing: bool = False):
 
-        self.__config = DiceboxConfig(config_file=config_file)
+        self.__config = config
 
-        self.__accuracy: float = 0.
+        self.__accuracy: float = 0.0
 
         self.__network_factory = NetworkFactory(config=self.__config)
         self.__network: Union[Network, None] = None   # the network object
         self.__model: Union[Sequential, None] = None  # the compiled network (model).
 
-        if create_fcs is True:
+        if create_fsc is True:
             logging.debug('creating a new fsc..')
             logging.info('self.config.DATA_DIRECTORY: (%s)' % self.__config.DATA_DIRECTORY)
             self.__fsc = FileSystemConnector(data_directory=self.__config.DATA_DIRECTORY,
-                                             disable_data_indexing=disable_data_indexing,
-                                             config_file=config_file)
+                                             config=self.__config,
+                                             disable_data_indexing=disable_data_indexing)
         else:
             logging.debug('creating a new ssc..')
             self.__ssc = SensoryServiceConnector(role='client', config_file=config_file)
@@ -104,7 +105,7 @@ class DiceboxNetwork:
         else:
             raise Exception('Unknown dataset type!  Please define, or correct.')
 
-        model = self.__network_factory.compile_network(network)
+        model = self.__network.compile()
 
         logging.info('batch size (model.fit): %s' % self.__config.BATCH_SIZE)
 
@@ -149,7 +150,7 @@ class DiceboxNetwork:
         logging.debug('Compiling model if need be.')
         logging.debug('-' * 80)
         if self.__model is None:
-            self.__model = self.__network_factory.compile_network(self.__network)
+            self.__model = self.__network.compile()
         logging.debug('-' * 80)
         logging.debug('Done!')
         logging.debug('-' * 80)
@@ -177,20 +178,23 @@ class DiceboxNetwork:
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
+    def accuracy(self) -> float:
+        return self.__accuracy
+
     ## Prediction
 
-    def classify(self, network_input: Any) -> Any:
+    def classify(self, network_input: Any) -> ndarray:
         if self.__config.DICEBOX_COMPLIANT_DATASET is True:
-            x_test = self.__get_dicebox_raw(network_input)
+            x_test: ndarray = self.__get_dicebox_raw(network_input)
         else:
             logging.error("UNKNOWN DATASET (%s) passed to classify" % self.__config.NETWORK_NAME)
             raise Exception("UNKNOWN DATASET (%s) passed to classify" % self.__config.NETWORK_NAME)
 
         if self.__model is None:
-            logging.error('Unable to classify without a __model.')
-            raise Exception('Unable to classify without a __model.')
+            logging.error('Unable to classify without a model.')
+            raise Exception('Unable to classify without a model.')
 
-        model_prediction = self.__model.predict_classes(x_test, batch_size=1, verbose=0)
+        model_prediction: ndarray = self.__model.predict_classes(x_test, batch_size=1, verbose=0)
         logging.info(model_prediction)
 
         return model_prediction
@@ -228,6 +232,8 @@ class DiceboxNetwork:
     ## Data Centric Functions
 
     def __get_dicebox_raw(self, raw_image_data: Any) -> ndarray:
+        # TODO: variable reuse needs to be cleaned up..
+
         # ugh dump to file for the time being
         filename = "%s/%s" % (self.__config.TMP_DIR, datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png'))
         with open(filename, 'wb') as f:
@@ -349,3 +355,33 @@ class DiceboxNetwork:
         y_train: ndarray = train_image_labels
         y_test: ndarray = test_image_labels
         return x_train, x_test, y_train, y_test
+
+
+    ## Network Functions
+
+    def load_network(self, network_definition: Any) -> None:
+        self.__network = self.__network_factory.create_network(network_definition=network_definition)
+        self.__model = self.__network.compile()
+
+    def generate_random_network(self) -> None:
+        self.__network = self.__network_factory.create_random_network()
+        self.__model = self.__network.compile()
+
+    # def network_loaded(self) -> bool:
+    #     if self.__network and self.__network is not None:
+    #         return True
+    #     else:
+    #         return False
+
+
+    ## For Evolutionary Optimizer
+
+    def get_optimizer(self) -> Optimizers:
+        return self.__network.optimizer
+
+    def get_layer_count(self) -> int:
+        return len(self.__network.layers)
+
+    def get_layer_definition(self, layer_index):
+        layer: Union[DropoutLayer, DenseLayer] = self.__network.layers[layer_index]
+        # self.__network_factory.decompile_layer(layer)

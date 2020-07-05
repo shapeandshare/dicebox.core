@@ -13,6 +13,8 @@ from functools import reduce
 from operator import add
 import copy
 
+from typing import List
+
 from .config import DiceboxConfig
 from .dicebox_network import DiceboxNetwork
 from .utils import lucky, random_index, random_index_between, random, random_strict
@@ -26,65 +28,37 @@ class EvolutionaryOptimizer:
     config = None
 
     def __init__(self,
+                 config: DiceboxConfig,
                  retain=0.4,
                  random_select=0.1,
-                 mutate_chance=0.2,
-                 config_file='./dicebox.__config',
-                 lonestar_model_file='./dicebox.lonestar.json'):
-        if self.config_file is None:
-            self.config_file = config_file
+                 mutate_chance=0.2):
 
-        if self.lonestar_model_file is None:
-            self.lonestar_model_file = lonestar_model_file
+        # self.lonestar_model_file: str = lonestar_model_file
+        self.config: DiceboxConfig = config
 
-        if self.config is None:
-            self.config = DiceboxConfig(config_file=config_file,
-                                        lonestar_model_file=lonestar_model_file)
+        self.mutate_chance: float = mutate_chance
+        self.random_select: float = random_select
+        self.retain: float = retain
 
-        """Create an optimizer.
-
-        Args:
-            retain (float): Percentage of population to retain after
-                each generation
-            random_select (float): Probability of a rejected __network
-                remaining in the population
-            mutate_chance (float): Probability a __network will be
-                randomly mutated
-
-        """
-        self.mutate_chance = mutate_chance
-        self.random_select = random_select
-        self.retain = retain
-
-    def create_population(self, count):
-        """Create a population of random networks.
-
-        Args:
-            count (int): Number of networks to generate, aka the
-                size of the population
-
-        Returns:
-            (list): Population of __network objects
-
-        """
-        pop = []
+    def create_population(self, count: int) -> List[DiceboxNetwork]:
+        # Create a population of random networks.
+        population: List[DiceboxNetwork] = []
         for _ in range(0, count):
             # Create a random __network.
-            network = DiceboxNetwork(config_file=self.config_file,
-                                     lonestar_model_file=self.lonestar_model_file)
-            network.create_random()
+            network = DiceboxNetwork(self.config)
+            network.generate_random_network()
 
-            # Add the __network to our population.
-            pop.append(network)
+            # Add the network to our population.
+            population.append(network)
 
-        return pop
+        return population
 
     @staticmethod
-    def fitness(network):
+    def fitness(network: DiceboxNetwork) -> float:
         """Return the accuracy, which is our fitness function."""
-        return network.__accuracy
+        return network.accuracy()
 
-    def grade(self, pop):
+    def grade(self, pop: List[DiceboxNetwork]) -> float:
         """Find average fitness for a population.
 
         Args:
@@ -97,7 +71,7 @@ class EvolutionaryOptimizer:
         summed = reduce(add, (self.fitness(network) for network in pop))
         return summed / float((len(pop)))
 
-    def breed(self, mother, father):
+    def breed(self, mother: DiceboxNetwork, father: DiceboxNetwork) -> List[DiceboxNetwork]:
         """Make two children as parts of their parents.
 
         Args:
@@ -105,44 +79,56 @@ class EvolutionaryOptimizer:
             father (dict): Network parameters
 
         Returns:
-            (list): Two __network objects
+            (list): Two network objects
 
         """
         children = []
         for _ in range(2):
-            child = DiceboxNetwork(config_file=self.config_file,
-                                     lonestar_model_file=self.lonestar_model_file)
-            if child.__network is None:
-                child.__network = {}
-            if 'layers' not in child.__network:
-                child.__network['layers'] = []
+            child = DiceboxNetwork(config=self.config)
+            # if child.__network is None:
+            #     child.__network = {}
+            # if 'layers' not in child.__network:
+            #     child.__network['layers'] = []
+
+            # build our network definition
+            network_definition = {
+                'input_shape': self.config.INPUT_SHAPE,
+                'output_size': self.config.NB_CLASSES
+            }
 
             # Set unchange-ables
-            child.__network['input_shape'] = child.__config.INPUT_SHAPE
-            child.__network['output_size'] = child.__config.NB_CLASSES
+            # child.__network['input_shape'] = child.__config.INPUT_SHAPE
+            # child.__network['output_size'] = child.__config.NB_CLASSES
 
             # Pick which parent's optimization function is passed on to offspring
             if lucky(0.5):
                 # logging.debug("child.__network['optimizer'] = mother(%s)", mother.__network['optimizer'])
-                child.__network['optimizer'] = mother.network['optimizer']
+                # child.__network['optimizer'] = mother.network['optimizer']
+                network_definition['optimizer'] = mother.get_optimizer().value
             else:
                 # logging.debug("child.__network['optimizer'] = father(%s)", father.__network['optimizer'])
-                child.__network['optimizer'] = father.network['optimizer']
+                # child.__network['optimizer'] = father.network['optimizer']
+                network_definition['optimizer'] = father.get_optimizer().value
 
             # Determine the number of layers
             if lucky(0.5):
                 # logging.debug("child layer length = mother(%s)", len(mother.__network['layers']))
-                layer_count = len(mother.network['layers'])
+                # layer_count = len(mother.network['layers'])
+                layer_count = mother.get_layer_count()
             else:
                 # logging.debug("child layer length = father(%s)", len(father.__network['layers']))
-                layer_count = len(father.network['layers'])
+                # layer_count = len(father.network['layers'])
+                layer_count = father.get_layer_count()
 
+            network_definition['layers'] = []
             for layer_index in range(0, layer_count):
                 # logging.debug("layer (%s/%s)", layer_index, layer_count)
                 # Pick which parent's layer is passed on to the offspring
                 if lucky(0.5):
                     if layer_index < len(mother.network['layers']):
-                        child.__network['layers'].append(mother.network['layers'][layer_index])
+                        # child.__network['layers'].append(mother.network['layers'][layer_index])
+                        network_definition['layers'].append(mother.get_layer_definition(layer_index))
+
                     elif layer_index < len(father.network['layers']):
                         child.__network['layers'].append(father.network['layers'][layer_index])
                     else:

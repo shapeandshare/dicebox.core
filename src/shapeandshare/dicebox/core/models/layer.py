@@ -4,20 +4,20 @@ from typing import Union
 
 
 class LayerType(Enum):
-    DROPOUT = 1
-    DENSE = 2
+    DROPOUT = 'dropout'
+    DENSE = 'dense'
 
 
 class ActivationFunction(Enum):
-    SOFTMAX = 1
-    ELU = 2
-    SOFTPLUS = 3
-    SOFTSIGN = 4
-    RELU = 5
-    TANH = 6
-    SIGMOID = 7
-    HARD_SIGMOID = 8
-    LINEAR = 9
+    SOFTMAX = 'softmax'
+    ELU = 'elu'
+    SOFTPLUS = 'softplus'
+    SOFTSIGN = 'softsign'
+    RELU = 'relu'
+    TANH = 'tanh'
+    SIGMOID = 'sigmoid'
+    HARD_SIGMOID = 'hard_sigmoid'
+    LINEAR = 'linear'
 
 
 class LayerConfig(ABC):
@@ -25,10 +25,6 @@ class LayerConfig(ABC):
 
     def __init__(self, layer_type: LayerType):
         self.layer_type = layer_type
-
-    def type(self) -> LayerType:
-        return self.layer_type
-
 
 class DropoutLayerConfigure(LayerConfig):
     def __init__(self, rate: float):
@@ -55,13 +51,13 @@ class Layer(ABC):
 
 class DenseLayer(Layer):
     def __init__(self, config: DenseLayerConfigure):
-        super().__init__(layer_type=config.type())
+        super().__init__(layer_type=config.layer_type)
         self.size: int = config.size
         self.activation: ActivationFunction = config.activation
 
 
 class DropoutLayer(Layer):
     def __init__(self, config: DropoutLayerConfigure):
-        super().__init__(layer_type=config.type())
-        self.type: LayerType = config.type()
+        super().__init__(layer_type=config.layer_type)
+        self.type: LayerType = config.layer_type
         self.rate: float = config.rate

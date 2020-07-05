@@ -1,6 +1,7 @@
-from tensorflow.python.keras.layers import Dense
+from typing import Any
+
+from tensorflow.python.keras.layers import Dense, Dropout
 from tensorflow.python.keras.models import Sequential
-from tensorflow.python.layers.core import Dropout
 
 from .config import DiceboxConfig
 from .layer_factory import LayerFactory
@@ -20,9 +21,9 @@ class NetworkFactory:
         self.config = config
         self.layer_factory = LayerFactory(config=self.config)
 
-    # Processes the __network which we store externally
-    def create_network(self, network_definition) -> Network:
-        optimizer: Optimizers = network_definition['optimizer'].upper()
+    # Processes the network which we store externally
+    def create_network(self, network_definition: Any) -> Network:
+        optimizer: Optimizers = Optimizers(network_definition['optimizer'])
         input_shape: int = network_definition['input_shape']
         output_size: int = network_definition['output_size']
 
@@ -31,12 +32,12 @@ class NetworkFactory:
 
         # Process layers
         for layer in network_definition['layers']:
-            if layer['type'] == 'dense':
+            if layer['type'] == LayerType.DENSE.value:
                 size: int = layer['size']
-                activation: ActivationFunction = ActivationFunction[layer['activation'].upper()]
+                activation: ActivationFunction = ActivationFunction(layer['activation'])
                 new_layer_config = self.layer_factory.build_dense_layer_config(size=size, activation=activation)
                 new_network.add_layer(new_layer_config)
-            elif layer['type'] == 'dropout':
+            elif layer['type'] == LayerType.DROPOUT.value:
                 rate: float = layer['rate']
                 new_layer_config = self.layer_factory.build_dropout_layer_config(rate=rate)
                 new_network.add_layer(new_layer_config)
@@ -52,42 +53,15 @@ class NetworkFactory:
 
         network_config: NetworkConfig = NetworkConfig(input_shape=self.config.INPUT_SHAPE,
                                                       output_size=self.config.NB_CLASSES,
-                                                      optimizer=Optimizers[optimizer.upper()])
+                                                      optimizer=Optimizers(optimizer))
         network: Network = Network(self.config, network_config)
 
         # Determine the number of layers..
         layer_count: int = random_index_between(self.config.TAXONOMY['min_layers'],
                                                 self.config.TAXONOMY['max_layers'])
         for layer_index in range(1, layer_count):
-            # add new random layer to the __network
+            # add new random layer to the network
             network.add_layer(self.layer_factory.build_random_layer_config())
 
         return network
 
-    @staticmethod
-    def compile_network(dicebox_network: Network) -> Sequential:
-        model = Sequential()
-
-        first_layer: bool = False
-        for layer in dicebox_network.layers:
-            # build and add layer
-            if layer.type() == LayerType.DROPOUT:
-                # handle dropout
-                model.add(Dropout(layer.rate))
-            else:
-                neurons: int = layer.size
-                activation: ActivationFunction = layer.activation
-
-                if first_layer is False:
-                    first_layer = True
-                    model.add(Dense(neurons, activation=activation, input_shape=dicebox_network.input_shape))
-                else:
-                    model.add(Dense(neurons, activation=activation))
-
-        # add final output layer.
-        model.add(Dense(dicebox_network.output_size,
-                        activation='softmax'))  # TODO: Make it possible to define with from the enum...
-
-        model.compile(loss='categorical_crossentropy', optimizer=dicebox_network.optimizer, metrics=['accuracy'])
-
-        return model

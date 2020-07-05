@@ -4,6 +4,7 @@ import json
 import numpy
 import numpy.testing
 
+from src.shapeandshare.dicebox.core.config import DiceboxConfig
 from src.shapeandshare.dicebox.core.connectors import FileSystemConnector
 
 
@@ -12,20 +13,23 @@ class FileSystemConnectorTest(unittest.TestCase):
     The basic class that inherits unittest.TestCase
     """
 
+    dc: DiceboxConfig
+    fsc: FileSystemConnector
+
     EXPECTED_DATASET_INDEX = None
     EXPECTED_CATEGORY_MAP = None
     TEST_DATA_BASE = 'test/fixtures'
     DATASET_LOCATION = '%s/test_dataset/data' % TEST_DATA_BASE
-    DICEBOX_CONFIG_FILE = '%s/dicebox.__config' % TEST_DATA_BASE
+    DICEBOX_CONFIG_FILE = '%s/dicebox.config' % TEST_DATA_BASE
     LONESTAR_MODEL_FILE = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
-    DISABLE_DATA_INDEXING = False
 
     def setUp(self):
+        self.dc = DiceboxConfig(config_file=self.DICEBOX_CONFIG_FILE)
+
         # instantiate the file system connector Class
         self.fsc = FileSystemConnector(data_directory=self.DATASET_LOCATION,
-                                       disable_data_indexing=self.DISABLE_DATA_INDEXING,
-                                       config_file=self.DICEBOX_CONFIG_FILE,
-                                       lonestar_model_file=self.LONESTAR_MODEL_FILE)
+                                       config=self.dc,
+                                       disable_data_indexing=self.DISABLE_DATA_INDEXING)
 
         with open('%s/DATASET_INDEX.json' % self.TEST_DATA_BASE) as json_file:
             self.EXPECTED_DATASET_INDEX = json.load(json_file)
@@ -36,6 +40,8 @@ class FileSystemConnectorTest(unittest.TestCase):
             self.EXPECTED_CATEGORY_MAP = json.load(json_file)
         if self.EXPECTED_CATEGORY_MAP is None:
             Exception('Unable to load %s/CATEGORY_MAP.json!', self.TEST_DATA_BASE)
+
+    DISABLE_DATA_INDEXING = False
 
     def test_class_variable_DATA_DIRECTORY(self):
         self.assertEqual(self.DATASET_LOCATION, self.fsc.data_directory)
@@ -80,7 +86,8 @@ class FileSystemConnectorTest(unittest.TestCase):
         filename = '%s/0/mnist_testing_0_28x28_3.png' % self.DATASET_LOCATION
 
         noise = 0
-        expected_data = numpy.fromfile('%s/0/mnist_testing_0_28x28_3.png.nbarray.binary' % self.DATASET_LOCATION, dtype=numpy.uint8)
+        expected_data = numpy.fromfile('%s/0/mnist_testing_0_28x28_3.png.nbarray.binary' % self.DATASET_LOCATION,
+                                       dtype=numpy.uint8)
         returned_data = self.fsc.process_image(filename, noise)
         # returned_data.tofile('test/fixtures/test_dataset/data/0/mnist_testing_0_28x28_3.png.nbarray.binary')
         numpy.testing.assert_array_equal(returned_data, expected_data)
