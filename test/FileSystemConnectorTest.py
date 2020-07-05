@@ -16,7 +16,7 @@ class FileSystemConnectorTest(unittest.TestCase):
     EXPECTED_CATEGORY_MAP = None
     TEST_DATA_BASE = 'test/fixtures'
     DATASET_LOCATION = '%s/test_dataset/data' % TEST_DATA_BASE
-    DICEBOX_CONFIG_FILE = '%s/dicebox.config' % TEST_DATA_BASE
+    DICEBOX_CONFIG_FILE = '%s/dicebox.__config' % TEST_DATA_BASE
     LONESTAR_MODEL_FILE = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
     DISABLE_DATA_INDEXING = False
 

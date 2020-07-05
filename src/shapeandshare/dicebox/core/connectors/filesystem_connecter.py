@@ -1,4 +1,4 @@
-"""Handles filesystem interactions for neural network input data.
+"""Handles filesystem interactions for neural __network input data.
 
 ###############################################################################
 # Filesystem Connector for Neural Network Input Data
@@ -34,7 +34,7 @@ class FileSystemConnector(object):
 
     config = None
 
-    def __init__(self, data_directory, disable_data_indexing=False, config_file='./dicebox.config',
+    def __init__(self, data_directory, disable_data_indexing=False, config_file='./dicebox.__config',
                  lonestar_model_file='./dicebox.lonestar.json'):
         if self.config is None:
             self.config = DiceboxConfig(config_file=config_file,
@@ -102,7 +102,7 @@ class FileSystemConnector(object):
             filename = "%s/%s/%s" % (self.data_directory, item[1], item[0])
             logging.debug("(%s)(%s)", category_map[item[1]], filename)
             # logging.info("  natural category label: (%s)" % item[1])
-            # logging.info("  neural network category label: (%i)" % category_map[item[1]])
+            # logging.info("  neural __network category label: (%i)" % category_map[item[1]])
             cat_one_hot = numpy.zeros(len(category_map))
             cat_one_hot[int(category_map[item[1]])] = 1
             image_labels.append(cat_one_hot)

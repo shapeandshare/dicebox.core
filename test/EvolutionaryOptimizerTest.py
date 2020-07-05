@@ -8,7 +8,7 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
     The basic class that inherits unittest.TestCase
     """
     TEST_DATA_BASE = 'test/fixtures'
-    local_config_file = '%s/dicebox.config' % TEST_DATA_BASE
+    local_config_file = '%s/dicebox.__config' % TEST_DATA_BASE
     local_lonestar_model_file = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
 
     def test_breed(self):
@@ -45,15 +45,15 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
         individual = DiceboxNetwork(config_file=self.local_config_file,
                                  lonestar_model_file=self.local_lonestar_model_file)
         individual.create_random()
-        individual.model = individual.compile_model(individual.network)
-        before_network = individual.network
+        individual.__model = individual.compile_model(individual.__network)
+        before_network = individual.__network
 
         mutant = op.mutate(individual)
 
-        mutant.model = mutant.compile_model(mutant.network)
-        after_network = mutant.network
+        mutant.__model = mutant.compile_model(mutant.__network)
+        after_network = mutant.__network
         self.assertNotEqual(id(individual), id(mutant))
-        self.assertNotEqual(id(individual.network), id(mutant.network))
+        self.assertNotEqual(id(individual.__network), id(mutant.__network))
         self.assertNotEqual(id(before_network), id(after_network))
         self.assertNotEqual(before_network, after_network)
 

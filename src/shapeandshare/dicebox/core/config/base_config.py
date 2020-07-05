@@ -1,4 +1,4 @@
-"""Handles loading dicebox.config.
+"""Handles loading dicebox.__config.
 
 ###############################################################################
 # Local Config File Handler
@@ -17,34 +17,18 @@ import logging
 
 class BaseConfig(object):
 
-    def __init__(self, config_file='./dicebox.config', lonestar_model_file='./dicebox.lonestar.json'):
+    def __init__(self, config_file='./dicebox.__config'):
         ###############################################################################
-        # Create config objects.
+        # Create __config objects.
         ###############################################################################
         local_config = configparser.ConfigParser()
         local_config.read(config_file)
 
         ###############################################################################
-        # Lonestar model support - Options
-        ###############################################################################
-        self.LONESTAR_DICEBOX_MODEL = None
-        try:
-            model_file = open(lonestar_model_file)
-        except IOError as e:
-            logging.error(e.message)
-            logging.error('Unable to open (%s).  Will not load a lonestar model.', lonestar_model_file)
-        else:
-            with model_file:
-                self.LONESTAR_DICEBOX_MODEL = json.load(model_file)
-                # Fix the tuple..
-                self.LONESTAR_DICEBOX_MODEL['input_shape'] = [self.LONESTAR_DICEBOX_MODEL['input_shape'], ]
-
-
-        ###############################################################################
         # Data Set Options
         ###############################################################################
         
-        # Load user defined config
+        # Load user defined __config
         self.DATASET = local_config.get('DATASET', 'name')
         self.DICEBOX_COMPLIANT_DATASET = local_config.getboolean('DATASET', 'dicebox_compliant')
         self.NB_CLASSES = local_config.getint('DATASET', 'categories')

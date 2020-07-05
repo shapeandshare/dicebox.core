@@ -16,14 +16,14 @@ from .base_config import BaseConfig
 
 class DiceboxConfig(object):
     
-    def __init__(self, config_file='./dicebox.config', lonestar_model_file='./dicebox.lonestar.json'):
-        self.dc = BaseConfig(config_file=config_file, lonestar_model_file=lonestar_model_file)
+    def __init__(self, config_file='./dicebox.__config'):
+        self.dc = BaseConfig(config_file=config_file)
 
         ###############################################################################
         # Data Set Options
         ###############################################################################
 
-        # Load user defined config
+        # Load user defined __config
         self.DATASET = self.dc.DATASET
         if 'DATASET' in os.environ:
             self.DATASET = os.environ['DATASET']
@@ -105,14 +105,6 @@ class DiceboxConfig(object):
             'activation': json.loads(self.ACTIVATION),
             'optimizer': json.loads(self.OPTIMIZER)
         }
-
-
-        ###############################################################################
-        # Lonestar Options
-        ###############################################################################
-        self.LONESTAR_DICEBOX_MODEL = self.dc.LONESTAR_DICEBOX_MODEL
-        if 'LONESTAR_DICEBOX_MODEL' in os.environ:
-            self.LONESTAR_DICEBOX_MODEL = json.loads(os.environ['LONESTAR_DICEBOX_MODEL'])
 
 
         ###############################################################################

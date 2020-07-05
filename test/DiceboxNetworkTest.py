@@ -3,6 +3,7 @@ import logging
 import json
 
 from src.shapeandshare.dicebox.core import DiceboxNetwork
+from src.shapeandshare.dicebox.core.models.network import Network
 
 
 class DiceboxNetworkTest(unittest.TestCase):
@@ -12,7 +13,7 @@ class DiceboxNetworkTest(unittest.TestCase):
     TEST_DATA_BASE = 'test/fixtures'
     local_create_fcs = False
     local_disable_data_indexing = True
-    local_config_file = '%s/dicebox.config' % TEST_DATA_BASE
+    local_config_file = '%s/dicebox.__config' % TEST_DATA_BASE
     local_lonestar_model_file = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
 
     ACTIVATION = ["softmax", "elu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid", "linear"]
@@ -27,35 +28,52 @@ class DiceboxNetworkTest(unittest.TestCase):
 
         dn = DiceboxNetwork(create_fcs=self.local_create_fcs,
                             disable_data_indexing=self.local_disable_data_indexing,
-                            config_file=self.local_config_file,
-                            lonestar_model_file=self.local_lonestar_model_file)
-        self.assertEqual(dn.network, {})
-        dn.create_random()
-        self.assertIsNotNone(dn.network)
-        logging.debug(dn.network)
-        self.assertIsNot(dn.network, {})
-        logging.debug(dn.network)
+                            config_file=self.local_config_file)
+        self.assertEqual(dn.__network, {})
+
+        dn.__network = dn.__network_factory.create_random_network()
+        self.assertIsNotNone(dn.__network)
+        logging.debug(dn.__network)
+        self.assertIsNot(dn.__network, {})
+        logging.debug(dn.__network)
         dn = None
 
-    def test_create_lonestar(self):
+    def test_create_model(self):
+        expected_dicebox_model = json.load(open(self.local_lonestar_model_file))
+
+        ###############################################################################
+        # Lonestar __model support - Options
+        ###############################################################################
+        # self.LONESTAR_DICEBOX_MODEL = None
+        # try:
+        #     model_file = open(lonestar_model_file)
+        # except IOError as e:
+        #     logging.error(e.message)
+        #     logging.error('Unable to open (%s).  Will not load a lonestar __model.', lonestar_model_file)
+        # else:
+        #     with model_file:
+        #         self.LONESTAR_DICEBOX_MODEL = json.load(model_file)
+        #         # Fix the tuple..
+        #         self.LONESTAR_DICEBOX_MODEL['input_shape'] = [self.LONESTAR_DICEBOX_MODEL['input_shape'], ]
+
         local_create_model = True
         local_weights_file = None
         expected_compiled_model = None
-        with open('%s/lonestar.model.json' % self.TEST_DATA_BASE) as json_file:
+        with open('%s/lonestar.__model.json' % self.TEST_DATA_BASE) as json_file:
             expected_compiled_model = json.load(json_file)
         self.assertIsNotNone(expected_compiled_model)
 
         dn = DiceboxNetwork(create_fcs=self.local_create_fcs,
                             disable_data_indexing=self.local_disable_data_indexing,
-                            config_file=self.local_config_file,
-                            lonestar_model_file=self.local_lonestar_model_file)
+                            config_file=self.local_config_file)
 
+        dn.__network_factory.create_network(network_definition=)
         dn.create_lonestar(create_model=local_create_model, weights_filename=local_weights_file)
-        returned_model = dn.model
+        returned_model = dn.__model
         self.assertIsNotNone(returned_model)
 
         # generate a sample..
-        # with open('%s/lonestar.model.out.json' % self.TEST_DATA_BASE, 'w') as json_file:
+        # with open('%s/lonestar.__model.out.json' % self.TEST_DATA_BASE, 'w') as json_file:
         #     json_file.write(json.dumps(json.loads(returned_model.to_json()), indent=4))
 
         self.assertEqual(json.loads(returned_model.to_json()), expected_compiled_model)
@@ -63,14 +81,14 @@ class DiceboxNetworkTest(unittest.TestCase):
 
     def test_compile_model(self):
         expected_compiled_model = None
-        with open('%s/model.json' % self.TEST_DATA_BASE) as json_file:
+        with open('%s/__model.json' % self.TEST_DATA_BASE) as json_file:
             expected_compiled_model = json.load(json_file)
         self.assertIsNotNone(expected_compiled_model)
 
         local_input_size = 784
         local_output_size = 10
         local_optimizer = 'adamax'
-        local_dicebox_model = {
+        local_dicebox_model_definition = {
             'optimizer': local_optimizer,
             'input_shape': [local_input_size, ],
             'output_size': local_output_size,
@@ -128,12 +146,13 @@ class DiceboxNetworkTest(unittest.TestCase):
                             config_file=self.local_config_file,
                             lonestar_model_file=self.local_lonestar_model_file)
 
-        returned_compiled_model = dn.compile_model(dicebox_model=local_dicebox_model)
+        local_network: Network = dn.__network_factory.create_network(local_dicebox_model_definition)
+        returned_compiled_model = dn.__network_factory.compile_network(dicebox_network=local_network)
 
         serialized_result = returned_compiled_model.to_json()
 
         # # generate a sample ..
-        # with open('%s/model.out.json' % self.TEST_DATA_BASE, 'w') as json_file:
+        # with open('%s/__model.out.json' % self.TEST_DATA_BASE, 'w') as json_file:
         #     json_file.write(json.dumps(json.loads(serialized_result), indent=4))
 
         self.assertEqual(json.loads(serialized_result), expected_compiled_model)

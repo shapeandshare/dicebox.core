@@ -3,7 +3,7 @@
 # See docs/Matt Harvey.LICENSE.txt
 
 """
-Class that holds a genetic algorithm for evolving a network.
+Class that holds a genetic algorithm for evolving a __network.
 
 Credit:
     A lot of those code was originally inspired by:
@@ -29,7 +29,7 @@ class EvolutionaryOptimizer:
                  retain=0.4,
                  random_select=0.1,
                  mutate_chance=0.2,
-                 config_file='./dicebox.config',
+                 config_file='./dicebox.__config',
                  lonestar_model_file='./dicebox.lonestar.json'):
         if self.config_file is None:
             self.config_file = config_file
@@ -46,9 +46,9 @@ class EvolutionaryOptimizer:
         Args:
             retain (float): Percentage of population to retain after
                 each generation
-            random_select (float): Probability of a rejected network
+            random_select (float): Probability of a rejected __network
                 remaining in the population
-            mutate_chance (float): Probability a network will be
+            mutate_chance (float): Probability a __network will be
                 randomly mutated
 
         """
@@ -64,17 +64,17 @@ class EvolutionaryOptimizer:
                 size of the population
 
         Returns:
-            (list): Population of network objects
+            (list): Population of __network objects
 
         """
         pop = []
         for _ in range(0, count):
-            # Create a random network.
+            # Create a random __network.
             network = DiceboxNetwork(config_file=self.config_file,
                                      lonestar_model_file=self.lonestar_model_file)
             network.create_random()
 
-            # Add the network to our population.
+            # Add the __network to our population.
             pop.append(network)
 
         return pop
@@ -82,7 +82,7 @@ class EvolutionaryOptimizer:
     @staticmethod
     def fitness(network):
         """Return the accuracy, which is our fitness function."""
-        return network.accuracy
+        return network.__accuracy
 
     def grade(self, pop):
         """Find average fitness for a population.
@@ -105,36 +105,36 @@ class EvolutionaryOptimizer:
             father (dict): Network parameters
 
         Returns:
-            (list): Two network objects
+            (list): Two __network objects
 
         """
         children = []
         for _ in range(2):
             child = DiceboxNetwork(config_file=self.config_file,
                                      lonestar_model_file=self.lonestar_model_file)
-            if child.network is None:
-                child.network = {}
-            if 'layers' not in child.network:
-                child.network['layers'] = []
+            if child.__network is None:
+                child.__network = {}
+            if 'layers' not in child.__network:
+                child.__network['layers'] = []
 
             # Set unchange-ables
-            child.network['input_shape'] = child.config.INPUT_SHAPE
-            child.network['output_size'] = child.config.NB_CLASSES
+            child.__network['input_shape'] = child.__config.INPUT_SHAPE
+            child.__network['output_size'] = child.__config.NB_CLASSES
 
             # Pick which parent's optimization function is passed on to offspring
             if lucky(0.5):
-                # logging.debug("child.network['optimizer'] = mother(%s)", mother.network['optimizer'])
-                child.network['optimizer'] = mother.network['optimizer']
+                # logging.debug("child.__network['optimizer'] = mother(%s)", mother.__network['optimizer'])
+                child.__network['optimizer'] = mother.network['optimizer']
             else:
-                # logging.debug("child.network['optimizer'] = father(%s)", father.network['optimizer'])
-                child.network['optimizer'] = father.network['optimizer']
+                # logging.debug("child.__network['optimizer'] = father(%s)", father.__network['optimizer'])
+                child.__network['optimizer'] = father.network['optimizer']
 
             # Determine the number of layers
             if lucky(0.5):
-                # logging.debug("child layer length = mother(%s)", len(mother.network['layers']))
+                # logging.debug("child layer length = mother(%s)", len(mother.__network['layers']))
                 layer_count = len(mother.network['layers'])
             else:
-                # logging.debug("child layer length = father(%s)", len(father.network['layers']))
+                # logging.debug("child layer length = father(%s)", len(father.__network['layers']))
                 layer_count = len(father.network['layers'])
 
             for layer_index in range(0, layer_count):
@@ -142,20 +142,20 @@ class EvolutionaryOptimizer:
                 # Pick which parent's layer is passed on to the offspring
                 if lucky(0.5):
                     if layer_index < len(mother.network['layers']):
-                        child.network['layers'].append(mother.network['layers'][layer_index])
+                        child.__network['layers'].append(mother.network['layers'][layer_index])
                     elif layer_index < len(father.network['layers']):
-                        child.network['layers'].append(father.network['layers'][layer_index])
+                        child.__network['layers'].append(father.network['layers'][layer_index])
                     else:
                         raise Exception('impossible breeding event occurred!')
                 else:
                     if layer_index < len(father.network['layers']):
-                        child.network['layers'].append(father.network['layers'][layer_index])
+                        child.__network['layers'].append(father.network['layers'][layer_index])
                     elif layer_index < len(mother.network['layers']):
-                        child.network['layers'].append(mother.network['layers'][layer_index])
+                        child.__network['layers'].append(mother.network['layers'][layer_index])
                     else:
                         raise Exception('impossible breeding event occurred!')
 
-            child.model = child.compile_model(child.network)
+            child.__model = child.compile_model(child.__network)
             children.append(child)
         return children
 
@@ -164,7 +164,7 @@ class EvolutionaryOptimizer:
         # It looks like Keras Sequencials no longer support this.
         # so we need to ensure we remove any compiled models on
         # the inbound object before proceeding.
-        individual.model = {}
+        individual.__model = {}
 
         # mutations = 0
         local_noise = self.mutate_chance
@@ -173,13 +173,13 @@ class EvolutionaryOptimizer:
         # see if the optimizer is mutated
         if lucky(local_noise):
             # yep..  Select an optimizer
-            # logging.debug("optimizer = (%s)", clone.network['optimizer'])
-            clone.network['optimizer'] = clone.select_random_optimizer()
+            # logging.debug("optimizer = (%s)", clone.__network['optimizer'])
+            clone.__network['optimizer'] = clone.select_random_optimizer()
             # mutations += 1
-            # logging.debug("optimizer = (%s)", clone.network['optimizer'])
+            # logging.debug("optimizer = (%s)", clone.__network['optimizer'])
 
         # Determine the number of layers..
-        layer_count = len(clone.network['layers'])
+        layer_count = len(clone.__network['layers'])
 
         # now mess around within the layers
         for index in range(1, layer_count):
@@ -188,11 +188,11 @@ class EvolutionaryOptimizer:
                 # then change the layer type
                 # how does this affect the weights, etc? :/
                 # logging.debug("layer = (%s)", layer)
-                clone.network['layers'][index - 1] = clone.build_random_layer()
+                clone.__network['layers'][index - 1] = clone.build_random_layer()
                 # mutations += 1
                 # logging.debug("layer = (%s)", layer)
             else:
-                layer = clone.network['layers'][index - 1]
+                layer = clone.__network['layers'][index - 1]
 
                 # keep checking the individual layer attributes
                 if layer['type'] == 'dropout':
@@ -207,15 +207,15 @@ class EvolutionaryOptimizer:
                         # mutate the layer size
                         # logging.debug('Mutating layer size')
                         # logging.debug("size = (%s)", layer['size'])
-                        layer['size'] = random_index_between(clone.config.TAXONOMY['min_neurons'],
-                                                                     clone.config.TAXONOMY['max_neurons'])
+                        layer['size'] = random_index_between(clone.__config.TAXONOMY['min_neurons'],
+                                                             clone.__config.TAXONOMY['max_neurons'])
                         # mutations += 1
                         # logging.debug("size = (%s)", layer['size'])
                     if lucky(local_noise):
                         # mutate activation function
                         # logging.debug("activation = (%s)", layer['activation'])
-                        activation_index = random_index(len(clone.config.TAXONOMY['activation']))
-                        layer['activation'] = clone.config.TAXONOMY['activation'][activation_index - 1]
+                        activation_index = random_index(len(clone.__config.TAXONOMY['activation']))
+                        layer['activation'] = clone.__config.TAXONOMY['activation'][activation_index - 1]
                         # mutations += 1
                         # logging.debug("activation = (%s)", layer['activation'])
                 else:
@@ -229,13 +229,13 @@ class EvolutionaryOptimizer:
         """Evolve a population of networks.
 
         Args:
-            pop (list): A list of network parameters
+            pop (list): A list of __network parameters
 
         Returns:
             (list): The evolved population of networks
 
         """
-        # Get scores for each network.
+        # Get scores for each __network.
         graded = [(self.fitness(network), network) for network in pop]
 
         # Sort on the scores.
@@ -244,12 +244,14 @@ class EvolutionaryOptimizer:
         # Get the number we want to keep for the next gen.
         retain_length = int(len(graded)*self.retain)
 
-        # The parents are every network we want to keep.
+        # The parents are every __network we want to keep.
+        # TODO: can not deepcopy the keras senquences...
         parents = copy.deepcopy(graded[:retain_length])
 
         # For those we aren't keeping, randomly keep some anyway.
         for individual in graded[retain_length:]:
             if self.random_select > random():
+                # TODO: deepcopy no longer works for sequentials... needs to be updated..
                 parents.append(copy.deepcopy(individual))
 
         # Randomly mutate some of the networks we're keeping.
@@ -269,7 +271,7 @@ class EvolutionaryOptimizer:
             male_index = random_index_between(0, parents_length - 1)
             female_index = random_index_between(0, parents_length - 1)
 
-            # Assuming they aren't the same network...
+            # Assuming they aren't the same __network...
             if male_index != female_index:
                 male = parents[male_index]
                 female = parents[female_index]
