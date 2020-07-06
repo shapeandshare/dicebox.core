@@ -1,4 +1,4 @@
-"""Handles filesystem interactions for neural __network input data.
+"""Handles filesystem interactions for neural network input data.
 
 ###############################################################################
 # Filesystem Connector for Neural Network Input Data
@@ -14,7 +14,6 @@ import fnmatch
 import struct
 import array
 import logging
-from collections import ValuesView
 from typing import Dict, Any, List, Union
 
 import numpy
@@ -25,19 +24,16 @@ from ..config import DiceboxConfig
 from ..utils import lucky
 
 
-class FileSystemConnector(object):
+class FileSystemConnector:
     """File System Connector Class"""
 
-    config: DiceboxConfig
-    data_directory: str
+    config: DiceboxConfig = None
 
     dataset_index: dict
     category_map: Dict[Any, int]
     pixel_cache = {}
 
-    config = None
-
-    def __init__(self, data_directory, config: DiceboxConfig, disable_data_indexing=False):
+    def __init__(self, config: DiceboxConfig, data_directory: str, disable_data_indexing=False):
         self.config = config
 
         self.data_directory = os.path.normpath(data_directory)
@@ -52,7 +48,6 @@ class FileSystemConnector(object):
             self.category_map: Dict[Any, int] = self.get_data_set_categories()
             logging.debug('CATEGORY_MAP')
             logging.debug(self.category_map)
-
         else:
             logging.info('File System Connector Data Indexing Disabled.')
 

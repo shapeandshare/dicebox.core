@@ -1,4 +1,4 @@
-"""Handles loading dicebox.__config.
+"""Handles loading dicebox.config.
 
 ###############################################################################
 # Local Config File Handler
@@ -11,13 +11,13 @@
 ###############################################################################
 import configparser
 import json
+from abc import ABC
 from urllib.parse import quote_plus
-import logging
 
 
-class BaseConfig(object):
+class BaseConfig(ABC):
 
-    def __init__(self, config_file='./dicebox.__config'):
+    def __init__(self, config_file='dicebox.config'):
         ###############################################################################
         # Create __config objects.
         ###############################################################################

@@ -54,8 +54,8 @@ class DiceboxNetwork(Network):
         if create_fsc is True:
             logging.debug('creating a new fsc..')
             logging.info('self.config.DATA_DIRECTORY: (%s)' % self.config.DATA_DIRECTORY)
-            self.__fsc = FileSystemConnector(data_directory=self.config.DATA_DIRECTORY,
-                                             config=self.config,
+            self.__fsc = FileSystemConnector(config=config,
+                                             data_directory=self.config.DATA_DIRECTORY,
                                              disable_data_indexing=disable_data_indexing)
         else:
             logging.debug('creating a new ssc..')

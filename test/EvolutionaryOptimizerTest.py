@@ -17,7 +17,7 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
         dc: DiceboxConfig = DiceboxConfig(config_file=self.local_config_file)
         nf = NetworkFactory(config=dc)
 
-        mother = DiceboxNetwork(config=dc, create_fsc=True, disable_data_indexing=True)
+        mother = DiceboxNetwork(config=dc, network_config: NetworkConfig, create_fsc=True, disable_data_indexing=True)
         mother.load_network(network=nf.create_random_network())
 
         father = DiceboxNetwork(config=dc, create_fsc=True, disable_data_indexing=True)
@@ -32,7 +32,7 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
         babies = op.breed(mother, father)
         self.assertTrue(len(babies) == 2)
         for child in babies:
-            child.print_network()
+            # child.print_network()
             self.assertNotEqual(mother, child)
             self.assertNotEqual(father, child)
             self.assertNotEqual(mother, father)
