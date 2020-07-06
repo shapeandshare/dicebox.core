@@ -16,11 +16,10 @@ class SensoryServiceConnector:
     interface_role = None
     config = None
 
-    def __init__(self, role, config_file='./dicebox.__config', lonestar_model_file='./dicebox.lonestar.json'):
+    def __init__(self, role, config: DiceboxConfig):
         logging.debug('Three wise monkeys')
 
-        if self.config is None:
-            self.config = DiceboxConfig(config_file=config_file, lonestar_model_file=lonestar_model_file)
+        self.config = config
 
         if self.interface_role is None:
             self.interface_role = role
@@ -33,8 +32,7 @@ class SensoryServiceConnector:
             if self.fsc is None:
                 logging.debug("[%s] creating a new __fsc..", self.interface_role)
                 self.fsc = FileSystemConnector(data_directory=self.config.DATA_DIRECTORY,
-                                               config_file=config_file,
-                                               lonestar_model_file=lonestar_model_file)
+                                               config=self.config)
 
     def get_batch(self, batch_size=0, noise=0):
         logging.debug('-' * 80)

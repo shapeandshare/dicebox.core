@@ -14,26 +14,18 @@ import logging
 import numpy
 from datetime import datetime
 import os
-import json
 
 from .config import DiceboxConfig
 from .connectors import FileSystemConnector, SensoryServiceConnector
 from .models.layer import DropoutLayer, DenseLayer
-from .models.network import Network, Optimizers
-from .network_factory import NetworkFactory
+from .models.network import Network, Optimizers, NetworkConfig
 
 
-class DiceboxNetwork:
-    """Represent a network and let us operate on it.
+class DiceboxNetwork(Network):
+    __accuracy: float
 
-    Currently only works for an MLP.
-    """
     __fsc: FileSystemConnector  # file system connector
     __ssc: SensoryServiceConnector  # sensory service connector
-
-    __config: DiceboxConfig
-
-    __network_factory: NetworkFactory
 
     # Helper: Early stopping.
     __early_stopper = EarlyStopping(patience=25)
@@ -51,143 +43,69 @@ class DiceboxNetwork:
 
     def __init__(self,
                  config: DiceboxConfig,
+                 network_config: NetworkConfig,
                  create_fsc: bool = True,
                  disable_data_indexing: bool = False):
 
-        self.__config = config
+        super().__init__(config=config, network_config=network_config)
 
         self.__accuracy: float = 0.0
 
-        self.__network_factory = NetworkFactory(config=self.__config)
-        self.__network: Union[Network, None] = None   # the network object
-        # self.__model: Union[Sequential, None] = None  # the compiled network (model).
-
         if create_fsc is True:
             logging.debug('creating a new fsc..')
-            logging.info('self.config.DATA_DIRECTORY: (%s)' % self.__config.DATA_DIRECTORY)
-            self.__fsc = FileSystemConnector(data_directory=self.__config.DATA_DIRECTORY,
-                                             config=self.__config,
+            logging.info('self.config.DATA_DIRECTORY: (%s)' % self.config.DATA_DIRECTORY)
+            self.__fsc = FileSystemConnector(data_directory=self.config.DATA_DIRECTORY,
+                                             config=self.config,
                                              disable_data_indexing=disable_data_indexing)
         else:
             logging.debug('creating a new ssc..')
-            self.__ssc = SensoryServiceConnector(role='client', config_file=config_file)
+            self.__ssc = SensoryServiceConnector(role='client', config=self.config)
 
-    # def create_set(self, __network: Network) -> None:
-    #     self.__network: Network = __network
-
-    ## Logging
-
-    def print_network(self) -> None:
-        """Print out a __network."""
-        logging.info(self.__network)
-        logging.info("Network accuracy: %.2f%%" % (self.__accuracy * 100))
-
+    # ## Logging
+    #
+    # def print_network(self) -> None:
+    #     """Print out a __network."""
+    #     logging.info(self.__network)
+    #     logging.info("Network accuracy: %.2f%%" % (self.__accuracy * 100))
 
     ## Training
 
-    def train(self) -> None:
-        if self.__accuracy == 0.:
-            self.__accuracy = self.train_and_score(self.__network)
-
-    def train_and_save(self, dataset: Any) -> None:
-        # if self.__accuracy == 0.:
-        logging.debug('-' * 80)
-        logging.debug("train_and_save(dataset)")
-        logging.debug("train_and_save(dataset=%s)" % dataset)
-        logging.debug('-' * 80)
-        self.__accuracy = self.train_and_score_and_save(dataset)
-
-    # does not update the instance model or network
-    def train_and_score(self, network: Network) -> float:
-        if self.__config.DICEBOX_COMPLIANT_DATASET is True:
+    def train(self, update_accuracy=False) -> float:
+        if self.config.DICEBOX_COMPLIANT_DATASET is True:
             x_train, x_test, y_train, y_test = self.get_dicebox_filesystem()
         else:
             raise Exception('Unknown dataset type!  Please define, or correct.')
 
-        model = self.__network.compile()
+        self.compile()
 
-        logging.info('batch size (model.fit): %s' % self.__config.BATCH_SIZE)
+        self.model.fit(x_train, y_train,
+                       batch_size=self.config.BATCH_SIZE,
+                       epochs=10000,  # using early stopping, so no real limit
+                       verbose=1,
+                       validation_data=(x_test, y_test),
+                       callbacks=[self.__early_stopper])
 
-        logging.info('Fitting network:')
-        logging.info(network)
-        logging.info('compiled model:')
-        logging.info(json.dumps(json.loads(model.to_json())))
+        score = self.model.evaluate(x_test, y_test, verbose=0)
 
-        model.fit(x_train, y_train,
-                  batch_size=self.__config.BATCH_SIZE,
-                  epochs=10000,  # using early stopping, so no real limit
-                  verbose=1,
-                  validation_data=(x_test, y_test),
-                  callbacks=[self.__early_stopper])
-
-        score = model.evaluate(x_test, y_test, verbose=0)
+        if update_accuracy is True:
+            self.__accuracy = score
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
-    # updates the instance's model and network
-    def train_and_score_and_save(self, dataset: Any) -> float:
-        logging.debug('-' * 80)
-        logging.debug("train_and_score_and_save(dataset)")
-        logging.debug("train_and_score_and_save(dataset=%s)" % dataset)
-        logging.debug('-' * 80)
-        if self.__config.DICEBOX_COMPLIANT_DATASET is True:
-            logging.debug('-' * 80)
-            logging.debug('loading sensory data..')
-            logging.debug('-' * 80)
-            x_train, x_test, y_train, y_test = self.get_dicebox_sensory_data()
-            # nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_sensory_data()
-            # nb_classes, batch_size, input_shape, x_train, x_test, y_train, y_test = self.get_dicebox_filesystem()
-            logging.debug('-' * 80)
-            logging.debug('Done!')
-            logging.debug('-' * 80)
-        else:
-            # no support yet!
-            logging.error('UNSUPPORTED dataset supplied to train_and_score_and_save')
-            raise Exception('UNSUPPORTED dataset supplied to train_and_score_and_save')
+    def set_accuracy(self, accuracy: float):
+        self.__accuracy = accuracy
 
-        logging.debug('-' * 80)
-        logging.debug('Compiling model if need be.')
-        logging.debug('-' * 80)
-        if self.__network.model is None:
-            self.__network.compile()
-        logging.debug('-' * 80)
-        logging.debug('Done!')
-        logging.debug('-' * 80)
-
-        logging.debug('-' * 80)
-        logging.debug('Fitting model.')
-        logging.debug('-' * 80)
-        self.__network.model.fit(x_train, y_train,
-                         batch_size=self.__config.BATCH_SIZE,
-                         epochs=10000,  # using early stopping, so no real limit
-                         verbose=1,
-                         validation_data=(x_test, y_test),
-                         callbacks=self.__callbacks_list)
-        logging.debug('-' * 80)
-        logging.debug('Done!')
-        logging.debug('-' * 80)
-
-        logging.debug('-' * 80)
-        logging.debug('Scoring model.')
-        logging.debug('-' * 80)
-        score = self.__network.model.evaluate(x_test, y_test, verbose=1)
-        logging.debug('-' * 80)
-        logging.debug('Done!')
-        logging.debug('-' * 80)
-
-        return score[1]  # 1 is accuracy. 0 is loss.
-
-    def accuracy(self) -> float:
+    def get_accuracy(self) -> float:
         return self.__accuracy
 
     ## Prediction
 
     def classify(self, network_input: Any) -> ndarray:
-        if self.__config.DICEBOX_COMPLIANT_DATASET is True:
+        if self.config.DICEBOX_COMPLIANT_DATASET is True:
             x_test: ndarray = self.__get_dicebox_raw(network_input)
         else:
-            logging.error("UNKNOWN DATASET (%s) passed to classify" % self.__config.NETWORK_NAME)
-            raise Exception("UNKNOWN DATASET (%s) passed to classify" % self.__config.NETWORK_NAME)
+            logging.error("UNKNOWN DATASET (%s) passed to classify" % self.config.NETWORK_NAME)
+            raise Exception("UNKNOWN DATASET (%s) passed to classify" % self.config.NETWORK_NAME)
 
         if self.__network.model is None:
             logging.error('Unable to classify without a model.')
@@ -197,7 +115,6 @@ class DiceboxNetwork:
         logging.info(model_prediction)
 
         return model_prediction
-
 
     ## Weights Storage Functions
 
@@ -227,14 +144,13 @@ class DiceboxNetwork:
             logging.error(e)
             raise e
 
-
     ## Data Centric Functions
 
     def __get_dicebox_raw(self, raw_image_data: Any) -> ndarray:
         # TODO: variable reuse needs to be cleaned up..
 
         # ugh dump to file for the time being
-        filename = "%s/%s" % (self.__config.TMP_DIR, datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png'))
+        filename = "%s/%s" % (self.config.TMP_DIR, datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png'))
         with open(filename, 'wb') as f:
             f.write(raw_image_data)
 
@@ -256,9 +172,9 @@ class DiceboxNetwork:
         return x_test
 
     def get_dicebox_filesystem(self) -> [ndarray, ndarray, ndarray, ndarray]:
-        noise = self.__config.NOISE
-        test_batch_size = self.__config.TEST_BATCH_SIZE
-        train_batch_size = self.__config.TRAIN_BATCH_SIZE
+        noise = self.config.NOISE
+        test_batch_size = self.config.TEST_BATCH_SIZE
+        train_batch_size = self.config.TRAIN_BATCH_SIZE
 
         logging.info('noise: %s' % noise)
         logging.info('train_batch_size: %s' % train_batch_size)
@@ -290,9 +206,9 @@ class DiceboxNetwork:
         logging.debug('get_dicebox_sensory_data(self)')
         logging.debug('-' * 80)
 
-        noise = self.__config.NOISE
-        train_batch_size = self.__config.TRAIN_BATCH_SIZE
-        test_batch_size = self.__config.TEST_BATCH_SIZE
+        noise = self.config.NOISE
+        train_batch_size = self.config.TRAIN_BATCH_SIZE
+        test_batch_size = self.config.TEST_BATCH_SIZE
 
         try:
             # train_image_data, train_image_labels = Network.__fsc.get_batch(train_batch_size, noise=noise)
@@ -355,17 +271,10 @@ class DiceboxNetwork:
         y_test: ndarray = test_image_labels
         return x_train, x_test, y_train, y_test
 
-
     ## Network Functions
-
-    # def load_network(self, network_definition: Any) -> None:
-    #     self.__network = self.__network_factory.create_network(network_definition=network_definition)
 
     def load_network(self, network: Network) -> None:
         self.__network = network
-
-    # def generate_random_network(self) -> None:
-    #     self.__network = self.__network_factory.create_random_network()
 
     ## For Evolutionary Optimizer
 
@@ -378,9 +287,5 @@ class DiceboxNetwork:
     def get_layer(self, layer_index: int) -> Union[DenseLayer, DropoutLayer]:
         return self.__network.get_layer_definition(layer_index)
 
-    # def get_layer_definition(self, layer_index) -> Any:
-    #     layer: Union[DropoutLayer, DenseLayer] = self.__network.get_layer_definition(layer_index)
-    #     return self.__network_factory.decompile_layer(layer)
-
     def get_config(self) -> DiceboxConfig:
-        return self.__config
+        return self.config
