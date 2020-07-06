@@ -1,4 +1,3 @@
-from abc import ABC
 from enum import Enum
 from typing import List, Union
 
@@ -7,7 +6,7 @@ from tensorflow.python.keras.models import Sequential
 
 from .layer import DenseLayer, DropoutLayer, DenseLayerConfigure, DropoutLayerConfigure, LayerType, ActivationFunction
 from ..config import DiceboxConfig
-from ..layer_factory import LayerFactory
+from src.shapeandshare.dicebox.core.factories.layer_factory import LayerFactory
 
 
 class Optimizers(Enum):

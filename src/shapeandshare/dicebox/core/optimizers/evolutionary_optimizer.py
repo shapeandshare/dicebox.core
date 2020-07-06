@@ -15,11 +15,11 @@ import copy
 
 from typing import List
 
-from .config import DiceboxConfig
-from .dicebox_network import DiceboxNetwork
-from .models.network import Network
-from .network_factory import NetworkFactory
-from .utils import lucky, random_index, random_index_between, random, random_strict
+from src.shapeandshare.dicebox.core.config import DiceboxConfig
+from src.shapeandshare.dicebox.core.dicebox_network import DiceboxNetwork
+from src.shapeandshare.dicebox.core.models.network import Network
+from src.shapeandshare.dicebox.core.factories.network_factory import NetworkFactory
+from src.shapeandshare.dicebox.core.utils import lucky, random_index, random_index_between, random, random_strict
 
 
 class EvolutionaryOptimizer(NetworkFactory):

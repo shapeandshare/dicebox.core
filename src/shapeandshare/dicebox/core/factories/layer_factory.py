@@ -1,10 +1,10 @@
 from abc import ABC
 from typing import Union, Any
 
-from .config import DiceboxConfig
-from .models.layer import DenseLayerConfigure, DropoutLayerConfigure, ActivationFunction, LayerType, DropoutLayer, \
+from src.shapeandshare.dicebox.core.config import DiceboxConfig
+from src.shapeandshare.dicebox.core.models.layer import DenseLayerConfigure, DropoutLayerConfigure, ActivationFunction, LayerType, DropoutLayer, \
     DenseLayer
-from .utils import random_index, random_index_between, random_strict
+from src.shapeandshare.dicebox.core.utils import random_index, random_index_between, random_strict
 
 
 class LayerFactory(ABC):
