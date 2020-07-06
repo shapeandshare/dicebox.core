@@ -2,7 +2,6 @@ import os
 import struct
 import math
 import errno
-import logging
 
 
 def lucky(noise=0):

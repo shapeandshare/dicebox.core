@@ -15,23 +15,23 @@ import copy
 
 from typing import List
 
-from src.shapeandshare.dicebox.core.config import DiceboxConfig
-from src.shapeandshare.dicebox.core.dicebox_network import DiceboxNetwork
-from src.shapeandshare.dicebox.core.models.network import Network
-from src.shapeandshare.dicebox.core.factories.network_factory import NetworkFactory
-from src.shapeandshare.dicebox.core.utils import lucky, random_index, random_index_between, random, random_strict
+
+from ..config import DiceboxConfig
+from ..dicebox_network import DiceboxNetwork
+from ..models.network import Network
+from ..factories.network_factory import NetworkFactory
+from ..utils import lucky, random_index, random_index_between, random, random_strict
 
 
 class EvolutionaryOptimizer(NetworkFactory):
     """Class that implements genetic algorithm for MLP optimization."""
 
-    config_file = None
-    lonestar_model_file = None
+    config_file: str = None
     config = None
 
     def __init__(self, config: DiceboxConfig, retain=0.4, random_select=0.1, mutate_chance=0.2):
         super().__init__(config=config)
-        self.config: DiceboxConfig = config
+        # self.config: DiceboxConfig = config
 
         self.mutate_chance: float = mutate_chance
         self.random_select: float = random_select
@@ -42,7 +42,7 @@ class EvolutionaryOptimizer(NetworkFactory):
         population: List[DiceboxNetwork] = []
         for _ in range(0, count):
             # Create a random network.
-            dn = DiceboxNetwork(config=self.config)
+            dn = DiceboxNetwork(config=self.config, network_config=self.create_random_network())
             network: Network = self.create_random_network()
             dn.load_network(network)
             # Add the network to our population.

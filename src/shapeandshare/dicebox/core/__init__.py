@@ -1,2 +1,2 @@
 from .dicebox_network import DiceboxNetwork
-from src.shapeandshare.dicebox.core.optimizers.evolutionary_optimizer import EvolutionaryOptimizer
+
