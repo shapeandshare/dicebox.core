@@ -11,7 +11,8 @@ from tensorflow.keras.callbacks import EarlyStopping
 from .config.dicebox_config import DiceboxConfig
 from .connectors.filesystem_connecter import FileSystemConnector
 from .connectors.sensory_service_connector import SensoryServiceConnector
-from .models.network import DropoutLayer, DenseLayer, Network, Optimizers, NetworkConfig
+from .models.network import DropoutLayer, DenseLayer, Network, Optimizers
+from .models.network_config import NetworkConfig
 
 
 class DiceboxNetwork(Network):
@@ -36,7 +37,7 @@ class DiceboxNetwork(Network):
 
     def __init__(self,
                  config: DiceboxConfig,
-                 network_config: NetworkConfig,
+                 network_config: Union[NetworkConfig, Union] = None,
                  create_fsc: bool = True,
                  disable_data_indexing: bool = False):
 
@@ -85,6 +86,7 @@ class DiceboxNetwork(Network):
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
+    # careful now.. maybe this shouldn't exist..
     def set_accuracy(self, accuracy: float):
         self.__accuracy = accuracy
 
@@ -268,6 +270,9 @@ class DiceboxNetwork(Network):
 
     def load_network(self, network: Network) -> None:
         self.__network = network
+
+        # reset other items related to a newly loaded network
+        self.__accuracy = 0.0
 
     ## For Evolutionary Optimizer
 

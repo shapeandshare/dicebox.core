@@ -3,11 +3,8 @@ from src.dicebox.config.dicebox_config import DiceboxConfig
 
 
 class DiceboxConfigTest(unittest.TestCase):
-    """
-    The basic class that inherits unittest.TestCase
-    """
-    TEST_DATA_BASE = 'test/fixtures'
-    local_config_file = '%s/dicebox.config' % TEST_DATA_BASE
+    fixtures_base = 'test/fixtures'
+    local_config_file = '%s/dicebox.config' % fixtures_base
 
     def setUp(self):
         self.dc = DiceboxConfig(config_file=self.local_config_file)

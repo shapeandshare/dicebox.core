@@ -1,55 +1,47 @@
-from enum import Enum
 from typing import List, Union
 
 from tensorflow.python.keras.layers import Dropout, Dense
 from tensorflow.python.keras.models import Sequential
 
-from .layer import DenseLayer, DropoutLayer, DenseLayerConfigure, DropoutLayerConfigure, LayerType, ActivationFunction
+from .layer import DenseLayer, DropoutLayer, LayerType, ActivationFunction
+from .optimizers import Optimizers
 from ..config.dicebox_config import DiceboxConfig
 from ..factories.layer_factory import LayerFactory
 
 
-class Optimizers(Enum):
-    RMSPROP = 'rmsprop'
-    ADAM = 'adam'
-    SGD = 'sgd'
-    ADAGRAD = 'adagrad'
-    ADADELTA = 'adadelta'
-    ADAMAX = 'adamax'
-    NADAM = 'nadam'
-
-
-class NetworkConfig:
-    def __init__(self, input_shape: int, output_size: int, optimizer: Optimizers):
-        self.input_shape: int = input_shape
-        self.output_size: int = output_size
-        self.optimizer: Optimizers = optimizer
-
-
 class Network(LayerFactory):
-    def __init__(self, config: DiceboxConfig, network_config: NetworkConfig):
+    def __init__(self, config: DiceboxConfig, network_config: Union[NetworkConfig, None]):
         super().__init__(config=config)
-        self.input_shape: int = network_config.input_shape
-        self.output_size: int = network_config.output_size
-        self.optimizer: Optimizers = network_config.optimizer
 
-        self.layers: List[Union[DropoutLayer, DenseLayer]] = []
-        self.model: Union[Sequential, None] = None
+        # allow a null startup state
+        if network_config is not None:
+            self.__input_shape: int = network_config.input_shape
+            self.__output_size: int = network_config.output_size
+            self.__optimizer: Optimizers = network_config.optimizer
 
-    def add_layer(self, layer_config: Union[DropoutLayerConfigure, DenseLayerConfigure]) -> None:
-        self.layers.append(self.compile_layer(layer_config=layer_config))
+            self.__layers: List[Union[DenseLayer, DropoutLayer]] = network_config.layers
+            self.model = None
+            self.compile()
 
-    def clear_model(self):
+    def add_layer(self, layer: Union[DropoutLayer, DenseLayer]) -> None:
+        self.__layers.append(layer)
+
+    def __clear_model(self):
         if self.model:
             del self.model
-        self.model: Union[Sequential, None] = None
+        self.model = None
 
     def compile(self) -> None:
-        self.clear_model()
+        self.__clear_model()
+
+        # early exist for empty layers
+        if len(self.__layers) < 1:
+            return
+
         model = Sequential()
 
         first_layer: bool = True
-        for layer in self.layers:
+        for layer in self.__layers:
             # build and add layer
             if layer.layer_type == LayerType.DROPOUT:
                 # handle dropout
@@ -59,21 +51,21 @@ class Network(LayerFactory):
                 activation: ActivationFunction = layer.activation
                 if first_layer is True:
                     first_layer = False
-                    model.add(Dense(neurons, activation=activation.value, input_shape=self.input_shape))
+                    model.add(Dense(neurons, activation=activation.value, input_shape=self.__input_shape))
                 else:
                     model.add(Dense(neurons, activation=activation.value))
             else:
                 raise
         # add final output layer.
-        model.add(Dense(self.output_size,
+        model.add(Dense(self.__output_size,
                         activation='softmax'))  # TODO: Make it possible to define with from the enum...
-        model.compile(loss='categorical_crossentropy', optimizer=self.optimizer.value, metrics=['accuracy'])
+        model.compile(loss='categorical_crossentropy', optimizer=self.__optimizer.value, metrics=['accuracy'])
 
         # return model
         self.model = model
 
-    def get_layer_definition(self, layer_index: int) -> Union[DenseLayer, DropoutLayer]:
-        return self.layers[layer_index]
-
     def get_layer(self, layer_index: int) -> Union[DenseLayer, DropoutLayer]:
-        return self.layers[layer_index]
+        return self.__layers[layer_index]
+
+    def get_layers(self) -> List[Union[DenseLayer, DropoutLayer]]:
+        return self.__layers

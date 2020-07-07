@@ -17,7 +17,8 @@ from typing import List
 from ..config.dicebox_config import DiceboxConfig
 from ..dicebox_network import DiceboxNetwork
 from ..factories.network_factory import NetworkFactory
-from ..models.network import Network, NetworkConfig, Optimizers
+from ..models.network import Network, Optimizers
+from ..models.network_config import NetworkConfig
 from ..utils.helpers import lucky, random_index, random_index_between, random, random_strict
 
 

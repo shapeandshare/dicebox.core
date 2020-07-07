@@ -19,26 +19,6 @@ class ActivationFunction(Enum):
     LINEAR = 'linear'
 
 
-class LayerConfig(ABC):
-    layer_type: LayerType
-
-    def __init__(self, layer_type: LayerType):
-        self.layer_type = layer_type
-
-
-class DropoutLayerConfigure(LayerConfig):
-    def __init__(self, rate: float):
-        super().__init__(LayerType.DROPOUT)
-        self.rate: float = rate
-
-
-class DenseLayerConfigure(LayerConfig):
-    def __init__(self, size: int, activation: ActivationFunction):
-        super().__init__(LayerType.DENSE)
-        self.size: int = size
-        self.activation: ActivationFunction = activation
-
-
 class Layer(ABC):
     layer_type: LayerType
 
@@ -50,14 +30,13 @@ class Layer(ABC):
 
 
 class DenseLayer(Layer):
-    def __init__(self, config: DenseLayerConfigure):
-        super().__init__(layer_type=config.layer_type)
-        self.size: int = config.size
-        self.activation: ActivationFunction = config.activation
+    def __init__(self, size: int, activation: ActivationFunction):
+        super().__init__(LayerType.DROPOUT)
+        self.size: int = size
+        self.activation: ActivationFunction = activation
 
 
 class DropoutLayer(Layer):
-    def __init__(self, config: DropoutLayerConfigure):
-        super().__init__(layer_type=config.layer_type)
-        self.type: LayerType = config.layer_type
-        self.rate: float = config.rate
+    def __init__(self, rate: float):
+        super().__init__(layer_type=LayerType.DENSE)
+        self.rate: float = rate

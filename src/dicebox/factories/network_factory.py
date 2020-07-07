@@ -2,7 +2,8 @@ from typing import Any
 
 from .layer_factory import LayerFactory
 from ..config.dicebox_config import DiceboxConfig
-from ..models.network import LayerType, ActivationFunction, Network, NetworkConfig, Optimizers
+from ..models.network import LayerType, ActivationFunction, Network, Optimizers
+from ..models.network_config import NetworkConfig
 from ..utils.helpers import random_index, random_index_between
 
 
@@ -26,12 +27,12 @@ class NetworkFactory(LayerFactory):
             if layer['type'] == LayerType.DENSE.value:
                 size: int = layer['size']
                 activation: ActivationFunction = ActivationFunction(layer['activation'])
-                new_layer_config = self.build_dense_layer_config(size=size, activation=activation)
-                new_network.add_layer(new_layer_config)
+                new_layer = self.build_dense_layer(size=size, activation=activation)
+                new_network.add_layer(new_layer)
             elif layer['type'] == LayerType.DROPOUT.value:
                 rate: float = layer['rate']
-                new_layer_config = self.build_dropout_layer_config(rate=rate)
-                new_network.add_layer(new_layer_config)
+                new_layer = self.build_dropout_layer(rate=rate)
+                new_network.add_layer(new_layer)
             else:
                 raise
 
@@ -53,7 +54,7 @@ class NetworkFactory(LayerFactory):
                                                 self.config.TAXONOMY['max_layers'])
         for layer_index in range(1, layer_count):
             # add new random layer to the network
-            network.add_layer(self.build_random_layer_config())
+            network.add_layer(self.build_random_layer())
 
         network.compile()
         return network
