@@ -1,17 +1,17 @@
-from PIL import Image
-import logging
-import requests
 import json
+import logging
 from datetime import datetime
-import pika
 
-from ..config import DiceboxConfig
+import pika
+import requests
+from PIL import Image
+
 from .filesystem_connecter import FileSystemConnector
+from ..config import DiceboxConfig
 from ..utils import make_sure_path_exists
 
 
 class SensoryServiceConnector:
-
     fsc = None  # file system connector
     interface_role = None
     config = None
@@ -72,7 +72,6 @@ class SensoryServiceConnector:
 
             image_label = []
             image_data = []
-
 
             # natural_category_list = self.get_category_map()
 
@@ -176,10 +175,10 @@ class SensoryServiceConnector:
             return image_data, image_label
 
             # small batch approach
-            #response = self.make_sensory_api_call('api/sensory/request', json_data, 'POST')
-            #image_labels = response['labels']
-            #image_data = response['data']
-            #return image_data, image_labels
+            # response = self.make_sensory_api_call('api/sensory/request', json_data, 'POST')
+            # image_labels = response['labels']
+            # image_data = response['data']
+            # return image_data, image_labels
 
         elif self.interface_role == 'server':
             logging.debug('-' * 80)
@@ -198,7 +197,8 @@ class SensoryServiceConnector:
         }
 
         try:
-            url = "%s%s:%s/%s" % (self.config.SENSORY_URI, self.config.SENSORY_SERVER, self.config.SENSORY_PORT, end_point)
+            url = "%s%s:%s/%s" % (
+                self.config.SENSORY_URI, self.config.SENSORY_SERVER, self.config.SENSORY_PORT, end_point)
             # logging.debug('-' * 80)
             # logging.debug(url)
             # logging.debug('-' * 80)
@@ -253,12 +253,12 @@ class SensoryServiceConnector:
 
             method_frame, header_frame, body = channel.basic_get(batch_id)
             if method_frame:
-                #logging.debug("%s %s %s" % (method_frame, header_frame, body))
+                # logging.debug("%s %s %s" % (method_frame, header_frame, body))
                 message = json.loads(body)
                 label = message['label']
                 data = message['data']
-                #logging.debug(label)
-                #logging.debug(data)
+                # logging.debug(label)
+                # logging.debug(data)
                 channel.basic_ack(method_frame.delivery_tag)
             else:
                 logging.debug('no message returned')

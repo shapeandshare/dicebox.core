@@ -1,17 +1,16 @@
-from typing import Union, Any
-
-from numpy import ndarray
-from tensorflow.keras.callbacks import EarlyStopping
 # from tensorflow.keras.callbacks import ModelCheckpoint
 import logging
-import numpy
-from datetime import datetime
 import os
+from datetime import datetime
+from typing import Union, Any
+
+import numpy
+from numpy import ndarray
+from tensorflow.keras.callbacks import EarlyStopping
 
 from .config import DiceboxConfig
 from .connectors import FileSystemConnector, SensoryServiceConnector
-from .models.layer import DropoutLayer, DenseLayer
-from .models.network import Network, Optimizers, NetworkConfig
+from .models import DropoutLayer, DenseLayer, Network, Optimizers, NetworkConfig
 
 
 class DiceboxNetwork(Network):

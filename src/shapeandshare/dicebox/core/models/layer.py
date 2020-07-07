@@ -1,6 +1,5 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from enum import Enum
-from typing import Union
 
 
 class LayerType(Enum):
@@ -25,6 +24,7 @@ class LayerConfig(ABC):
 
     def __init__(self, layer_type: LayerType):
         self.layer_type = layer_type
+
 
 class DropoutLayerConfigure(LayerConfig):
     def __init__(self, rate: float):

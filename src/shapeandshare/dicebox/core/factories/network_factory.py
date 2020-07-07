@@ -1,10 +1,9 @@
 from typing import Any
 
-from src.shapeandshare.dicebox.core.config import DiceboxConfig
-from src.shapeandshare.dicebox.core.factories.layer_factory import LayerFactory
-from src.shapeandshare.dicebox.core.models.layer import LayerType, ActivationFunction
-from src.shapeandshare.dicebox.core.models.network import Network, NetworkConfig, Optimizers
-from src.shapeandshare.dicebox.core.utils import random_index, random_index_between
+from ..config import DiceboxConfig
+from ..factories import LayerFactory
+from ..models import LayerType, ActivationFunction, Network, NetworkConfig, Optimizers
+from ..utils import random_index, random_index_between
 
 
 # The birthing chambers ...

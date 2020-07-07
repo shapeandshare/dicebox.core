@@ -6,14 +6,11 @@
 ###############################################################################
 """
 
-###############################################################################
-# Dependencies
-###############################################################################
-import os
-import fnmatch
-import struct
 import array
+import fnmatch
 import logging
+import os
+import struct
 from typing import Dict, Any, List, Union
 
 import numpy

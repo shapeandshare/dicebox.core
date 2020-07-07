@@ -6,9 +6,6 @@
 ###############################################################################
 """
 
-###############################################################################
-# Dependencies
-###############################################################################
 import configparser
 import json
 from abc import ABC
@@ -27,7 +24,7 @@ class BaseConfig(ABC):
         ###############################################################################
         # Data Set Options
         ###############################################################################
-        
+
         # Load user defined __config
         self.DATASET = local_config.get('DATASET', 'name')
         self.DICEBOX_COMPLIANT_DATASET = local_config.getboolean('DATASET', 'dicebox_compliant')
@@ -40,7 +37,6 @@ class BaseConfig(ABC):
         self.NETWORK_NAME = "%s_%ix%i" % (self.DATASET, self.IMAGE_WIDTH, self.IMAGE_HEIGHT)
         self.INPUT_SHAPE = (self.IMAGE_WIDTH * self.IMAGE_HEIGHT,)
         self.DATA_DIRECTORY = "%s/%s/data/" % (self.DATA_BASE_DIRECTORY, self.NETWORK_NAME)
-
 
         ###############################################################################
         # Neural Network Taxonomy Options
@@ -58,7 +54,7 @@ class BaseConfig(ABC):
             'max_neurons': self.MAX_NEURONS,
             'min_layers': self.MIN_LAYERS,
             'max_layers': self.MAX_LAYERS,
-            'layer_types':  json.loads(self.LAYER_TYPES),
+            'layer_types': json.loads(self.LAYER_TYPES),
             'activation': json.loads(self.ACTIVATION),
             'optimizer': json.loads(self.OPTIMIZER)
         }
@@ -75,7 +71,6 @@ class BaseConfig(ABC):
         self.POPULATION = local_config.getint('EVOLUTION', 'population')
         self.NOISE = local_config.getfloat('GLOBAL', 'noise')
 
-
         ###############################################################################
         # Training Options / Settings for the 1920x1080 dataset
         ###############################################################################
@@ -84,14 +79,12 @@ class BaseConfig(ABC):
         self.TEST_BATCH_SIZE = local_config.getint('TRAINING', 'test_batch_size')
         self.LOAD_BEST_WEIGHTS_ON_START = local_config.getboolean('TRAINING', 'load_best_weights_on_start')
 
-
         ###############################################################################
         # Direcrtory Options
         ###############################################################################
         self.LOGS_DIR = local_config.get('DIRECTORY', 'logs_dir')
         self.WEIGHTS_DIR = local_config.get('DIRECTORY', 'weights_dir')
         self.TMP_DIR = local_config.get('DIRECTORY', 'tmp_dir')
-
 
         ###############################################################################
         # Server Options
@@ -101,7 +94,6 @@ class BaseConfig(ABC):
         self.LISTENING_HOST = local_config.get('SERVER', 'listening_host')
         self.FLASK_DEBUG = local_config.getboolean('SERVER', 'flask_debug')
         self.MODEL_WEIGHTS_FILENAME = local_config.get('SERVER', 'model_weights_filename')
-
 
         ###############################################################################
         # Sensory Service Options
@@ -134,7 +126,6 @@ class BaseConfig(ABC):
         )
         self.SENSORY_SERVICE_SHARD_SIZE = local_config.getint('SENSORY_SERVICE', 'shard_size')
 
-
         ###############################################################################
         # Training Service Options
         ###############################################################################
@@ -160,7 +151,6 @@ class BaseConfig(ABC):
             self.TRAINING_SERVICE_RABBITMQ_PORT,
             self.TRAINING_SERVICE_RABBITMQ_VHOST
         )
-
 
         ###############################################################################
         # Training Processor Options
@@ -193,7 +183,6 @@ class BaseConfig(ABC):
             self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT,
             self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST
         )
-
 
         ###############################################################################
         # Client Options

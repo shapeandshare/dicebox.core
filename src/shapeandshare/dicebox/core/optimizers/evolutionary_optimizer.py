@@ -9,17 +9,15 @@ Credit:
     A lot of those code was originally inspired by:
     http://lethain.com/genetic-algorithms-cool-name-damn-simple/
 """
+import copy
 from functools import reduce
 from operator import add
-import copy
-
 from typing import List
-
 
 from ..config import DiceboxConfig
 from ..dicebox_network import DiceboxNetwork
-from ..models.network import Network
 from ..factories.network_factory import NetworkFactory
+from ..models.network import Network
 from ..utils import lucky, random_index, random_index_between, random, random_strict
 
 
@@ -228,7 +226,7 @@ class EvolutionaryOptimizer(NetworkFactory):
         graded = [x[1] for x in sorted(graded, key=lambda x: x[0], reverse=True)]
 
         # Get the number we want to keep for the next gen.
-        retain_length = int(len(graded)*self.retain)
+        retain_length = int(len(graded) * self.retain)
 
         # The parents are every __network we want to keep.
         # TODO: can not deepcopy the keras senquences...

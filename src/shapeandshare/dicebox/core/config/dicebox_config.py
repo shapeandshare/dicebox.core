@@ -6,16 +6,14 @@
 ###############################################################################
 """
 
-###############################################################################
-# Dependencies
-###############################################################################
-import os
 import json
+import os
+
 from .base_config import BaseConfig
 
 
 class DiceboxConfig(BaseConfig):
-    
+
     def __init__(self, config_file: str = 'dicebox.config'):
         super().__init__(config_file=config_file)
 
@@ -48,7 +46,6 @@ class DiceboxConfig(BaseConfig):
         if 'DATA_BASE_DIRECTORY' in os.environ:
             self.DATA_BASE_DIRECTORY = os.environ['DATA_BASE_DIRECTORY']
 
-
         ###############################################################################
         # Build Calculated Configs
         ###############################################################################
@@ -64,7 +61,6 @@ class DiceboxConfig(BaseConfig):
         if 'DATA_DIRECTORY' in os.environ:
             self.DATA_DIRECTORY = os.environ['DATA_DIRECTORY']
 
-
         ###############################################################################
         # Neural Network Taxonomy Options
         ###############################################################################
@@ -73,19 +69,19 @@ class DiceboxConfig(BaseConfig):
             self.MIN_NEURONS = os.environ['MIN_NEURONS']
 
         self.MAX_NEURONS = self.MAX_NEURONS
-        if 'MAX_NEURONS'  in os.environ:
+        if 'MAX_NEURONS' in os.environ:
             self.MAX_NEURONS = os.environ['MAX_NEURONS']
 
         self.MIN_LAYERS = self.MIN_LAYERS
-        if 'MIN_LAYERS'  in os.environ:
+        if 'MIN_LAYERS' in os.environ:
             self.MIN_LAYERS = os.environ['MIN_LAYERS']
 
         self.MAX_LAYERS = self.MAX_LAYERS
-        if 'MAX_LAYERS'  in os.environ:
+        if 'MAX_LAYERS' in os.environ:
             self.MAX_LAYERS = os.environ['MAX_LAYERS']
 
         self.LAYER_TYPES = self.LAYER_TYPES
-        if 'LAYER_TYPES'  in os.environ:
+        if 'LAYER_TYPES' in os.environ:
             self.LAYER_TYPES = os.environ['LAYER_TYPES']
 
         self.ACTIVATION = self.ACTIVATION
@@ -106,7 +102,6 @@ class DiceboxConfig(BaseConfig):
             'optimizer': json.loads(self.OPTIMIZER)
         }
 
-
         ###############################################################################
         # Evolution Options
         ###############################################################################
@@ -125,7 +120,6 @@ class DiceboxConfig(BaseConfig):
         self.NOISE = self.NOISE
         if 'NOISE' in os.environ:
             self.NOISE = float(os.environ['NOISE'])
-
 
         ###############################################################################
         # Training Options / Settings for the 1920x1080 dataset
@@ -147,7 +141,6 @@ class DiceboxConfig(BaseConfig):
             if os.environ['LOAD_BEST_WEIGHTS_ON_START'] == 'False':
                 self.LOAD_BEST_WEIGHTS_ON_START = False
 
-
         ###############################################################################
         # Direcrtory Options
         ###############################################################################
@@ -162,7 +155,6 @@ class DiceboxConfig(BaseConfig):
         self.TMP_DIR = self.TMP_DIR
         if 'TMP_DIR' in os.environ:
             self.MP_DIR = os.environ['TMP_DIR']
-
 
         ###############################################################################
         # Server Options
@@ -188,7 +180,6 @@ class DiceboxConfig(BaseConfig):
         if 'MODEL_WEIGHTS_FILENAME' in os.environ:
             self.MODEL_WEIGHTS_FILENAME = os.environ['MODEL_WEIGHTS_FILENAME']
 
-
         ###############################################################################
         # Sensory Service Options
         ###############################################################################
@@ -210,11 +201,13 @@ class DiceboxConfig(BaseConfig):
 
         self.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY = self.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY
         if 'SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY' in os.environ:
-            self.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY = os.environ['SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY']
+            self.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY = os.environ[
+                'SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_ROUTING_KEY']
 
         self.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE = self.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE
         if 'SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE' in os.environ:
-            self.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE = os.environ['SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE']
+            self.SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE = os.environ[
+                'SENSORY_SERVICE_RABBITMQ_BATCH_REQUEST_TASK_QUEUE']
 
         self.SENSORY_SERVICE_RABBITMQ_URI = self.SENSORY_SERVICE_RABBITMQ_URI
         if 'SENSORY_SERVICE_RABBITMQ_URI' in os.environ:
@@ -252,8 +245,6 @@ class DiceboxConfig(BaseConfig):
         if 'SENSORY_SERVICE_SHARD_SIZE' in os.environ:
             self.SENSORY_SERVICE_SHARD_SIZE = int(os.environ['SENSORY_SERVICE_SHARD_SIZE'])
 
-
-
         ###############################################################################
         # Training Service Options
         ###############################################################################
@@ -263,11 +254,13 @@ class DiceboxConfig(BaseConfig):
 
         self.TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = self.TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY
         if 'TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY' in os.environ:
-            self.TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = os.environ['TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY']
+            self.TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = os.environ[
+                'TRAINING_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY']
 
         self.TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = self.TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE
         if 'TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE' in os.environ:
-            self.TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = os.environ['TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE']
+            self.TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = os.environ[
+                'TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE']
 
         self.TRAINING_SERVICE_RABBITMQ_RABBITMQ_VHOST = self.TRAINING_SERVICE_RABBITMQ_RABBITMQ_VHOST
         if 'TRAINING_SERVICE_RABBITMQ_RABBITMQ_VHOST' in os.environ:
@@ -306,37 +299,43 @@ class DiceboxConfig(BaseConfig):
             self.TRAINING_SERVICE_RABBITMQ_VHOST
         )
 
-
         ###############################################################################
         # Training Processor Options
         ###############################################################################
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE = self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE
         if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE' in os.environ:
-            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE']
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE = os.environ[
+                'TRAINING_PROCESSOR_SERVICE_RABBITMQ_EXCHANGE']
 
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY
         if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY' in os.environ:
-            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY']
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY = os.environ[
+                'TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAINING_REQUEST_ROUTING_KEY']
 
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE
         if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE' in os.environ:
-            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE']
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = os.environ[
+                'TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE']
 
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST = self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST
         if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST' in os.environ:
-            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST']
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST = os.environ[
+                'TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST']
 
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI = self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI
         if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI' in os.environ:
-            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI']
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI = os.environ[
+                'TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI']
 
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME = self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME
         if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME' in os.environ:
-            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME']
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME = os.environ[
+                'TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME']
 
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD = self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD
         if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD' in os.environ:
-            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD']
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD = os.environ[
+                'TRAINING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD']
 
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER = self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER
         if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER' in os.environ:
@@ -358,7 +357,6 @@ class DiceboxConfig(BaseConfig):
             self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT,
             self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST
         )
-
 
         ###############################################################################
         # Client Options
