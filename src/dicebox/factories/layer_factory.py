@@ -1,9 +1,9 @@
 from abc import ABC
 from typing import Union, Any
 
-from ..config import DiceboxConfig
-from ..models import DenseLayerConfigure, DropoutLayerConfigure, ActivationFunction, LayerType, DropoutLayer, DenseLayer
-from ..utils import random_index, random_index_between, random_strict
+from ..config.dicebox_config import DiceboxConfig
+from ..models.network import DenseLayerConfigure, DropoutLayerConfigure, ActivationFunction, LayerType, DropoutLayer, DenseLayer
+from ..utils.helpers import random_index, random_index_between, random_strict
 
 
 class LayerFactory(ABC):

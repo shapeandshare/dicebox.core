@@ -2,8 +2,10 @@ import unittest
 import json
 from typing import Any
 
-from src.shapeandshare.dicebox.core.config import DiceboxConfig
-from src.shapeandshare.dicebox.core.factories import NetworkFactory
+# from src.shapeandshare.dicebox import DiceboxConfig, NetworkFactory
+from src.dicebox.config.dicebox_config import DiceboxConfig
+from src.dicebox.factories.network_factory import NetworkFactory
+
 
 class DiceboxNetworkTest(unittest.TestCase):
     """

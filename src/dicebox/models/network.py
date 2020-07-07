@@ -4,9 +4,9 @@ from typing import List, Union
 from tensorflow.python.keras.layers import Dropout, Dense
 from tensorflow.python.keras.models import Sequential
 
-from . import DenseLayer, DropoutLayer, DenseLayerConfigure, DropoutLayerConfigure, LayerType, ActivationFunction
-from ..config import DiceboxConfig
-from ..factories import LayerFactory
+from .layer import DenseLayer, DropoutLayer, DenseLayerConfigure, DropoutLayerConfigure, LayerType, ActivationFunction
+from ..config.dicebox_config import DiceboxConfig
+from ..factories.layer_factory import LayerFactory
 
 
 class Optimizers(Enum):

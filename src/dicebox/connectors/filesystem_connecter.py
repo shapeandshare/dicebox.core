@@ -17,8 +17,8 @@ import numpy
 from PIL import Image
 from numpy import ndarray
 
-from ..config import DiceboxConfig
-from ..utils import lucky
+from ..config.dicebox_config import DiceboxConfig
+from ..utils.helpers import lucky
 
 
 class FileSystemConnector:

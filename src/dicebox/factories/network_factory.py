@@ -1,15 +1,14 @@
 from typing import Any
 
-from ..config import DiceboxConfig
-from ..factories import LayerFactory
-from ..models import LayerType, ActivationFunction, Network, NetworkConfig, Optimizers
-from ..utils import random_index, random_index_between
+from .layer_factory import LayerFactory
+from ..config.dicebox_config import DiceboxConfig
+from ..models.network import LayerType, ActivationFunction, Network, NetworkConfig, Optimizers
+from ..utils.helpers import random_index, random_index_between
 
 
 # The birthing chambers ...
 
 class NetworkFactory(LayerFactory):
-    # TODO: lonestar should not exist, make it the responsiblity of the caller during create
     def __init__(self, config: DiceboxConfig):
         super().__init__(config=config)
 

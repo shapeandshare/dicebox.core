@@ -1,6 +1,5 @@
-import json
 import unittest
-from src.shapeandshare.dicebox.core.config import DiceboxConfig
+from src.dicebox.config.dicebox_config import DiceboxConfig
 
 
 class DiceboxConfigTest(unittest.TestCase):

@@ -14,11 +14,11 @@ from functools import reduce
 from operator import add
 from typing import List
 
-from ..config import DiceboxConfig
+from ..config.dicebox_config import DiceboxConfig
 from ..dicebox_network import DiceboxNetwork
 from ..factories.network_factory import NetworkFactory
-from ..models.network import Network
-from ..utils import lucky, random_index, random_index_between, random, random_strict
+from ..models.network import Network, NetworkConfig, Optimizers
+from ..utils.helpers import lucky, random_index, random_index_between, random, random_strict
 
 
 class EvolutionaryOptimizer(NetworkFactory):
@@ -68,10 +68,11 @@ class EvolutionaryOptimizer(NetworkFactory):
 
     def breed(self, mother: DiceboxNetwork, father: DiceboxNetwork) -> List[DiceboxNetwork]:
         # Creates two offspring.
+        dummy_config: NetworkConfig = NetworkConfig(input_shape=0, output_size=0, optimizer=Optimizers.ADAM)
 
         children = []
         for _ in range(2):
-            child = DiceboxNetwork(config=self.config)
+            child = DiceboxNetwork(config=self.config, network_config=dummy_config)
             # if child.__network is None:
             #     child.__network = {}
             # if 'layers' not in child.__network:

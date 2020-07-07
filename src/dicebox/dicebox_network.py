@@ -8,9 +8,10 @@ import numpy
 from numpy import ndarray
 from tensorflow.keras.callbacks import EarlyStopping
 
-from .config import DiceboxConfig
-from .connectors import FileSystemConnector, SensoryServiceConnector
-from .models import DropoutLayer, DenseLayer, Network, Optimizers, NetworkConfig
+from .config.dicebox_config import DiceboxConfig
+from .connectors.filesystem_connecter import FileSystemConnector
+from .connectors.sensory_service_connector import SensoryServiceConnector
+from .models.network import DropoutLayer, DenseLayer, Network, Optimizers, NetworkConfig
 
 
 class DiceboxNetwork(Network):

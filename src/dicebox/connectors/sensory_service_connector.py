@@ -7,8 +7,8 @@ import requests
 from PIL import Image
 
 from .filesystem_connecter import FileSystemConnector
-from ..config import DiceboxConfig
-from ..utils import make_sure_path_exists
+from ..config.dicebox_config import DiceboxConfig
+from ..utils.helpers import make_sure_path_exists
 
 
 class SensoryServiceConnector:
