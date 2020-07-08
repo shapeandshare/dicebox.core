@@ -31,12 +31,12 @@ class Layer(ABC):
 
 class DenseLayer(Layer):
     def __init__(self, size: int, activation: ActivationFunction):
-        super().__init__(LayerType.DROPOUT)
+        super().__init__(layer_type=LayerType.DENSE)
         self.size: int = size
         self.activation: ActivationFunction = activation
 
 
 class DropoutLayer(Layer):
     def __init__(self, rate: float):
-        super().__init__(layer_type=LayerType.DENSE)
+        super().__init__(layer_type=LayerType.DROPOUT)
         self.rate: float = rate

@@ -41,8 +41,8 @@ class EvolutionaryOptimizer(NetworkFactory):
         population: List[DiceboxNetwork] = []
         for _ in range(0, count):
             # Create a random network.
-            dn = DiceboxNetwork(config=self.config, network_config=self.create_random_network())
             network: Network = self.create_random_network()
+            dn = DiceboxNetwork(config=self.config)
             dn.load_network(network)
             # Add the network to our population.
             population.append(dn)
@@ -52,7 +52,7 @@ class EvolutionaryOptimizer(NetworkFactory):
     @staticmethod
     def fitness(network: DiceboxNetwork) -> float:
         """Return the accuracy, which is our fitness function."""
-        return network.accuracy()
+        return network.get_accuracy()
 
     def grade(self, pop: List[DiceboxNetwork]) -> float:
         """Find average fitness for a population.
@@ -69,11 +69,10 @@ class EvolutionaryOptimizer(NetworkFactory):
 
     def breed(self, mother: DiceboxNetwork, father: DiceboxNetwork) -> List[DiceboxNetwork]:
         # Creates two offspring.
-        dummy_config: NetworkConfig = NetworkConfig(input_shape=0, output_size=0, optimizer=Optimizers.ADAM)
 
         children = []
         for _ in range(2):
-            child = DiceboxNetwork(config=self.config, network_config=dummy_config)
+            child = DiceboxNetwork(config=self.config)
             # if child.__network is None:
             #     child.__network = {}
             # if 'layers' not in child.__network:

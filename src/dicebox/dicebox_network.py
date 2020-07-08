@@ -37,7 +37,7 @@ class DiceboxNetwork(Network):
 
     def __init__(self,
                  config: DiceboxConfig,
-                 network_config: Union[NetworkConfig, Union] = None,
+                 network_config: Union[NetworkConfig, None] = None,
                  create_fsc: bool = True,
                  disable_data_indexing: bool = False):
 
@@ -277,13 +277,13 @@ class DiceboxNetwork(Network):
     ## For Evolutionary Optimizer
 
     def get_optimizer(self) -> Optimizers:
-        return self.__network.optimizer
+        return self.__network.get_optimizer()
 
     def get_layer_count(self) -> int:
-        return len(self.__network.layers)
+        return len(self.__network.get_layers())
 
     def get_layer(self, layer_index: int) -> Union[DenseLayer, DropoutLayer]:
-        return self.__network.get_layer_definition(layer_index)
+        return self.__network.get_layer(layer_index=layer_index)
 
     def get_config(self) -> DiceboxConfig:
         return self.config

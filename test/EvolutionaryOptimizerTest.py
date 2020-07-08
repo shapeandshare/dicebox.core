@@ -18,12 +18,11 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
     def test_breed(self):
         dc: DiceboxConfig = DiceboxConfig(config_file=self.local_config_file)
         nf = NetworkFactory(config=dc)
-        dummy_config: NetworkConfig = NetworkConfig(input_shape=0, output_size=0, optimizer=Optimizers.ADAM)
-        mother = DiceboxNetwork(config=dc, network_config=dummy_config, create_fsc=True, disable_data_indexing=True)
 
+        mother = DiceboxNetwork(config=dc, create_fsc=True, disable_data_indexing=True)
         mother.load_network(network=nf.create_random_network())
 
-        father = DiceboxNetwork(config=dc, network_config=dummy_config, create_fsc=True, disable_data_indexing=True)
+        father = DiceboxNetwork(config=dc, create_fsc=True, disable_data_indexing=True)
         father.load_network(network=nf.create_random_network())
 
         op = EvolutionaryOptimizer(config=dc,

@@ -7,7 +7,7 @@ from src.dicebox.models.optimizers import Optimizers
 
 
 class NetworkConfig:
-    def __init__(self, input_shape: int, output_size: int, optimizer: Optimizers, layers: List[Union[DropoutLayer, DenseLayer]]):
+    def __init__(self, input_shape: int, output_size: int, optimizer: Optimizers, layers: List[Union[DropoutLayer, DenseLayer]] = []):
         self.input_shape: int = input_shape
         self.output_size: int = output_size
         self.optimizer: Optimizers = optimizer

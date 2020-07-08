@@ -24,8 +24,7 @@ class DiceboxNetworkTest(unittest.TestCase):
         self.maxDiff = None
 
     def test_create_random(self):
-        dc: DiceboxConfig = DiceboxConfig(config_file=self.local_config_file)
-        nf: NetworkFactory = NetworkFactory(config=dc)
+        nf: NetworkFactory = NetworkFactory(config=DiceboxConfig(config_file=self.local_config_file))
         nf.create_random_network()
 
         # dn: DiceboxNetwork = DiceboxNetwork(dc,
