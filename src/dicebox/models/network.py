@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Any
 
 from tensorflow.python.keras.layers import Dropout, Dense
 from tensorflow.python.keras.models import Sequential
@@ -73,3 +73,24 @@ class Network(LayerFactory):
 
     def get_optimizer(self) -> Optimizers:
         return self.__optimizer
+
+    def get_input_shape(self) -> int:
+        return self.__input_shape
+
+    def get_output_size(self) -> int:
+        return self.__output_size
+
+    def decompile(self) -> Any:
+        definition = {
+            'input_shape': self.__input_shape,
+            'output_size': self.__output_size,
+            'optimizer': self.__optimizer.value,
+            'layers': []
+        }
+
+        for i in range(0, len(self.__layers)):
+            layer = self.decompile_layer(self.__layers[i])
+            definition['layers'].append(layer)
+
+        return definition
+

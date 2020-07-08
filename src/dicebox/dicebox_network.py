@@ -55,13 +55,6 @@ class DiceboxNetwork(Network):
             logging.debug('creating a new ssc..')
             self.__ssc = SensoryServiceConnector(role='client', config=self.config)
 
-    # ## Logging
-    #
-    # def print_network(self) -> None:
-    #     """Print out a __network."""
-    #     logging.info(self.__network)
-    #     logging.info("Network accuracy: %.2f%%" % (self.__accuracy * 100))
-
     ## Training
 
     def train(self, update_accuracy=False) -> float:
@@ -287,3 +280,11 @@ class DiceboxNetwork(Network):
 
     def get_config(self) -> DiceboxConfig:
         return self.config
+
+
+
+    def deconstruct_network(self) -> Any:
+        return self.deconstruct_network()
+
+    def get_network_config(self):
+        return self.decompile()

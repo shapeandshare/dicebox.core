@@ -1,14 +1,3 @@
-# Derived from https://github.com/harvitronix/neural-network-genetic-algorithm
-# Derived source copyright: Matt Harvey, 2017, Derived source license: The MIT License
-# See docs/Matt Harvey.LICENSE.txt
-
-"""
-Class that holds a genetic algorithm for evolving a __network.
-
-Credit:
-    A lot of those code was originally inspired by:
-    http://lethain.com/genetic-algorithms-cool-name-damn-simple/
-"""
 import copy
 from functools import reduce
 from operator import add
@@ -17,7 +6,7 @@ from typing import List
 from ..config.dicebox_config import DiceboxConfig
 from ..dicebox_network import DiceboxNetwork
 from ..factories.network_factory import NetworkFactory
-from ..models.network import Network, Optimizers
+from ..models.network import Network
 from ..models.network_config import NetworkConfig
 from ..utils.helpers import lucky, random_index, random_index_between, random, random_strict
 
@@ -25,16 +14,16 @@ from ..utils.helpers import lucky, random_index, random_index_between, random, r
 class EvolutionaryOptimizer(NetworkFactory):
     """Class that implements genetic algorithm for MLP optimization."""
 
-    config_file: str = None
-    config = None
+    mutate_chance: float
+    random_select: float
+    retain: float
 
     def __init__(self, config: DiceboxConfig, retain=0.4, random_select=0.1, mutate_chance=0.2):
         super().__init__(config=config)
-        # self.config: DiceboxConfig = config
 
-        self.mutate_chance: float = mutate_chance
-        self.random_select: float = random_select
-        self.retain: float = retain
+        self.mutate_chance = mutate_chance
+        self.random_select = random_select
+        self.retain = retain
 
     def create_population(self, count: int) -> List[DiceboxNetwork]:
         # Create a population of random networks.
@@ -44,9 +33,9 @@ class EvolutionaryOptimizer(NetworkFactory):
             network: Network = self.create_random_network()
             dn = DiceboxNetwork(config=self.config)
             dn.load_network(network)
+
             # Add the network to our population.
             population.append(dn)
-
         return population
 
     @staticmethod
@@ -55,119 +44,79 @@ class EvolutionaryOptimizer(NetworkFactory):
         return network.get_accuracy()
 
     def grade(self, pop: List[DiceboxNetwork]) -> float:
-        """Find average fitness for a population.
-
-        Args:
-            pop (list): The population of networks
-
-        Returns:
-            (float): The average accuracy of the population
-
-        """
-        summed = reduce(add, (self.fitness(network) for network in pop))
+        # Find average fitness for a population.
+        summed: float = reduce(add, (self.fitness(network) for network in pop))
         return summed / float((len(pop)))
 
-    def breed(self, mother: DiceboxNetwork, father: DiceboxNetwork) -> List[DiceboxNetwork]:
-        # Creates two offspring.
-
-        children = []
-        for _ in range(2):
-            child = DiceboxNetwork(config=self.config)
-            # if child.__network is None:
-            #     child.__network = {}
-            # if 'layers' not in child.__network:
-            #     child.__network['layers'] = []
+    def breed(self, mother: DiceboxNetwork, father: DiceboxNetwork, offspringCount: int = 2) -> List[DiceboxNetwork]:
+        # Creates offspring
+        children: List[DiceboxNetwork] = []
+        for _ in range(offspringCount):
+            child = DiceboxNetwork(config=self.config)  # TODO: this should come from a parent... (though in practice are probably the same)
 
             # build our network definition
+
             network_definition = {
                 'input_shape': self.config.INPUT_SHAPE,
                 'output_size': self.config.NB_CLASSES
             }
 
-            # Set unchange-ables
-            # child.__network['input_shape'] = child.__config.INPUT_SHAPE
-            # child.__network['output_size'] = child.__config.NB_CLASSES
-
             # Pick which parent's optimization function is passed on to offspring
             if lucky(0.5):
-                # logging.debug("child.__network['optimizer'] = mother(%s)", mother.__network['optimizer'])
-                # child.__network['optimizer'] = mother.network['optimizer']
                 network_definition['optimizer'] = mother.get_optimizer().value
             else:
-                # logging.debug("child.__network['optimizer'] = father(%s)", father.__network['optimizer'])
-                # child.__network['optimizer'] = father.network['optimizer']
                 network_definition['optimizer'] = father.get_optimizer().value
 
             # Determine the number of layers
             if lucky(0.5):
-                # logging.debug("child layer length = mother(%s)", len(mother.__network['layers']))
-                # layer_count = len(mother.network['layers'])
                 layer_count = mother.get_layer_count()
             else:
-                # logging.debug("child layer length = father(%s)", len(father.__network['layers']))
-                # layer_count = len(father.network['layers'])
                 layer_count = father.get_layer_count()
 
+            # build layers
             network_definition['layers'] = []
             for layer_index in range(0, layer_count):
-                # logging.debug("layer (%s/%s)", layer_index, layer_count)
                 # Pick which parent's layer is passed on to the offspring
                 if lucky(0.5):
                     if layer_index < mother.get_layer_count():
-                        # child.__network['layers'].append(mother.network['layers'][layer_index])
                         layer = mother.get_layer(layer_index=layer_index)
                         network_definition['layers'].append(self.decompile_layer(layer))
                     elif layer_index < father.get_layer_count():
-                        # child.__network['layers'].append(father.network['layers'][layer_index])
                         layer = father.get_layer(layer_index=layer_index)
                         network_definition['layers'].append(self.decompile_layer(layer))
                     else:
-                        raise Exception('impossible breeding event occurred!')
+                        raise Exception('impossible breeding event occurred?')
                 else:
                     if layer_index < father.get_layer_count():
-                        # child.__network['layers'].append(father.network['layers'][layer_index])
                         layer = father.get_layer(layer_index=layer_index)
                         network_definition['layers'].append(self.decompile_layer(layer))
                     elif layer_index < mother.get_layer_count():
-                        # child.__network['layers'].append(mother.network['layers'][layer_index])
                         layer = mother.get_layer(layer_index=layer_index)
                         network_definition['layers'].append(self.decompile_layer(layer))
                     else:
-                        raise Exception('impossible breeding event occurred!')
-
-            # child.__model = child.compile_model(child.__network)
+                        raise Exception('impossible breeding event occurred?')
             child_network = self.create_network(network_definition=network_definition)
             child.load_network(network=child_network)
             children.append(child)
         return children
 
     def mutate(self, individual: DiceboxNetwork) -> DiceboxNetwork:
-        # we will be performing a deepcopy on the incoming object.
-        # It looks like Keras Sequencials no longer support this.
-        # so we need to ensure we remove any compiled models on
-        # the inbound object before proceeding.
 
+        # this is introduces chaos into the new entity
+        local_noise = self.mutate_chance
+
+        raw_individual_definition = individual.deconstruct_network()
         mutant = DiceboxNetwork(config=individual.get_config())
 
-        individual.__model = {}
-
-        # mutations = 0
-        local_noise = self.mutate_chance
-        # logging.debug("***************************************************")
-        clone = copy.deepcopy(individual)
         # see if the optimizer is mutated
         if lucky(local_noise):
-            # yep..  Select an optimizer
-            # logging.debug("optimizer = (%s)", clone.__network['optimizer'])
             clone.__network['optimizer'] = clone.select_random_optimizer()
-            # mutations += 1
-            # logging.debug("optimizer = (%s)", clone.__network['optimizer'])
 
         # Determine the number of layers..
         layer_count = len(clone.__network['layers'])
 
         # now mess around within the layers
-        for index in range(1, layer_count):
+        for index in range(0, layer_count):
             # see if the layer is mutated
             if lucky(local_noise):
                 # then change the layer type
@@ -208,7 +157,9 @@ class EvolutionaryOptimizer(NetworkFactory):
                     raise Exception('Not yet implemented!')
         # logging.debug("mutations: (%s)", mutations)
         # logging.debug("***************************************************")
-        return clone
+        # return clone
+
+        return mutant
 
     def evolve(self, pop):
         """Evolve a population of networks.
