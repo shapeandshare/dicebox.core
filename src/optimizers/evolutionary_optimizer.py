@@ -1,15 +1,16 @@
 import copy
 from functools import reduce
 from operator import add
-from typing import List
+from random import random
+from typing import List, Any
 
 from ..config.dicebox_config import DiceboxConfig
 from ..dicebox_network import DiceboxNetwork
 from ..factories.network_factory import NetworkFactory
 from ..models.network import Network
-from ..models.network_config import NetworkConfig
-from ..utils.helpers import lucky, random_index, random_index_between, random, random_strict
-
+# from ..models.network_config import NetworkConfig
+from ..models.optimizers import Optimizers
+from ..utils.helpers import lucky, random_index, random_index_between, dicebox_random, random_strict
 
 class EvolutionaryOptimizer(NetworkFactory):
     """Class that implements genetic algorithm for MLP optimization."""
@@ -18,12 +19,16 @@ class EvolutionaryOptimizer(NetworkFactory):
     random_select: float
     retain: float
 
-    def __init__(self, config: DiceboxConfig, retain=0.4, random_select=0.1, mutate_chance=0.2):
+    def __init__(self,
+                 config: DiceboxConfig,
+                 retain: float = 0.4,
+                 random_select: float = 0.1,
+                 mutate_chance: float = 0.2):
         super().__init__(config=config)
 
-        self.mutate_chance = mutate_chance
-        self.random_select = random_select
-        self.retain = retain
+        self.mutate_chance: float = mutate_chance
+        self.random_select: float = random_select
+        self.retain: float = retain
 
     def create_population(self, count: int) -> List[DiceboxNetwork]:
         # Create a population of random networks.
@@ -31,7 +36,7 @@ class EvolutionaryOptimizer(NetworkFactory):
         for _ in range(0, count):
             # Create a random network.
             network: Network = self.create_random_network()
-            dn = DiceboxNetwork(config=self.config)
+            dn: DiceboxNetwork = DiceboxNetwork(config=self.config)
             dn.load_network(network)
 
             # Add the network to our population.
@@ -43,40 +48,58 @@ class EvolutionaryOptimizer(NetworkFactory):
         """Return the accuracy, which is our fitness function."""
         return network.get_accuracy()
 
-    def grade(self, pop: List[DiceboxNetwork]) -> float:
+    def grade(self, population: List[DiceboxNetwork]) -> float:
         # Find average fitness for a population.
-        summed: float = reduce(add, (self.fitness(network) for network in pop))
-        return summed / float((len(pop)))
+        summed: float = reduce(add, (self.fitness(network) for network in population))
+        return summed / float((len(population)))
 
+    # TODO: Support parents of N numbers..
+    # offspring should would not be deterministic (the number should varry by some hyper-parameter controllable value)
     def breed(self, mother: DiceboxNetwork, father: DiceboxNetwork, offspringCount: int = 2) -> List[DiceboxNetwork]:
         # Creates offspring
         children: List[DiceboxNetwork] = []
         for _ in range(offspringCount):
-            child = DiceboxNetwork(config=self.config)  # TODO: this should come from a parent... (though in practice are probably the same)
+            #
+            # TODO: what would it mean if the config 's came from the parents..?
+            #
 
+            child: DiceboxNetwork = DiceboxNetwork(config=self.config)
+
+            #
             # build our network definition
+            #
 
-            network_definition = {
+            # TODO: what would it mean if the config 's came from the parents..?
+            network_definition: Any = {
                 'input_shape': self.config.INPUT_SHAPE,
                 'output_size': self.config.NB_CLASSES
             }
 
+            #
             # Pick which parent's optimization function is passed on to offspring
+            #
+            # TODO: Support N parents
             if lucky(0.5):
                 network_definition['optimizer'] = mother.get_optimizer().value
             else:
                 network_definition['optimizer'] = father.get_optimizer().value
 
+            #
             # Determine the number of layers
+            #
+            # TODO: this should include variation between the N parents as well.
             if lucky(0.5):
-                layer_count = mother.get_layer_count()
+                layer_count: int = mother.get_layer_count()
             else:
-                layer_count = father.get_layer_count()
+                layer_count: int = father.get_layer_count()
 
+            #
             # build layers
+            #
             network_definition['layers'] = []
             for layer_index in range(0, layer_count):
                 # Pick which parent's layer is passed on to the offspring
+                # TODO: this should include variation between the N parents as well.
                 if lucky(0.5):
                     if layer_index < mother.get_layer_count():
                         layer = mother.get_layer(layer_index=layer_index)
@@ -102,19 +125,21 @@ class EvolutionaryOptimizer(NetworkFactory):
 
     def mutate(self, individual: DiceboxNetwork) -> DiceboxNetwork:
 
-        # this is introduces chaos into the new entity
-        local_noise = self.mutate_chance
+        # this introduces chaos into the new entity
+        local_noise: float = self.mutate_chance
 
-        raw_individual_definition = individual.deconstruct_network()
-        mutant = DiceboxNetwork(config=individual.get_config())
+        # Review the 'raw' genome of the individual
+        raw_individual_definition: Any = individual.decompile()
 
+        # TODO: possibly only of the parents types..
         # see if the optimizer is mutated
         if lucky(local_noise):
-            clone.__network['optimizer'] = clone.select_random_optimizer()
+            raw_individual_definition['optimizer'] = Optimizers.select_random_optimizer().value
 
         # Determine the number of layers..
-        layer_count = len(clone.__network['layers'])
+        layer_count = len(raw_individual_definition['layers'])
 
+        # TODO: adjust the number of layers (its easy to remove, adding could be random)?
         # now mess around within the layers
         for index in range(0, layer_count):
             # see if the layer is mutated
@@ -122,11 +147,13 @@ class EvolutionaryOptimizer(NetworkFactory):
                 # then change the layer type
                 # how does this affect the weights, etc? :/
                 # logging.debug("layer = (%s)", layer)
-                clone.__network['layers'][index - 1] = clone.build_random_layer()
+                # clone.__network['layers'][index - 1] = clone.build_random_layer()
+                raw_individual_definition['layers'][index - 1] = self.decompile_layer(self.build_random_layer())
+
                 # mutations += 1
                 # logging.debug("layer = (%s)", layer)
             else:
-                layer = clone.__network['layers'][index - 1]
+                layer = raw_individual_definition['layers'][index - 1]
 
                 # keep checking the individual layer attributes
                 if layer['type'] == 'dropout':
@@ -141,15 +168,15 @@ class EvolutionaryOptimizer(NetworkFactory):
                         # mutate the layer size
                         # logging.debug('Mutating layer size')
                         # logging.debug("size = (%s)", layer['size'])
-                        layer['size'] = random_index_between(clone.__config.TAXONOMY['min_neurons'],
-                                                             clone.__config.TAXONOMY['max_neurons'])
+                        layer['size'] = random_index_between(self.config.TAXONOMY['min_neurons'],
+                                                             self.config.TAXONOMY['max_neurons'])
                         # mutations += 1
                         # logging.debug("size = (%s)", layer['size'])
                     if lucky(local_noise):
                         # mutate activation function
                         # logging.debug("activation = (%s)", layer['activation'])
-                        activation_index = random_index(len(clone.__config.TAXONOMY['activation']))
-                        layer['activation'] = clone.__config.TAXONOMY['activation'][activation_index - 1]
+                        activation_index = random_index(len(self.config.TAXONOMY['activation']))
+                        layer['activation'] = self.config.TAXONOMY['activation'][activation_index - 1]
                         # mutations += 1
                         # logging.debug("activation = (%s)", layer['activation'])
                 else:
@@ -159,6 +186,8 @@ class EvolutionaryOptimizer(NetworkFactory):
         # logging.debug("***************************************************")
         # return clone
 
+        mutant = DiceboxNetwork(config=individual.config)
+        mutant.load_network(raw_individual_definition)
         return mutant
 
     def evolve(self, pop):
@@ -186,7 +215,7 @@ class EvolutionaryOptimizer(NetworkFactory):
 
         # For those we aren't keeping, randomly keep some anyway.
         for individual in graded[retain_length:]:
-            if self.random_select > random():
+            if self.random_select > dicebox_random():
                 # TODO: deepcopy no longer works for sequentials... needs to be updated..
                 parents.append(copy.deepcopy(individual))
 

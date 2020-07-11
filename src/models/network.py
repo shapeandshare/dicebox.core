@@ -4,7 +4,7 @@ from tensorflow.python.keras.layers import Dropout, Dense
 from tensorflow.python.keras.models import Sequential
 
 from .layer import DenseLayer, DropoutLayer, LayerType, ActivationFunction
-from .network_config import NetworkConfig
+from ..config.network_config import NetworkConfig
 from .optimizers import Optimizers
 from ..config.dicebox_config import DiceboxConfig
 from ..factories.layer_factory import LayerFactory

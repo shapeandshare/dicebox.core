@@ -1,4 +1,4 @@
-"""Allow over-riding the defaults with non-secure ENV variables, or secure docker secrets
+"""
 
 ###############################################################################
 # Local Config File Handler

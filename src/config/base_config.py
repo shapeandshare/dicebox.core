@@ -1,4 +1,4 @@
-"""Handles loading dicebox.config.
+"""
 
 ###############################################################################
 # Local Config File Handler
@@ -16,7 +16,7 @@ class BaseConfig(ABC):
 
     def __init__(self, config_file='dicebox.config'):
         ###############################################################################
-        # Create __config objects.
+        # Create config objects.
         ###############################################################################
         local_config = configparser.ConfigParser()
         local_config.read(config_file)
@@ -25,7 +25,7 @@ class BaseConfig(ABC):
         # Data Set Options
         ###############################################################################
 
-        # Load user defined __config
+        # Load user defined config
         self.DATASET = local_config.get('DATASET', 'name')
         self.DICEBOX_COMPLIANT_DATASET = local_config.getboolean('DATASET', 'dicebox_compliant')
         self.NB_CLASSES = local_config.getint('DATASET', 'categories')

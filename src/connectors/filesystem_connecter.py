@@ -1,7 +1,8 @@
-"""Handles filesystem interactions for neural network input data.
+"""
 
 ###############################################################################
 # Filesystem Connector for Neural Network Input Data
+# Handles filesystem interactions for neural network input data.
 # Copyright (c) 2017-2020 Joshua Burt
 ###############################################################################
 """

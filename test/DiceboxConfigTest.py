@@ -1,5 +1,5 @@
 import unittest
-from src.dicebox.config.dicebox_config import DiceboxConfig
+from src.config.dicebox_config import DiceboxConfig
 
 
 class DiceboxConfigTest(unittest.TestCase):

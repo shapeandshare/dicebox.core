@@ -12,7 +12,7 @@ from .config.dicebox_config import DiceboxConfig
 from .connectors.filesystem_connecter import FileSystemConnector
 from .connectors.sensory_service_connector import SensoryServiceConnector
 from .models.network import DropoutLayer, DenseLayer, Network, Optimizers
-from .models.network_config import NetworkConfig
+from .config.network_config import NetworkConfig
 
 
 class DiceboxNetwork(Network):
@@ -278,13 +278,8 @@ class DiceboxNetwork(Network):
     def get_layer(self, layer_index: int) -> Union[DenseLayer, DropoutLayer]:
         return self.__network.get_layer(layer_index=layer_index)
 
-    def get_config(self) -> DiceboxConfig:
-        return self.config
+    # def get_config(self) -> DiceboxConfig:
+    #     return self.config
 
-
-
-    def deconstruct_network(self) -> Any:
-        return self.deconstruct_network()
-
-    def get_network_config(self):
-        return self.decompile()
+    # def get_network_config(self):
+    #     return self.decompile()
