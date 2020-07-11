@@ -112,7 +112,7 @@ class BaseConfig(ABC):
         self.SENSORY_SERVICE_RABBITMQ_USERNAME = local_config.get('SENSORY_SERVICE', 'rabbitmq_username')
         self.SENSORY_SERVICE_RABBITMQ_PASSWORD = local_config.get('SENSORY_SERVICE', 'rabbitmq_password')
         self.SENSORY_SERVICE_RABBITMQ_SERVER = local_config.get('SENSORY_SERVICE', 'rabbitmq_server')
-        self.SENSORY_SERVICE_RABBITMQ_PORT = local_config.get('SENSORY_SERVICE', 'rabbitmq_port')
+        self.SENSORY_SERVICE_RABBITMQ_PORT = local_config.getint('SENSORY_SERVICE', 'rabbitmq_port')
         self.SENSORY_SERVICE_RABBITMQ_VHOST = quote_plus(
             local_config.get('SENSORY_SERVICE', 'rabbitmq_vhost'))
 
@@ -135,14 +135,12 @@ class BaseConfig(ABC):
             'TRAINING_SERVICE', 'rabbitmq_batch_request_routing_key')
         self.TRAINING_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = local_config.get(
             'TRAINING_SERVICE', 'rabbitmq_train_request_task_queue')
-        self.TRAINING_SERVICE_RABBITMQ_RABBITMQ_VHOST = local_config.get('TRAINING_SERVICE', 'rabbitmq_vhost')
         self.TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI = local_config.get('TRAINING_SERVICE', 'rabbitmq_uri')
         self.TRAINING_SERVICE_RABBITMQ_USERNAME = local_config.get('TRAINING_SERVICE', 'rabbitmq_username')
         self.TRAINING_SERVICE_RABBITMQ_PASSWORD = local_config.get('TRAINING_SERVICE', 'rabbitmq_password')
         self.TRAINING_SERVICE_RABBITMQ_SERVER = local_config.get('TRAINING_SERVICE', 'rabbitmq_server')
-        self.TRAINING_SERVICE_RABBITMQ_PORT = local_config.get('TRAINING_SERVICE', 'rabbitmq_port')
-        self.TRAINING_SERVICE_RABBITMQ_VHOST = quote_plus(
-            local_config.get('TRAINING_SERVICE', 'rabbitmq_vhost'))
+        self.TRAINING_SERVICE_RABBITMQ_PORT = local_config.getint('TRAINING_SERVICE', 'rabbitmq_port')
+        self.TRAINING_SERVICE_RABBITMQ_VHOST = quote_plus(local_config.get('TRAINING_SERVICE', 'rabbitmq_vhost'))
         self.TRAINING_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
             self.TRAINING_SERVICE_RABBITMQ_RABBITMQ_URI,
             self.TRAINING_SERVICE_RABBITMQ_USERNAME,
@@ -161,9 +159,7 @@ class BaseConfig(ABC):
             'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_batch_request_routing_key')
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = local_config.get(
             'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_train_request_task_queue')
-        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_VHOST = local_config.get(
-            'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_vhost')
-        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI = local_config.get(
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_URI = local_config.get(
             'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_uri')
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME = local_config.get(
             'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_username')
@@ -171,12 +167,12 @@ class BaseConfig(ABC):
             'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_password')
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER = local_config.get(
             'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_server')
-        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT = local_config.get(
+        self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT = local_config.getint(
             'TRAINING_PROCESSOR_SERVICE', 'rabbitmq_port')
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST = quote_plus(
             local_config.get('TRAINING_PROCESSOR_SERVICE', 'rabbitmq_vhost'))
         self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_URL = "%s%s:%s@%s:%s/%s" % (
-            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_RABBITMQ_URI,
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_URI,
             self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_USERNAME,
             self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PASSWORD,
             self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER,
@@ -188,5 +184,5 @@ class BaseConfig(ABC):
         # Client Options
         ###############################################################################
         self.CLASSIFICATION_SERVER = local_config.get('CLIENT', 'classification_server')
-        self.SERVER_PORT = local_config.getint('CLIENT', 'classification_port')
-        self.SERVER_URI = local_config.get('CLIENT', 'classification_uri')
+        self.CLASSIFICATION_SERVER_PORT = local_config.getint('CLIENT', 'classification_port')
+        self.CLASSIFICATION_SERVER_URI = local_config.get('CLIENT', 'classification_uri')
