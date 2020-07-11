@@ -1,7 +1,7 @@
 import copy
 from functools import reduce
 from operator import add
-from random import random
+# from random import random
 from typing import List, Any
 
 from ..config.dicebox_config import DiceboxConfig
@@ -11,6 +11,7 @@ from ..models.network import Network
 # from ..models.network_config import NetworkConfig
 from ..models.optimizers import Optimizers
 from ..utils.helpers import lucky, random_index, random_index_between, dicebox_random, random_strict
+
 
 class EvolutionaryOptimizer(NetworkFactory):
     """Class that implements genetic algorithm for MLP optimization."""

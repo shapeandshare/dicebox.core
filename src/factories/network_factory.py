@@ -66,8 +66,8 @@ class NetworkFactory(LayerFactory):
     #     # return new_network
     #     new_network_config = NetworkConfig(input_shape=input_shape, output_size=output_size, optimizer=optimizer)
 
-    def create_network_from_config(self, config: NetworkConfig) -> Network:
-        return Network(config=self.config, network_config=config)
+    # def create_network_from_config(self, config: NetworkConfig) -> Network:
+    #     return Network(config=self.config, network_config=config)
 
     def create_random_network(self) -> Network:
         # Select an optimizer
