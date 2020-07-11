@@ -26,7 +26,12 @@ class DiceboxConfig(BaseConfig):
             self.DATASET = os.environ['DATASET']
 
         if 'DICEBOX_COMPLIANT_DATASET' in os.environ:
-            self.DICEBOX_COMPLIANT_DATASET = os.environ['DICEBOX_COMPLIANT_DATASET']
+            if os.environ['DICEBOX_COMPLIANT_DATASET'] == 'True':
+                self.DICEBOX_COMPLIANT_DATASET = True
+            elif os.environ['DICEBOX_COMPLIANT_DATASET'] == 'False':
+                self.DICEBOX_COMPLIANT_DATASET = False
+            else:
+                raise
 
         if 'NB_CLASSES' in os.environ:
             self.NB_CLASSES = int(os.environ['NB_CLASSES'])
@@ -44,31 +49,25 @@ class DiceboxConfig(BaseConfig):
         # Build Calculated Configs
         ###############################################################################
         self.NETWORK_NAME = "%s_%ix%i" % (self.DATASET, self.IMAGE_WIDTH, self.IMAGE_HEIGHT)
-        if 'NETWORK_NAME' in os.environ:
-            self.NETWORK_NAME = os.environ['NETWORK_NAME']
 
         self.INPUT_SHAPE = (self.IMAGE_WIDTH * self.IMAGE_HEIGHT,)
-        if 'INPUT_SHAPE' in os.environ:
-            self.INPUT_SHAPE = os.environ['INPUT_SHAPE']
 
         self.DATA_DIRECTORY = "%s/%s/data/" % (self.DATA_BASE_DIRECTORY, self.NETWORK_NAME)
-        if 'DATA_DIRECTORY' in os.environ:
-            self.DATA_DIRECTORY = os.environ['DATA_DIRECTORY']
 
         ###############################################################################
         # Neural Network Taxonomy Options
         ###############################################################################
         if 'MIN_NEURONS' in os.environ:
-            self.MIN_NEURONS = os.environ['MIN_NEURONS']
+            self.MIN_NEURONS = int(os.environ['MIN_NEURONS'])
 
         if 'MAX_NEURONS' in os.environ:
-            self.MAX_NEURONS = os.environ['MAX_NEURONS']
+            self.MAX_NEURONS = int(os.environ['MAX_NEURONS'])
 
         if 'MIN_LAYERS' in os.environ:
-            self.MIN_LAYERS = os.environ['MIN_LAYERS']
+            self.MIN_LAYERS = int(os.environ['MIN_LAYERS'])
 
         if 'MAX_LAYERS' in os.environ:
-            self.MAX_LAYERS = os.environ['MAX_LAYERS']
+            self.MAX_LAYERS = int(os.environ['MAX_LAYERS'])
 
         if 'LAYER_TYPES' in os.environ:
             self.LAYER_TYPES = os.environ['LAYER_TYPES']
@@ -121,6 +120,10 @@ class DiceboxConfig(BaseConfig):
         if 'LOAD_BEST_WEIGHTS_ON_START' in os.environ:
             if os.environ['LOAD_BEST_WEIGHTS_ON_START'] == 'False':
                 self.LOAD_BEST_WEIGHTS_ON_START = False
+            elif os.environ['LOAD_BEST_WEIGHTS_ON_START'] == 'True':
+                self.LOAD_BEST_WEIGHTS_ON_START = True
+            else:
+                raise
 
         ###############################################################################
         # Direcrtory Options
@@ -132,7 +135,7 @@ class DiceboxConfig(BaseConfig):
             self.WEIGHTS_DIR = os.environ['WEIGHTS_DIR']
 
         if 'TMP_DIR' in os.environ:
-            self.MP_DIR = os.environ['TMP_DIR']
+            self.TMP_DIR = os.environ['TMP_DIR']
 
         ###############################################################################
         # Server Options
@@ -149,6 +152,10 @@ class DiceboxConfig(BaseConfig):
         if 'FLASK_DEBUG' in os.environ:
             if os.environ['FLASK_DEBUG'] == 'True':
                 self.FLASK_DEBUG = True
+            elif os.environ['FLASK_DEBUG'] == 'False':
+                self.FLASK_DEBUG = False
+            else:
+                raise
 
         if 'MODEL_WEIGHTS_FILENAME' in os.environ:
             self.MODEL_WEIGHTS_FILENAME = os.environ['MODEL_WEIGHTS_FILENAME']
@@ -160,7 +167,7 @@ class DiceboxConfig(BaseConfig):
             self.SENSORY_SERVER = os.environ['SENSORY_SERVER']
 
         if 'SENSORY_PORT' in os.environ:
-            self.SENSORY_PORT = os.environ['SENSORY_PORT']
+            self.SENSORY_PORT = int(os.environ['SENSORY_PORT'])
 
         if 'SENSORY_URI' in os.environ:
             self.SENSORY_URI = os.environ['SENSORY_URI']
@@ -189,7 +196,7 @@ class DiceboxConfig(BaseConfig):
             self.SENSORY_SERVICE_RABBITMQ_SERVER = os.environ['SENSORY_SERVICE_RABBITMQ_SERVER']
 
         if 'SENSORY_SERVICE_RABBITMQ_PORT' in os.environ:
-            self.SENSORY_SERVICE_RABBITMQ_PORT = os.environ['SENSORY_SERVICE_RABBITMQ_PORT']
+            self.SENSORY_SERVICE_RABBITMQ_PORT = int(os.environ['SENSORY_SERVICE_RABBITMQ_PORT'])
 
         if 'SENSORY_SERVICE_RABBITMQ_VHOST' in os.environ:
             self.SENSORY_SERVICE_RABBITMQ_VHOST = os.environ['SENSORY_SERVICE_RABBITMQ_VHOST']
@@ -234,7 +241,7 @@ class DiceboxConfig(BaseConfig):
             self.TRAINING_SERVICE_RABBITMQ_SERVER = os.environ['TRAINING_SERVICE_RABBITMQ_SERVER']
 
         if 'TRAINING_SERVICE_RABBITMQ_PORT' in os.environ:
-            self.TRAINING_SERVICE_RABBITMQ_PORT = os.environ['TRAINING_SERVICE_RABBITMQ_PORT']
+            self.TRAINING_SERVICE_RABBITMQ_PORT = int(os.environ['TRAINING_SERVICE_RABBITMQ_PORT'])
 
         if 'TRAINING_SERVICE_RABBITMQ_VHOST' in os.environ:
             self.TRAINING_SERVICE_RABBITMQ_VHOST = os.environ['TRAINING_SERVICE_RABBITMQ_VHOST']
@@ -264,10 +271,6 @@ class DiceboxConfig(BaseConfig):
             self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE = os.environ[
                 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_TRAIN_REQUEST_TASK_QUEUE']
 
-        if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST' in os.environ:
-            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST = os.environ[
-                'TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST']
-
         if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_URI' in os.environ:
             self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_URI = os.environ[
                 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_URI']
@@ -284,7 +287,7 @@ class DiceboxConfig(BaseConfig):
             self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_SERVER']
 
         if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT' in os.environ:
-            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT']
+            self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT = int(os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_PORT'])
 
         if 'TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST' in os.environ:
             self.TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST = os.environ['TRAINING_PROCESSOR_SERVICE_RABBITMQ_VHOST']
@@ -305,8 +308,8 @@ class DiceboxConfig(BaseConfig):
         if 'CLASSIFICATION_SERVER' in os.environ:
             self.CLASSIFICATION_SERVER = os.environ['CLASSIFICATION_SERVER']
 
-        if 'SERVER_PORT' in os.environ:
-            self.SERVER_PORT = int(os.environ['SERVER_PORT'])
+        if 'CLASSIFICATION_SERVER_PORT' in os.environ:
+            self.CLASSIFICATION_SERVER_PORT = int(os.environ['CLASSIFICATION_SERVER_PORT'])
 
-        if 'SERVER_URI' in os.environ:
-            self.SERVER_URI = os.environ['SERVER_URI']
+        if 'CLASSIFICATION_SERVER_URI' in os.environ:
+            self.CLASSIFICATION_SERVER_URI = os.environ['CLASSIFICATION_SERVER_URI']
