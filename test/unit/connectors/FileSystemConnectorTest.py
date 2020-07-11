@@ -22,6 +22,7 @@ class FileSystemConnectorTest(unittest.TestCase):
     DATASET_LOCATION = '%s/test_dataset/data' % TEST_DATA_BASE
     DICEBOX_CONFIG_FILE = '%s/dicebox.config' % TEST_DATA_BASE
     LONESTAR_MODEL_FILE = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
+    DISABLE_DATA_INDEXING = False
 
     def setUp(self):
         self.dc = DiceboxConfig(config_file=self.DICEBOX_CONFIG_FILE)
@@ -34,14 +35,12 @@ class FileSystemConnectorTest(unittest.TestCase):
         with open('%s/DATASET_INDEX.json' % self.TEST_DATA_BASE) as json_file:
             self.EXPECTED_DATASET_INDEX = json.load(json_file)
         if self.EXPECTED_DATASET_INDEX is None:
-            Exception('Unable to load %s/DATASET_INDEX.json!', self.TEST_DATA_BASE)
+            Exception('Unable to load %s/DATASET_INDEX.json', self.TEST_DATA_BASE)
 
         with open('%s/CATEGORY_MAP.json' % self.TEST_DATA_BASE) as json_file:
             self.EXPECTED_CATEGORY_MAP = json.load(json_file)
         if self.EXPECTED_CATEGORY_MAP is None:
-            Exception('Unable to load %s/CATEGORY_MAP.json!', self.TEST_DATA_BASE)
-
-    DISABLE_DATA_INDEXING = False
+            Exception('Unable to load %s/CATEGORY_MAP.json', self.TEST_DATA_BASE)
 
     def test_class_variable_DATA_DIRECTORY(self):
         self.assertEqual(self.DATASET_LOCATION, self.fsc.data_directory)

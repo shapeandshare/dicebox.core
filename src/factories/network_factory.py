@@ -19,8 +19,8 @@ class NetworkFactory(LayerFactory):
         input_shape: int = network_definition['input_shape']
         output_size: int = network_definition['output_size']
 
-        new_network_config = NetworkConfig(input_shape=input_shape, output_size=output_size, optimizer=optimizer)
-        new_network = Network(self.config, new_network_config)
+        new_network_config: NetworkConfig = NetworkConfig(input_shape=input_shape, output_size=output_size, optimizer=optimizer)
+        new_network = Network(config=self.config, network_config=new_network_config)
 
         # Process layers
         for layer in network_definition['layers']:

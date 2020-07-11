@@ -12,11 +12,11 @@ class DiceboxNetworkTest(unittest.TestCase):
     The basic class that inherits unittest.TestCase
     """
     TEST_DATA_BASE = 'test/fixtures'
-    # local_create_fcs = True
-    # local_disable_data_indexing = True
     local_config_file = '%s/dicebox.config' % TEST_DATA_BASE
     local_lonestar_model_file = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
 
+    # local_create_fcs = True
+    # local_disable_data_indexing = True
     # ACTIVATION = ["softmax", "elu", "softplus", "softsign", "relu", "tanh", "sigmoid", "hard_sigmoid", "linear"]
     # OPTIMIZER = ["rmsprop", "adam", "sgd", "adagrad", "adadelta", "adamax", "nadam"]
 
