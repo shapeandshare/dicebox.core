@@ -9,7 +9,7 @@ from numpy import ndarray
 from tensorflow.keras.callbacks import EarlyStopping
 
 from .config.dicebox_config import DiceboxConfig
-from .connectors.filesystem_connecter import FileSystemConnector
+from .connectors.filesystem_connector import FileSystemConnector
 from .connectors.sensory_service_connector import SensoryServiceConnector
 from .models.layer import DropoutLayer, DenseLayer
 from .models.network import Network, Optimizers

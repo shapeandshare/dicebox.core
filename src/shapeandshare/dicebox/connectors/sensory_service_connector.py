@@ -6,7 +6,7 @@ import pika
 import requests
 from PIL import Image
 
-from .filesystem_connecter import FileSystemConnector
+from .filesystem_connector import FileSystemConnector
 from ..config.dicebox_config import DiceboxConfig
 from ..utils.helpers import make_sure_path_exists
 

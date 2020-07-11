@@ -5,7 +5,7 @@ import numpy
 import numpy.testing
 
 from src.shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
-from src.shapeandshare.dicebox.connectors.filesystem_connecter import FileSystemConnector
+from src.shapeandshare.dicebox.connectors.filesystem_connector import FileSystemConnector
 
 
 class FileSystemConnectorTest(unittest.TestCase):
