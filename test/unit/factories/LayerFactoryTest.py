@@ -2,9 +2,9 @@ import os
 import unittest
 from typing import Any, Union
 
-from src.config.dicebox_config import DiceboxConfig
-from src.factories.layer_factory import LayerFactory
-from src.models.layer import DropoutLayer, ActivationFunction, DenseLayer
+from src.shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
+from src.shapeandshare.dicebox.factories.layer_factory import LayerFactory
+from src.shapeandshare.dicebox.models.layer import DropoutLayer, ActivationFunction, DenseLayer
 
 
 class LayerFactoryTest(unittest.TestCase):

@@ -11,7 +11,8 @@ from tensorflow.keras.callbacks import EarlyStopping
 from .config.dicebox_config import DiceboxConfig
 from .connectors.filesystem_connecter import FileSystemConnector
 from .connectors.sensory_service_connector import SensoryServiceConnector
-from .models.network import DropoutLayer, DenseLayer, Network, Optimizers
+from .models.layer import DropoutLayer, DenseLayer
+from .models.network import Network, Optimizers
 from .config.network_config import NetworkConfig
 
 

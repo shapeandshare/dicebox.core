@@ -1,9 +1,9 @@
 import unittest
 
-from src.dicebox_network import DiceboxNetwork
-from src.optimizers.evolutionary_optimizer import EvolutionaryOptimizer
-from src.config.dicebox_config import DiceboxConfig
-from src.factories.network_factory import NetworkFactory
+from src.shapeandshare.dicebox.dicebox_network import DiceboxNetwork
+from src.shapeandshare.dicebox.optimizers.evolutionary_optimizer import EvolutionaryOptimizer
+from src.shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
+from src.shapeandshare.dicebox.factories.network_factory import NetworkFactory
 
 
 class EvolutionaryOptimizerTest(unittest.TestCase):

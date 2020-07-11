@@ -1,10 +1,8 @@
-import os
 import unittest
 
-from src.config.dicebox_config import DiceboxConfig
-from src.config.network_config import NetworkConfig
-from src.factories.network_factory import NetworkFactory
-from src.models.optimizers import Optimizers
+from src.shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
+from src.shapeandshare.dicebox.factories.network_factory import NetworkFactory
+from src.shapeandshare.dicebox.models.optimizers import Optimizers
 
 
 class NetworkTest(unittest.TestCase):

@@ -4,8 +4,8 @@ import json
 import numpy
 import numpy.testing
 
-from src.config.dicebox_config import DiceboxConfig
-from src.connectors.filesystem_connecter import FileSystemConnector
+from src.shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
+from src.shapeandshare.dicebox.connectors.filesystem_connecter import FileSystemConnector
 
 
 class FileSystemConnectorTest(unittest.TestCase):

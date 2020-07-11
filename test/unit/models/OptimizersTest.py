@@ -1,6 +1,6 @@
 import unittest
 
-from src.models.optimizers import select_random_optimizer
+from src.shapeandshare.dicebox.models.optimizers import select_random_optimizer
 
 
 class OptimizersTest(unittest.TestCase):

@@ -1,6 +1,7 @@
 import json
 import unittest
-from src.config.base_config import BaseConfig
+
+from src.shapeandshare.dicebox.config.base_config import BaseConfig
 
 
 class BaseConfigTest(unittest.TestCase):

@@ -1,6 +1,6 @@
 import os
 import unittest
-from src.config.dicebox_config import DiceboxConfig
+from src.shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
 from dotenv import load_dotenv
 import json
 from pathlib import Path

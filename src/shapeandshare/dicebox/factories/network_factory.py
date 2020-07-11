@@ -2,7 +2,8 @@ from typing import Any
 
 from .layer_factory import LayerFactory
 from ..config.dicebox_config import DiceboxConfig
-from ..models.network import LayerType, ActivationFunction, Network, Optimizers
+from ..models.layer import LayerType, ActivationFunction
+from ..models.network import Network, Optimizers
 from ..config.network_config import NetworkConfig
 from ..utils.helpers import random_index, random_index_between
 

@@ -3,8 +3,8 @@ import json
 from typing import Any
 
 # from src.shapeandshare.dicebox import DiceboxConfig, NetworkFactory
-from src.config.dicebox_config import DiceboxConfig
-from src.factories.network_factory import NetworkFactory
+from src.shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
+from src.shapeandshare.dicebox.factories.network_factory import NetworkFactory
 
 
 class DiceboxNetworkTest(unittest.TestCase):

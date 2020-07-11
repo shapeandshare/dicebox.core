@@ -1,9 +1,9 @@
 import unittest
 from typing import Union, List
 
-from src.config.network_config import NetworkConfig
-from src.models.layer import DropoutLayer, DenseLayer
-from src.models.optimizers import Optimizers
+from src.shapeandshare.dicebox.config.network_config import NetworkConfig
+from src.shapeandshare.dicebox.models.layer import DropoutLayer, DenseLayer
+from src.shapeandshare.dicebox.models.optimizers import Optimizers
 
 
 class NetworkConfigTest(unittest.TestCase):

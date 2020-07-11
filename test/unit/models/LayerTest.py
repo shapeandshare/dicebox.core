@@ -1,6 +1,6 @@
 import unittest
 
-from src.models.layer import DenseLayer, ActivationFunction, LayerType, DropoutLayer
+from src.shapeandshare.dicebox.models.layer import DenseLayer, ActivationFunction, LayerType, DropoutLayer
 
 
 class LayerTest(unittest.TestCase):

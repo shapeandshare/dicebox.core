@@ -2,7 +2,7 @@ from abc import ABC
 from typing import Union, Any
 
 from ..config.dicebox_config import DiceboxConfig
-from ..models.network import ActivationFunction, LayerType, DropoutLayer, DenseLayer
+from ..models.layer import ActivationFunction, LayerType, DropoutLayer, DenseLayer
 from ..utils.helpers import random_index, random_index_between, random_strict
 
 

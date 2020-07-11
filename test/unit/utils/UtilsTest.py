@@ -1,6 +1,6 @@
 import unittest
 
-from src.utils.helpers import lucky
+from src.shapeandshare.dicebox.utils.helpers import lucky
 
 
 class UtilsTest(unittest.TestCase):
