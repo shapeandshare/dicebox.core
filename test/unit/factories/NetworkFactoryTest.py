@@ -25,16 +25,8 @@ class NetworkFactoryTest(unittest.TestCase):
     def test_create_network(self):
         new_network_one: Network = self.network_factory.create_random_network()
         decompiled_network_one: Any = new_network_one.decompile()
-
         new_network_two: Network = self.network_factory.create_network(decompiled_network_one)
         decompiled_network_two: Any = new_network_two.decompile()
-
-        with open('net_one.json', 'w') as file:
-            file.write(json.dumps(decompiled_network_one))
-
-        with open('net_two.json', 'w') as file:
-            file.write(json.dumps(decompiled_network_two))
-
         self.assertEqual(decompiled_network_one, decompiled_network_two)
 
 
