@@ -57,3 +57,4 @@ def make_sure_path_exists(path) -> None:
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise exception
+

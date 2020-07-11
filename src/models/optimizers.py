@@ -1,5 +1,6 @@
 from enum import Enum
-from random import random
+from random import choices
+
 
 class Optimizers(Enum):
     RMSPROP = 'rmsprop'
@@ -10,14 +11,14 @@ class Optimizers(Enum):
     ADAMAX = 'adamax'
     NADAM = 'nadam'
 
-    @staticmethod
-    def select_random_optimizer():
-        return random.choice(
-            Optimizers.RMSPROP,
-            Optimizers.ADAM,
-            Optimizers.SGD,
-            Optimizers.ADAGRAD,
-            Optimizers.ADADELTA,
-            Optimizers.ADAMAX,
-            Optimizers.NADAM
-        )
+
+def select_random_optimizer() -> Optimizers:
+    return choices([
+        Optimizers.RMSPROP,
+        Optimizers.ADAM,
+        Optimizers.SGD,
+        Optimizers.ADAGRAD,
+        Optimizers.ADADELTA,
+        Optimizers.ADAMAX,
+        Optimizers.NADAM
+    ])[0]
