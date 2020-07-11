@@ -46,12 +46,12 @@ class LayerFactoryTest(unittest.TestCase):
         os.environ['LAYER_TYPES'] = '["random", "unsupported"]'
         local_dicebox_config: DiceboxConfig = DiceboxConfig(config_file=self.local_config_file)
         local_layer_factory: LayerFactory = LayerFactory(config=local_dicebox_config)
-        del os.environ['LAYER_TYPES']
         try:
             local_layer_factory.build_random_layer()
             self.assertFalse(True, 'Exception should have been thrown.')
         except Exception:
             self.assertTrue(True, 'Expected exception seen.')
+        del os.environ['LAYER_TYPES']
 
     def test_should_throw_exception_when_decompiling_unknown_layer_type(self):
         bad_layer: DropoutLayer = DropoutLayer(rate=0.0)

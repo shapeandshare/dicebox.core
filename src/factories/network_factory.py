@@ -22,6 +22,9 @@ class NetworkFactory(LayerFactory):
         new_network_config: NetworkConfig = NetworkConfig(input_shape=input_shape, output_size=output_size, optimizer=optimizer)
         new_network = Network(config=self.config, network_config=new_network_config)
 
+        if 'layers' not in network_definition:
+            network_definition['layers'] = []
+
         # Process layers
         for layer in network_definition['layers']:
             if layer['type'] == LayerType.DENSE.value:
