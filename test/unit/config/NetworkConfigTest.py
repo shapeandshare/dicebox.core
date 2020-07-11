@@ -30,7 +30,7 @@ class NetworkConfigTest(unittest.TestCase):
         self.assertEqual(network_config.input_shape, 1)
         self.assertEqual(network_config.output_size, 1)
         self.assertEqual(network_config.optimizer, Optimizers.ADAM)
-        self.assertEqual(network_config.layers, None)
+        self.assertEqual(network_config.layers, [])
         self.assertEqual(network_config.model, None)
 
 
