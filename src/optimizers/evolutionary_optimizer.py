@@ -4,7 +4,6 @@ from operator import add
 from typing import List, Any, Tuple
 
 from ..config.dicebox_config import DiceboxConfig
-from ..config.network_config import NetworkConfig
 from ..dicebox_network import DiceboxNetwork
 from ..factories.network_factory import NetworkFactory
 from ..models.network import Network
