@@ -25,9 +25,8 @@ class Layer(ABC):
     def __init__(self, layer_type: LayerType):
         self.layer_type: LayerType = layer_type
 
-    def type(self) -> LayerType:
-        return self.layer_type
-
+    # def type(self) -> LayerType:
+    #     return self.layer_type
 
 class DenseLayer(Layer):
     def __init__(self, size: int, activation: ActivationFunction):

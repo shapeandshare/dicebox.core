@@ -79,9 +79,9 @@ class DiceboxNetwork(Network):
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
-    # careful now.. maybe this shouldn't exist..
-    def set_accuracy(self, accuracy: float):
-        self.__accuracy = accuracy
+    # # careful now.. maybe this shouldn't exist..
+    # def set_accuracy(self, accuracy: float):
+    #     self.__accuracy = accuracy
 
     def get_accuracy(self) -> float:
         return self.__accuracy

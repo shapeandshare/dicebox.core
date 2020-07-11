@@ -23,22 +23,22 @@ class DiceboxNetworkTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
 
-    def test_create_random(self):
-        nf: NetworkFactory = NetworkFactory(config=DiceboxConfig(config_file=self.local_config_file))
-        nf.create_random_network()
-
-        # dn: DiceboxNetwork = DiceboxNetwork(dc,
-        #                     create_fsc=True,
-        #                     disable_data_indexing=True)
-        # dn.generate_random_network()
-
-        # self.assertEqual(dn.__network, {})
-        # dn.__network = dn.__network_factory.create_random_network()
-        # self.assertIsNotNone(dn.__network)
-        # logging.debug(dn.__network)
-        # self.assertIsNot(dn.__network, {})
-        # logging.debug(dn.__network)
-        # dn = None
+    # def test_create_random(self):
+    #     nf: NetworkFactory = NetworkFactory(config=DiceboxConfig(config_file=self.local_config_file))
+    #     nf.create_random_network()
+    #
+    #     # dn: DiceboxNetwork = DiceboxNetwork(dc,
+    #     #                     create_fsc=True,
+    #     #                     disable_data_indexing=True)
+    #     # dn.generate_random_network()
+    #
+    #     # self.assertEqual(dn.__network, {})
+    #     # dn.__network = dn.__network_factory.create_random_network()
+    #     # self.assertIsNotNone(dn.__network)
+    #     # logging.debug(dn.__network)
+    #     # self.assertIsNot(dn.__network, {})
+    #     # logging.debug(dn.__network)
+    #     # dn = None
 
     def test_load_network(self):
         dc = DiceboxConfig(config_file=self.local_config_file)
