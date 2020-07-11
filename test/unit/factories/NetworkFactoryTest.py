@@ -1,3 +1,4 @@
+import os
 import unittest
 import json
 from typing import Any
@@ -5,6 +6,7 @@ from typing import Any
 from src.config.dicebox_config import DiceboxConfig
 from src.factories.network_factory import NetworkFactory
 from src.models.network import Network
+from src.models.optimizers import Optimizers
 
 
 class NetworkFactoryTest(unittest.TestCase):
@@ -28,6 +30,30 @@ class NetworkFactoryTest(unittest.TestCase):
         new_network_two: Network = self.network_factory.create_network(decompiled_network_one)
         decompiled_network_two: Any = new_network_two.decompile()
         self.assertEqual(decompiled_network_one, decompiled_network_two)
+
+    def test_should_throw_exception_when_asked_to_create_an_unknown_layer_type(self):
+        os.environ['LAYER_TYPES'] = '["random", "unsupported"]'
+        local_dicebox_config: DiceboxConfig = DiceboxConfig(config_file=self.local_config_file)
+        local_network_factory: NetworkFactory = NetworkFactory(config=local_dicebox_config)
+
+        definition = {
+            'input_shape': 1,
+            'output_size': 1,
+            'optimizer': Optimizers.ADAM.value,
+            'layers': [
+                {
+                    'type': 'random'
+                }
+            ]
+        }
+
+        try:
+            local_network_factory.create_network(network_definition=definition)
+            self.assertTrue(False, 'Expected exception not seen.')
+        except Exception:
+            self.assertTrue(True, 'Expected exception seen.')
+
+        del os.environ['LAYER_TYPES']
 
 
 if __name__ == '__main__':
