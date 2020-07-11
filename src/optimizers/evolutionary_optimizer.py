@@ -1,14 +1,13 @@
 import copy
 from functools import reduce
 from operator import add
-# from random import random
-from typing import List, Any
+from typing import List, Any, Tuple
 
 from ..config.dicebox_config import DiceboxConfig
+from ..config.network_config import NetworkConfig
 from ..dicebox_network import DiceboxNetwork
 from ..factories.network_factory import NetworkFactory
 from ..models.network import Network
-# from ..models.network_config import NetworkConfig
 from ..models.optimizers import Optimizers
 from ..utils.helpers import lucky, random_index, random_index_between, dicebox_random, random_strict
 
@@ -56,16 +55,78 @@ class EvolutionaryOptimizer(NetworkFactory):
 
     # TODO: Support parents of N numbers..
     # offspring should would not be deterministic (the number should varry by some hyper-parameter controllable value)
-    def breed(self, mother: DiceboxNetwork, father: DiceboxNetwork, offspringCount: int = 2) -> List[DiceboxNetwork]:
+    # def breed(self, mother: DiceboxNetwork, father: DiceboxNetwork, offspringCount: int = 2) -> List[DiceboxNetwork]:
+    #     # Creates offspring
+    #     children: List[DiceboxNetwork] = []
+    #     for _ in range(offspringCount):
+    #         #
+    #         # TODO: what would it mean if the config 's came from the parents..?
+    #         #
+    #
+    #         child: DiceboxNetwork = DiceboxNetwork(config=self.config)
+    #
+    #         #
+    #         # build our network definition
+    #         #
+    #
+    #         # TODO: what would it mean if the config 's came from the parents..?
+    #         network_definition: Any = {
+    #             'input_shape': self.config.INPUT_SHAPE,
+    #             'output_size': self.config.NB_CLASSES
+    #         }
+    #
+    #         #
+    #         # Pick which parent's optimization function is passed on to offspring
+    #         #
+    #         # TODO: Support N parents
+    #         if lucky(0.5):
+    #             network_definition['optimizer'] = mother.get_optimizer().value
+    #         else:
+    #             network_definition['optimizer'] = father.get_optimizer().value
+    #
+    #         #
+    #         # Determine the number of layers
+    #         #
+    #         # TODO: this should include variation between the N parents as well.
+    #         if lucky(0.5):
+    #             layer_count: int = mother.get_layer_count()
+    #         else:
+    #             layer_count: int = father.get_layer_count()
+    #
+    #         #
+    #         # build layers
+    #         #
+    #         network_definition['layers'] = []
+    #         for layer_index in range(0, layer_count):
+    #             # Pick which parent's layer is passed on to the offspring
+    #             # TODO: this should include variation between the N parents as well.
+    #             if lucky(0.5):
+    #                 if layer_index < mother.get_layer_count():
+    #                     layer = mother.get_layer(layer_index=layer_index)
+    #                     network_definition['layers'].append(self.decompile_layer(layer))
+    #                 elif layer_index < father.get_layer_count():
+    #                     layer = father.get_layer(layer_index=layer_index)
+    #                     network_definition['layers'].append(self.decompile_layer(layer))
+    #                 else:
+    #                     raise Exception('impossible breeding event occurred?')
+    #             else:
+    #                 if layer_index < father.get_layer_count():
+    #                     layer = father.get_layer(layer_index=layer_index)
+    #                     network_definition['layers'].append(self.decompile_layer(layer))
+    #                 elif layer_index < mother.get_layer_count():
+    #                     layer = mother.get_layer(layer_index=layer_index)
+    #                     network_definition['layers'].append(self.decompile_layer(layer))
+    #                 else:
+    #                     raise Exception('impossible breeding event occurred?')
+    #         child_network = self.create_network(network_definition=network_definition)
+    #         child.load_network(network=child_network)
+    #         children.append(child)
+    #     return children
+
+    def breed(self, mother: Any, father: Any, offspringCount: int = 2) -> List[Any]:
         # Creates offspring
-        children: List[DiceboxNetwork] = []
+        children: List[Any] = []
         for _ in range(offspringCount):
-            #
-            # TODO: what would it mean if the config 's came from the parents..?
-            #
-
-            child: DiceboxNetwork = DiceboxNetwork(config=self.config)
-
             #
             # build our network definition
             #
@@ -119,9 +180,10 @@ class EvolutionaryOptimizer(NetworkFactory):
                         network_definition['layers'].append(self.decompile_layer(layer))
                     else:
                         raise Exception('impossible breeding event occurred?')
-            child_network = self.create_network(network_definition=network_definition)
-            child.load_network(network=child_network)
-            children.append(child)
+            # child_network = self.create_network(network_definition=network_definition)
+            # child.load_network(network=child_network)
+            # children.append(child)
+            children.append(network_definition)
         return children
 
     def mutate(self, individual: DiceboxNetwork) -> DiceboxNetwork:
@@ -191,59 +253,51 @@ class EvolutionaryOptimizer(NetworkFactory):
         mutant.load_network(raw_individual_definition)
         return mutant
 
-    def evolve(self, pop):
-        """Evolve a population of networks.
+    def evolve(self, population: List[DiceboxNetwork]) -> List[DiceboxNetwork]:
+        """Evolve a population of networks."""
 
-        Args:
-            pop (list): A list of __network parameters
-
-        Returns:
-            (list): The evolved population of networks
-
-        """
-        # Get scores for each __network.
-        graded = [(self.fitness(network), network) for network in pop]
+        # Get scores for each network.
+        # graded_population: List[Tuple[float, DiceboxNetwork]] = [(self.fitness(network), network) for network in population]
+        graded_decompiled_population: List[Tuple[float, Any]] = [(self.fitness(network), network.decompile()) for network in population]
 
         # Sort on the scores.
-        graded = [x[1] for x in sorted(graded, key=lambda x: x[0], reverse=True)]
+        ranked_population: List[Any] = [x[1] for x in sorted(graded_decompiled_population, key=lambda x: x[0], reverse=True)]
 
         # Get the number we want to keep for the next gen.
-        retain_length = int(len(graded) * self.retain)
+        retain_length: int = int(len(ranked_population) * self.retain)
 
-        # The parents are every __network we want to keep.
-        # TODO: can not deepcopy the keras senquences...
-        parents = copy.deepcopy(graded[:retain_length])
+        # The parents are every network we want to keep.
+        parent_genomes: List[Any] = copy.deepcopy(ranked_population[:retain_length])
 
         # For those we aren't keeping, randomly keep some anyway.
-        for individual in graded[retain_length:]:
+        for individual in ranked_population[retain_length:]:
             if self.random_select > dicebox_random():
-                # TODO: deepcopy no longer works for sequentials... needs to be updated..
-                parents.append(copy.deepcopy(individual))
+                parent_genomes.append(copy.deepcopy(individual))
 
         # Randomly mutate some of the networks we're keeping.
-        for individual in parents:
+        for individual in parent_genomes:
             if lucky(self.mutate_chance):
                 individual = self.mutate(individual)
 
         # Now find out how many spots we have left to fill.
-        parents_length = len(parents)
-        desired_length = len(pop) - parents_length
-        children = []
+        parents_length: int = len(parent_genomes)
+        desired_length: int = len(population) - parents_length
+        children: List[Any] = []
 
         # Add children, which are bred from two remaining networks.
         while len(children) < desired_length:
 
             # Get a random mom and dad.
-            male_index = random_index_between(0, parents_length - 1)
-            female_index = random_index_between(0, parents_length - 1)
+            male_index: int = random_index_between(0, parents_length - 1)
+            female_index: int = random_index_between(0, parents_length - 1)
 
-            # Assuming they aren't the same __network...
+            # Assuming they aren't the same network...
             if male_index != female_index:
-                male = parents[male_index]
-                female = parents[female_index]
+                male = parent_genomes[male_index]
+                female = parent_genomes[female_index]
 
                 # Breed them.
-                babies = self.breed(male, female)
+                babies: List[Any] = self.breed(male, female)
 
                 # Add the children one at a time.
                 for baby in babies:
@@ -251,6 +305,13 @@ class EvolutionaryOptimizer(NetworkFactory):
                     if len(children) < desired_length:
                         children.append(baby)
 
-        parents.extend(children)
+        parent_genomes.extend(children)
 
+        parent_networks: List[Network] = [(self.create_network(genome)) for genome in parent_genomes]
+        parents: List[DiceboxNetwork] = [(self.build_dicebox_network(network=network)) for network in parent_networks]
         return parents
+
+    def build_dicebox_network(self, network: Network) -> DiceboxNetwork:
+            dicebox_network: DiceboxNetwork = DiceboxNetwork(config=self.config)
+            dicebox_network.load_network(network=network)
+            return dicebox_network
