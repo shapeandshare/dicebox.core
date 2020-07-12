@@ -14,7 +14,7 @@ class PrimordialPool:
     def __init__(self, config: DiceboxConfig):
         self.config = config
 
-    def train_networks(self, networks):
+    def train_networks(self, networks: List[DiceboxNetwork]):
         """Train each network.
 
         Args:
@@ -23,23 +23,16 @@ class PrimordialPool:
         """
         pbar = tqdm(total=len(networks))
         for network in networks:
-            network.train()
+            accuracy: float = network.train()
+            logging.info("accuracy: %f" % accuracy)
             pbar.update(1)
         pbar.close()
 
-    def get_average_accuracy(self, networks):
-        """Get the average accuracy for a group of networks.
-
-        Args:
-            networks (list): List of networks
-
-        Returns:
-            float: The average accuracy of a population of networks.
-
-        """
-        total_accuracy = 0
+    def get_average_accuracy(self, networks: List[DiceboxNetwork]) -> float:
+        """Get the average accuracy for a group of networks."""
+        total_accuracy: float = 0.0
         for network in networks:
-            total_accuracy += network.accuracy
+            total_accuracy += network.get_accuracy()
 
         return total_accuracy / len(networks)
 
@@ -51,7 +44,9 @@ class PrimordialPool:
         logging.info('Generations: %s' % generations)
         logging.info('Population: %s' % population_size)
 
-        optimizer: EvolutionaryOptimizer = EvolutionaryOptimizer(config=self.config, retain=0.4, random_select=0.1,
+        optimizer: EvolutionaryOptimizer = EvolutionaryOptimizer(config=self.config,
+                                                                 retain=0.4,
+                                                                 random_select=0.1,
                                                                  mutate_chance=0.2)
         networks: List[DiceboxNetwork] = optimizer.create_population(population_size)
 
@@ -92,13 +87,8 @@ class PrimordialPool:
         # Print out the top 5 networks.
         self.export_networks(networks[:5])
 
-    def export_networks(self, networks):
-        """Print a list of networks.
-
-        Args:
-            networks (list): The population of networks
-
-        """
+    def export_networks(self, networks: List[DiceboxNetwork]):
+        """Print a list of networks."""
         logging.info('-' * 80)
         for network in networks:
-            network.print_network()
+            network.decompile()

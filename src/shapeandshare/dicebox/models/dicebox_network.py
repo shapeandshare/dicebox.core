@@ -278,9 +278,3 @@ class DiceboxNetwork(Network):
 
     def get_layer(self, layer_index: int) -> Union[DenseLayer, DropoutLayer]:
         return self.__network.get_layer(layer_index=layer_index)
-
-    # def get_config(self) -> DiceboxConfig:
-    #     return self.config
-
-    # def get_network_config(self):
-    #     return self.decompile()
