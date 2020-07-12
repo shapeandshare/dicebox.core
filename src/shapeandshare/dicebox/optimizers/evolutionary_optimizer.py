@@ -36,15 +36,9 @@ class EvolutionaryOptimizer(NetworkFactory):
         for _ in range(0, count):
             # Create a random network.
 
-            # print('----------------------------------------------------------------------------------------------')
-            # print(network.decompile())
-            # print('----------------------------------------------------------------------------------------------')
             random_network: Network = self.create_random_network()
             network_config: NetworkConfig = self.create_network_config(network_definition=random_network.decompile())
             dn: DiceboxNetwork = DiceboxNetwork(config=self.config, network_config=network_config)
-            print('----------------------------------------------------------------------------------------------')
-            print(dn.decompile())
-            print('----------------------------------------------------------------------------------------------')
 
             # Add the network to our population.
             population.append(dn)
