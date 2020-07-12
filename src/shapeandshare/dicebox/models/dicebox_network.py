@@ -262,19 +262,19 @@ class DiceboxNetwork(Network):
 
     ## Network Functions
 
-    def load_network(self, network: Network) -> None:
-        self.__network = network
-
-        # reset other items related to a newly loaded network
-        self.__accuracy = 0.0
+    # def load_network(self, network: Network) -> None:
+    #     # self.__network = network
+    #     self.
+    #     # reset other items related to a newly loaded network
+    #     self.__accuracy = 0.0
 
     ## For Evolutionary Optimizer
 
-    def get_optimizer(self) -> Optimizers:
-        return self.__network.get_optimizer()
+    # def get_optimizer(self) -> Optimizers:
+    #     return self.__network.get_optimizer()
 
-    def get_layer_count(self) -> int:
-        return len(self.__network.get_layers())
+    # def get_layer_count(self) -> int:
+    #     return len(self.__network.get_layers())
 
-    def get_layer(self, layer_index: int) -> Union[DenseLayer, DropoutLayer]:
-        return self.__network.get_layer(layer_index=layer_index)
+    # def get_layer(self, layer_index: int) -> Union[DenseLayer, DropoutLayer]:
+    #     return self.__network.get_layer(layer_index=layer_index)

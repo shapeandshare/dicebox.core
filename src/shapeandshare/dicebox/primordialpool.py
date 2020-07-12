@@ -91,4 +91,4 @@ class PrimordialPool:
         """Print a list of networks."""
         logging.info('-' * 80)
         for network in networks:
-            network.decompile()
+            logging.info(network.decompile())

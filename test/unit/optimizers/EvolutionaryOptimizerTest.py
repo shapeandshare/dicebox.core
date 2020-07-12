@@ -1,6 +1,8 @@
 import unittest
 
+from src.shapeandshare.dicebox.config import NetworkConfig
 from src.shapeandshare.dicebox.models.dicebox_network import DiceboxNetwork
+from src.shapeandshare.dicebox.models.network import Network
 from src.shapeandshare.dicebox.optimizers.evolutionary_optimizer import EvolutionaryOptimizer
 from src.shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
 from src.shapeandshare.dicebox.factories.network_factory import NetworkFactory
@@ -18,11 +20,13 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
         dc: DiceboxConfig = DiceboxConfig(config_file=self.local_config_file)
         nf = NetworkFactory(config=dc)
 
-        mother = DiceboxNetwork(config=dc, create_fsc=True, disable_data_indexing=True)
-        mother.load_network(network=nf.create_random_network())
+        mother_network: Network = nf.create_random_network()
+        # mother_network_config: NetworkConfig = nf.create_network_config(mother_network.decompile())
+        # mother = DiceboxNetwork(config=dc, network_config=mother_network_config, create_fsc=True, disable_data_indexing=True)
 
-        father = DiceboxNetwork(config=dc, create_fsc=True, disable_data_indexing=True)
-        father.load_network(network=nf.create_random_network())
+        father_network: Network = nf.create_random_network()
+        # father_network_config: NetworkConfig = nf.create_network_config(father_network.decompile())
+        # father = DiceboxNetwork(config=dc, network_config=father_network_config, create_fsc=True, disable_data_indexing=True)
 
         op = EvolutionaryOptimizer(config=dc,
                                    retain=0.4,
@@ -30,13 +34,13 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
                                    mutate_chance=0.2)
 
         # Breed them.
-        babies = op.breed(mother, father)
+        babies = op.breed(mother_network.decompile(), father_network.decompile())
         self.assertTrue(len(babies) == 2)
         for child in babies:
             # child.print_network()
-            self.assertNotEqual(mother, child)
-            self.assertNotEqual(father, child)
-            self.assertNotEqual(mother, father)
+            self.assertNotEqual(mother_network.decompile(), child)
+            self.assertNotEqual(father_network.decompile(), child)
+            self.assertNotEqual(mother_network.decompile(), father_network.decompile())
 
     # def test_mutate(self):
     #     op = EvolutionaryOptimizer(retain=0.4,

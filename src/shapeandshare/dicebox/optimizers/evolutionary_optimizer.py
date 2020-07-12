@@ -3,6 +3,7 @@ from functools import reduce
 from operator import add
 from typing import List, Any, Tuple
 
+from ..config import NetworkConfig
 from ..config.dicebox_config import DiceboxConfig
 from ..models.dicebox_network import DiceboxNetwork
 from ..factories.network_factory import NetworkFactory
@@ -34,9 +35,16 @@ class EvolutionaryOptimizer(NetworkFactory):
         population: List[DiceboxNetwork] = []
         for _ in range(0, count):
             # Create a random network.
-            network: Network = self.create_random_network()
-            dn: DiceboxNetwork = DiceboxNetwork(config=self.config)
-            dn.load_network(network)
+
+            # print('----------------------------------------------------------------------------------------------')
+            # print(network.decompile())
+            # print('----------------------------------------------------------------------------------------------')
+            random_network: Network = self.create_random_network()
+            network_config: NetworkConfig = self.create_network_config(network_definition=random_network.decompile())
+            dn: DiceboxNetwork = DiceboxNetwork(config=self.config, network_config=network_config)
+            print('----------------------------------------------------------------------------------------------')
+            print(dn.decompile())
+            print('----------------------------------------------------------------------------------------------')
 
             # Add the network to our population.
             population.append(dn)
@@ -131,7 +139,7 @@ class EvolutionaryOptimizer(NetworkFactory):
             #
 
             # TODO: what would it mean if the config 's came from the parents..?
-            network_definition: Any = {
+            child: Any = {
                 'input_shape': self.config.INPUT_SHAPE,
                 'output_size': self.config.NB_CLASSES
             }
@@ -141,48 +149,48 @@ class EvolutionaryOptimizer(NetworkFactory):
             #
             # TODO: Support N parents
             if lucky(0.5):
-                network_definition['optimizer'] = mother.get_optimizer().value
+                child['optimizer'] = mother['optimizer']
             else:
-                network_definition['optimizer'] = father.get_optimizer().value
+                child['optimizer'] = father['optimizer']
 
             #
             # Determine the number of layers
             #
             # TODO: this should include variation between the N parents as well.
             if lucky(0.5):
-                layer_count: int = mother.get_layer_count()
+                layer_count: int = len(mother['layers'])
             else:
-                layer_count: int = father.get_layer_count()
+                layer_count: int = len(father['layers'])
 
             #
             # build layers
             #
-            network_definition['layers'] = []
+            child['layers'] = []
             for layer_index in range(0, layer_count):
                 # Pick which parent's layer is passed on to the offspring
                 # TODO: this should include variation between the N parents as well.
                 if lucky(0.5):
-                    if layer_index < mother.get_layer_count():
-                        layer = mother.get_layer(layer_index=layer_index)
-                        network_definition['layers'].append(self.decompile_layer(layer))
-                    elif layer_index < father.get_layer_count():
-                        layer = father.get_layer(layer_index=layer_index)
-                        network_definition['layers'].append(self.decompile_layer(layer))
+                    if layer_index < len(mother['layers']):
+                        layer = mother['layers'][layer_index]
+                        child['layers'].append(layer)
+                    elif layer_index < len(father['layers']):
+                        layer = father['layers'][layer_index]
+                        child['layers'].append(layer)
                     else:
                         raise Exception('impossible breeding event occurred?')
                 else:
-                    if layer_index < father.get_layer_count():
-                        layer = father.get_layer(layer_index=layer_index)
-                        network_definition['layers'].append(self.decompile_layer(layer))
+                    if layer_index < len(father['layers']):
+                        layer = father['layers'][layer_index]
+                        child['layers'].append(layer)
                     elif layer_index < mother.get_layer_count():
-                        layer = mother.get_layer(layer_index=layer_index)
-                        network_definition['layers'].append(self.decompile_layer(layer))
+                        layer = mother['layers'][layer_index]
+                        child['layers'].append(layer)
                     else:
                         raise Exception('impossible breeding event occurred?')
             # child_network = self.create_network(network_definition=network_definition)
             # child.load_network(network=child_network)
             # children.append(child)
-            children.append(network_definition)
+            children.append(child)
         return children
 
     def mutate(self, individual: DiceboxNetwork) -> DiceboxNetwork:
@@ -248,8 +256,8 @@ class EvolutionaryOptimizer(NetworkFactory):
         # logging.debug("***************************************************")
         # return clone
 
-        mutant = DiceboxNetwork(config=individual.config)
-        mutant.load_network(raw_individual_definition)
+        mutant_network_config: NetworkConfig = self.create_network_config(network_definition=raw_individual_definition)
+        mutant: DiceboxNetwork = DiceboxNetwork(config=self.config, network_config=mutant_network_config)
         return mutant
 
     def evolve(self, population: List[DiceboxNetwork]) -> List[DiceboxNetwork]:
@@ -311,6 +319,6 @@ class EvolutionaryOptimizer(NetworkFactory):
         return parents
 
     def build_dicebox_network(self, network: Network) -> DiceboxNetwork:
-            dicebox_network: DiceboxNetwork = DiceboxNetwork(config=self.config)
-            dicebox_network.load_network(network=network)
+            network_config: NetworkConfig = self.create_network_config(network_definition=network.decompile())
+            dicebox_network: DiceboxNetwork = DiceboxNetwork(config=self.config, network_config=network_config)
             return dicebox_network

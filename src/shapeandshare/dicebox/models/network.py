@@ -11,6 +11,11 @@ from ..factories.layer_factory import LayerFactory
 
 
 class Network(LayerFactory):
+    __input_shape: int
+    __output_size: int
+    __optimizer: Optimizers
+    __layers: List[Union[DenseLayer, DropoutLayer]]
+
     def __init__(self, config: DiceboxConfig, network_config: Union[NetworkConfig, None]):
         super().__init__(config=config)
 
