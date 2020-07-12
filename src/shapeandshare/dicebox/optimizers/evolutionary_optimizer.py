@@ -256,10 +256,6 @@ class EvolutionaryOptimizer(NetworkFactory):
         desired_length: int = len(population) - parents_length
         children: List[Any] = []
 
-        # print('-------------------------------------------------------------------------------------------')
-        # print(parent_genomes)
-        # print('-------------------------------------------------------------------------------------------')
-
         # Add children, which are bred from two remaining networks.
         while len(children) < desired_length:
 
@@ -271,19 +267,11 @@ class EvolutionaryOptimizer(NetworkFactory):
                 # then we do not have enough parents to breed,
                 # so mutate..
                 mutant: Any = self.mutate(individual=parent_genomes[0])
-                print('-------------------------------------------------------------------------------------------')
-                print('mutant')
-                print(mutant)
-                print('-------------------------------------------------------------------------------------------')
                 children.append(mutant)
             elif parents_length < 1:
                 # then there are no parents..
                 # generate a random network.
                 random_network: Any = self.create_random_network().decompile()
-                print('-------------------------------------------------------------------------------------------')
-                print('random_network')
-                print(random_network)
-                print('-------------------------------------------------------------------------------------------')
                 children.append(random_network)
             else:
                 # then we can bread normally
@@ -303,9 +291,6 @@ class EvolutionaryOptimizer(NetworkFactory):
                             children.append(baby)
 
         parent_genomes.extend(children)
-        print('-------------------------------------------------------------------------------------------')
-        print(parent_genomes)
-        print('-------------------------------------------------------------------------------------------')
         parent_networks: List[Network] = [(self.create_network(genome)) for genome in parent_genomes]
         parents: List[DiceboxNetwork] = [(self.build_dicebox_network(network=network)) for network in parent_networks]
         return parents
