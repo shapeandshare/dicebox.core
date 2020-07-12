@@ -151,7 +151,8 @@ setup(
         'configparser==5.0.0',
         'pika==1.1.0',
         'requests==2.24.0',
-        'typing==3.7.4.1'
+        'typing==3.7.4.1',
+        'tqdm==4.47.0'
     ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
