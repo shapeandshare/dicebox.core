@@ -176,7 +176,7 @@ class EvolutionaryOptimizer(NetworkFactory):
                     if layer_index < len(father['layers']):
                         layer = father['layers'][layer_index]
                         child['layers'].append(layer)
-                    elif layer_index < mother.get_layer_count():
+                    elif layer_index < len(mother['layers']):
                         layer = mother['layers'][layer_index]
                         child['layers'].append(layer)
                     else:
@@ -187,21 +187,21 @@ class EvolutionaryOptimizer(NetworkFactory):
             children.append(child)
         return children
 
-    def mutate(self, individual: DiceboxNetwork) -> DiceboxNetwork:
+    def mutate(self, individual: Any) -> Any:
 
         # this introduces chaos into the new entity
         local_noise: float = self.mutate_chance
 
-        # Review the 'raw' genome of the individual
-        raw_individual_definition: Any = individual.decompile()
+        # # Review the 'raw' genome of the individual
+        # raw_individual_definition: Any = individual.decompile()
 
         # TODO: possibly only of the parents types..
         # see if the optimizer is mutated
         if lucky(local_noise):
-            raw_individual_definition['optimizer'] = Optimizers.select_random_optimizer().value
+            individual['optimizer'] = Optimizers.select_random_optimizer().value
 
         # Determine the number of layers..
-        layer_count = len(raw_individual_definition['layers'])
+        layer_count = len(individual['layers'])
 
         # TODO: adjust the number of layers (its easy to remove, adding could be random)?
         # now mess around within the layers
@@ -212,12 +212,12 @@ class EvolutionaryOptimizer(NetworkFactory):
                 # how does this affect the weights, etc? :/
                 # logging.debug("layer = (%s)", layer)
                 # clone.__network['layers'][index - 1] = clone.build_random_layer()
-                raw_individual_definition['layers'][index - 1] = self.decompile_layer(self.build_random_layer())
+                individual['layers'][index - 1] = self.decompile_layer(self.build_random_layer())
 
                 # mutations += 1
                 # logging.debug("layer = (%s)", layer)
             else:
-                layer = raw_individual_definition['layers'][index - 1]
+                layer = individual['layers'][index - 1]
 
                 # keep checking the individual layer attributes
                 if layer['type'] == 'dropout':
@@ -250,7 +250,7 @@ class EvolutionaryOptimizer(NetworkFactory):
         # logging.debug("***************************************************")
         # return clone
 
-        mutant_network_config: NetworkConfig = self.create_network_config(network_definition=raw_individual_definition)
+        mutant_network_config: NetworkConfig = self.create_network_config(network_definition=individual)
         mutant: DiceboxNetwork = DiceboxNetwork(config=self.config, network_config=mutant_network_config)
         return mutant
 

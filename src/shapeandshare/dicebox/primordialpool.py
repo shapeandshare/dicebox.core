@@ -71,7 +71,7 @@ class PrimordialPool:
             logging.info('Top 5 individuals in current generation')
 
             # Sort our final population.
-            current_networks = sorted(networks, key=lambda x: x.accuracy, reverse=True)
+            current_networks = sorted(networks, key=lambda x: x.get_accuracy(), reverse=True)
 
             # Print out the top 5 networks.
             self.export_networks(current_networks[:5])
@@ -82,7 +82,7 @@ class PrimordialPool:
                 networks = optimizer.evolve(networks)
 
         # Sort our final population.
-        networks = sorted(networks, key=lambda x: x.accuracy, reverse=True)
+        networks = sorted(networks, key=lambda x: x.get_accuracy(), reverse=True)
 
         # Print out the top 5 networks.
         self.export_networks(networks[:5])
