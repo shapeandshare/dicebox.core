@@ -68,8 +68,7 @@ class DiceboxNetwork(Network):
 
         self.model.fit(x_train, y_train,
                        batch_size=self.config.BATCH_SIZE,
-                       # epochs=10000,  # using early stopping, so no real limit
-                       epochs=self.config.EPOCHS,
+                       epochs=self.config.EPOCHS, # using early stopping, so this limit acts like a max
                        verbose=1,
                        validation_data=(x_test, y_test),
                        callbacks=[self.__early_stopper])
