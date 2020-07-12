@@ -4,7 +4,7 @@ from operator import add
 from typing import List, Any, Tuple
 
 from ..config.dicebox_config import DiceboxConfig
-from ..dicebox_network import DiceboxNetwork
+from src.shapeandshare.dicebox.models.dicebox_network import DiceboxNetwork
 from ..factories.network_factory import NetworkFactory
 from ..models.network import Network
 from ..models.optimizers import Optimizers

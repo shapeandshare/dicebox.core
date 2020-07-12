@@ -1,1 +1,1 @@
-from .dicebox_network import DiceboxNetwork
+from .primordialpool import PrimordialPool

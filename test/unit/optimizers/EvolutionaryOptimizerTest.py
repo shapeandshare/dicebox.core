@@ -1,6 +1,6 @@
 import unittest
 
-from src.shapeandshare.dicebox.dicebox_network import DiceboxNetwork
+from src.shapeandshare.dicebox.models.dicebox_network import DiceboxNetwork
 from src.shapeandshare.dicebox.optimizers.evolutionary_optimizer import EvolutionaryOptimizer
 from src.shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
 from src.shapeandshare.dicebox.factories.network_factory import NetworkFactory
