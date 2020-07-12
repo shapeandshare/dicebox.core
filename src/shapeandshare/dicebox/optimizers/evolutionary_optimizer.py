@@ -8,7 +8,7 @@ from ..config.dicebox_config import DiceboxConfig
 from ..models.dicebox_network import DiceboxNetwork
 from ..factories.network_factory import NetworkFactory
 from ..models.network import Network
-from ..models.optimizers import Optimizers
+from ..models.optimizers import select_random_optimizer
 from ..utils.helpers import lucky, random_index, random_index_between, dicebox_random, random_strict
 
 
@@ -181,27 +181,22 @@ class EvolutionaryOptimizer(NetworkFactory):
                         child['layers'].append(layer)
                     else:
                         raise Exception('impossible breeding event occurred?')
-            # child_network = self.create_network(network_definition=network_definition)
-            # child.load_network(network=child_network)
-            # children.append(child)
             children.append(child)
         return children
 
     def mutate(self, individual: Any) -> Any:
+        mutant: Any = copy.deepcopy(individual)
 
         # this introduces chaos into the new entity
         local_noise: float = self.mutate_chance
 
-        # # Review the 'raw' genome of the individual
-        # raw_individual_definition: Any = individual.decompile()
-
         # TODO: possibly only of the parents types..
         # see if the optimizer is mutated
         if lucky(local_noise):
-            individual['optimizer'] = Optimizers.select_random_optimizer().value
+            mutant['optimizer'] = select_random_optimizer().value
 
         # Determine the number of layers..
-        layer_count = len(individual['layers'])
+        layer_count = len(mutant['layers'])
 
         # TODO: adjust the number of layers (its easy to remove, adding could be random)?
         # now mess around within the layers
@@ -209,56 +204,32 @@ class EvolutionaryOptimizer(NetworkFactory):
             # see if the layer is mutated
             if lucky(local_noise):
                 # then change the layer type
-                # how does this affect the weights, etc? :/
-                # logging.debug("layer = (%s)", layer)
-                # clone.__network['layers'][index - 1] = clone.build_random_layer()
-                individual['layers'][index - 1] = self.decompile_layer(self.build_random_layer())
-
-                # mutations += 1
-                # logging.debug("layer = (%s)", layer)
+                mutant['layers'][index - 1] = self.decompile_layer(self.build_random_layer())
             else:
-                layer = individual['layers'][index - 1]
+                layer = mutant['layers'][index - 1]
 
                 # keep checking the individual layer attributes
                 if layer['type'] == 'dropout':
                     if lucky(local_noise):
                         # mutate the dropout rate
-                        # logging.debug("rate = (%s)", layer['rate'])
                         layer['rate'] = random_strict()
-                        # mutations += 1
-                        # logging.debug("rate = (%s)", layer['rate'])
                 elif layer['type'] == 'dense':
                     if lucky(local_noise):
                         # mutate the layer size
-                        # logging.debug('Mutating layer size')
-                        # logging.debug("size = (%s)", layer['size'])
                         layer['size'] = random_index_between(self.config.TAXONOMY['min_neurons'],
                                                              self.config.TAXONOMY['max_neurons'])
-                        # mutations += 1
-                        # logging.debug("size = (%s)", layer['size'])
                     if lucky(local_noise):
                         # mutate activation function
-                        # logging.debug("activation = (%s)", layer['activation'])
                         activation_index = random_index(len(self.config.TAXONOMY['activation']))
                         layer['activation'] = self.config.TAXONOMY['activation'][activation_index - 1]
-                        # mutations += 1
-                        # logging.debug("activation = (%s)", layer['activation'])
                 else:
-                    # logging.debug('Unknown layer type')
                     raise Exception('Not yet implemented!')
-        # logging.debug("mutations: (%s)", mutations)
-        # logging.debug("***************************************************")
-        # return clone
-
-        mutant_network_config: NetworkConfig = self.create_network_config(network_definition=individual)
-        mutant: DiceboxNetwork = DiceboxNetwork(config=self.config, network_config=mutant_network_config)
         return mutant
 
     def evolve(self, population: List[DiceboxNetwork]) -> List[DiceboxNetwork]:
         """Evolve a population of networks."""
 
         # Get scores for each network.
-        # graded_population: List[Tuple[float, DiceboxNetwork]] = [(self.fitness(network), network) for network in population]
         graded_decompiled_population: List[Tuple[float, Any]] = [(self.fitness(network), network.decompile()) for network in population]
 
         # Sort on the scores.
@@ -278,12 +249,16 @@ class EvolutionaryOptimizer(NetworkFactory):
         # Randomly mutate some of the networks we're keeping.
         for individual in parent_genomes:
             if lucky(self.mutate_chance):
-                individual = self.mutate(individual)
+                individual = self.mutate(individual=individual)
 
         # Now find out how many spots we have left to fill.
         parents_length: int = len(parent_genomes)
         desired_length: int = len(population) - parents_length
         children: List[Any] = []
+
+        # print('-------------------------------------------------------------------------------------------')
+        # print(parent_genomes)
+        # print('-------------------------------------------------------------------------------------------')
 
         # Add children, which are bred from two remaining networks.
         while len(children) < desired_length:
@@ -292,22 +267,45 @@ class EvolutionaryOptimizer(NetworkFactory):
             male_index: int = random_index_between(0, parents_length - 1)
             female_index: int = random_index_between(0, parents_length - 1)
 
-            # Assuming they aren't the same network...
-            if male_index != female_index:
-                male = parent_genomes[male_index]
-                female = parent_genomes[female_index]
+            if parents_length == 1:
+                # then we do not have enough parents to breed,
+                # so mutate..
+                mutant: Any = self.mutate(individual=parent_genomes[0])
+                print('-------------------------------------------------------------------------------------------')
+                print('mutant')
+                print(mutant)
+                print('-------------------------------------------------------------------------------------------')
+                children.append(mutant)
+            elif parents_length < 1:
+                # then there are no parents..
+                # generate a random network.
+                random_network: Any = self.create_random_network().decompile()
+                print('-------------------------------------------------------------------------------------------')
+                print('random_network')
+                print(random_network)
+                print('-------------------------------------------------------------------------------------------')
+                children.append(random_network)
+            else:
+                # then we can bread normally
+                # Assuming they aren't the same network...
+                # for a very small populations this might be required..
+                if male_index != female_index:
+                    male = parent_genomes[male_index]
+                    female = parent_genomes[female_index]
 
-                # Breed them.
-                babies: List[Any] = self.breed(male, female)
+                    # Breed them.
+                    babies: List[Any] = self.breed(male, female)
 
-                # Add the children one at a time.
-                for baby in babies:
-                    # Don't grow larger than desired length.
-                    if len(children) < desired_length:
-                        children.append(baby)
+                    # Add the children one at a time.
+                    for baby in babies:
+                        # Don't grow larger than desired length.
+                        if len(children) < desired_length:
+                            children.append(baby)
 
         parent_genomes.extend(children)
-
+        print('-------------------------------------------------------------------------------------------')
+        print(parent_genomes)
+        print('-------------------------------------------------------------------------------------------')
         parent_networks: List[Network] = [(self.create_network(genome)) for genome in parent_genomes]
         parents: List[DiceboxNetwork] = [(self.build_dicebox_network(network=network)) for network in parent_networks]
         return parents

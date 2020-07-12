@@ -81,10 +81,6 @@ class DiceboxNetwork(Network):
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
-    # # careful now.. maybe this shouldn't exist..
-    # def set_accuracy(self, accuracy: float):
-    #     self.__accuracy = accuracy
-
     def get_accuracy(self) -> float:
         return self.__accuracy
 
@@ -97,11 +93,11 @@ class DiceboxNetwork(Network):
             logging.error("UNKNOWN DATASET (%s) passed to classify" % self.config.NETWORK_NAME)
             raise Exception("UNKNOWN DATASET (%s) passed to classify" % self.config.NETWORK_NAME)
 
-        if self.__network.model is None:
-            logging.error('Unable to classify without a model.')
-            raise Exception('Unable to classify without a model.')
+        if self.model is None:
+            logging.error('No model! Compile the network first.')
+            raise Exception('No model! Compile the network first.')
 
-        model_prediction: ndarray = self.__network.model.predict_classes(x_test, batch_size=1, verbose=0)
+        model_prediction: ndarray = self.model.predict_classes(x_test, batch_size=1, verbose=0)
         logging.info(model_prediction)
 
         return model_prediction
@@ -109,26 +105,26 @@ class DiceboxNetwork(Network):
     ## Weights Storage Functions
 
     def save_model_weights(self, filename: str) -> None:
-        if self.__network.model is None:
+        if self.model is None:
             logging.error('No model! Compile the network first.')
             raise Exception('No model! Compile the network first.')
 
         logging.debug('loading weights file..')
         try:
-            self.__network.model.save_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
+            self.model.save_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
         except Exception as e:
             logging.error('Unable to save weights file.')
             logging.error(e)
             raise e
 
     def load_model_weights(self, filename: str) -> None:
-        if self.__network.model is None:
+        if self.model is None:
             logging.error('No model! Compile the network first.')
             raise Exception('No model! Compile the network first.')
 
         logging.debug('loading weights file..')
         try:
-            self.__network.model.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
+            self.model.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
         except Exception as e:
             logging.error('Unable to load weights file.')
             logging.error(e)
@@ -166,9 +162,9 @@ class DiceboxNetwork(Network):
         test_batch_size = self.config.TEST_BATCH_SIZE
         train_batch_size = self.config.TRAIN_BATCH_SIZE
 
-        logging.info('noise: %s' % noise)
-        logging.info('train_batch_size: %s' % train_batch_size)
-        logging.info('test_batch_size: %s' % test_batch_size)
+        logging.debug('noise: %s' % noise)
+        logging.debug('train_batch_size: %s' % train_batch_size)
+        logging.debug('test_batch_size: %s' % test_batch_size)
 
         train_image_data, train_image_labels = self.__fsc.get_batch(train_batch_size, noise=noise)
         # train_image_data, train_image_labels = Network.__ssc.get_batch(train_batch_size, noise=noise)
@@ -260,22 +256,3 @@ class DiceboxNetwork(Network):
         y_train: ndarray = train_image_labels
         y_test: ndarray = test_image_labels
         return x_train, x_test, y_train, y_test
-
-    ## Network Functions
-
-    # def load_network(self, network: Network) -> None:
-    #     # self.__network = network
-    #     self.
-    #     # reset other items related to a newly loaded network
-    #     self.__accuracy = 0.0
-
-    ## For Evolutionary Optimizer
-
-    # def get_optimizer(self) -> Optimizers:
-    #     return self.__network.get_optimizer()
-
-    # def get_layer_count(self) -> int:
-    #     return len(self.__network.get_layers())
-
-    # def get_layer(self, layer_index: int) -> Union[DenseLayer, DropoutLayer]:
-    #     return self.__network.get_layer(layer_index=layer_index)

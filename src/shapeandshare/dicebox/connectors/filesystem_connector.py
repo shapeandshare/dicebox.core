@@ -1,10 +1,3 @@
-"""
-###############################################################################
-# Filesystem Connector for Neural Network Input Data
-# Handles filesystem interactions for neural network input data.
-###############################################################################
-"""
-
 import array
 import fnmatch
 import logging
@@ -47,23 +40,23 @@ class FileSystemConnector:
         else:
             logging.info('File System Connector Data Indexing Disabled.')
 
-    def get_batch_list(self, batch_size: int):
+    def get_batch_list(self, batch_size: int) -> List[int]:
         """For a given batch size, returns a random selection of indices
 
         :param batch_size: integer value
         :return: array of indices in the batch size (each index appearing only once).
         """
-        output = []
+        output: List[int] = []
         set_size: int = len(self.dataset_index)
         value_list = list(self.dataset_index.values())
         if batch_size > set_size:
             raise Exception('Max batch size: %s, but %s was specified!' % (set_size, batch_size))
 
-        set_indices = []
+        set_indices: List[int] = []
         for i in range(0, set_size):
             set_indices.append(i)
 
-        output_list = []
+        output_list: List[int] = []
         while len(output_list) < batch_size:
             index: int = int(round((float(ord(struct.unpack('c', os.urandom(1))[0])) / 255) * (len(set_indices) - 1)))
             output_list.append(set_indices[index])
@@ -73,7 +66,7 @@ class FileSystemConnector:
             output.append(value_list[i])
         return output
 
-    def get_batch(self, batch_size: int, noise: int = 0) -> List[Union[list, List[ndarray]]]:
+    def get_batch(self, batch_size: int, noise: float = 0.0) -> List[Union[list, List[ndarray]]]:
         """For a given batch size and noise level, returns a dictionary of data and labels.
 
         :param batch_size: integer
@@ -118,7 +111,7 @@ class FileSystemConnector:
             image_data.append(pixel_data)
         return [image_data, image_labels]
 
-    def process_image(self, filename, noise=0):
+    def process_image(self, filename: str, noise: float = 0.0):
         """For a given filename, and noise level, will return a numpy array of pixel data.
 
         :param filename:
