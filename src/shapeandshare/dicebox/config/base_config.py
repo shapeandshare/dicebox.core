@@ -1,11 +1,3 @@
-"""
-
-###############################################################################
-# Local Config File Handler
-# Copyright (c) 2017-2020 Joshua Burt
-###############################################################################
-"""
-
 import configparser
 import json
 from abc import ABC
