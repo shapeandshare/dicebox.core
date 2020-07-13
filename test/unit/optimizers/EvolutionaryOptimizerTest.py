@@ -1,6 +1,7 @@
 import unittest
 
-from src.shapeandshare.dicebox.config import NetworkConfig
+# from src.shapeandshare.dicebox.config import NetworkConfig
+# from src.shapeandshare.dicebox.models.dicebox_network import DiceboxNetwork
 from src.shapeandshare.dicebox.models.dicebox_network import DiceboxNetwork
 from src.shapeandshare.dicebox.models.network import Network
 from src.shapeandshare.dicebox.optimizers.evolutionary_optimizer import EvolutionaryOptimizer
@@ -18,23 +19,19 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
 
     def test_breed(self):
         dc: DiceboxConfig = DiceboxConfig(config_file=self.local_config_file)
-        nf = NetworkFactory(config=dc)
-
-        mother_network: Network = nf.create_random_network()
-        # mother_network_config: NetworkConfig = nf.create_network_config(mother_network.decompile())
-        # mother = DiceboxNetwork(config=dc, network_config=mother_network_config, create_fsc=True, disable_data_indexing=True)
-
-        father_network: Network = nf.create_random_network()
-        # father_network_config: NetworkConfig = nf.create_network_config(father_network.decompile())
-        # father = DiceboxNetwork(config=dc, network_config=father_network_config, create_fsc=True, disable_data_indexing=True)
-
-        op = EvolutionaryOptimizer(config=dc,
+        eo = EvolutionaryOptimizer(config=dc,
                                    retain=0.4,
                                    random_select=0.1,
                                    mutate_chance=0.2)
 
+        mother_network: Network = eo.create_random_network()
+        mother: DiceboxNetwork = eo.build_dicebox_network(mother_network)
+
+        father_network: Network = eo.create_random_network()
+        father: DiceboxNetwork = eo.build_dicebox_network(father_network)
+
         # Breed them.
-        babies = op.breed(mother_network.decompile(), father_network.decompile())
+        babies = eo.breed(mother, father)
         self.assertTrue(len(babies) == 2)
         for child in babies:
             # child.print_network()

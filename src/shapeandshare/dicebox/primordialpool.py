@@ -50,7 +50,7 @@ class PrimordialPool:
                                                                  mutate_chance=0.2)
         networks: List[DiceboxNetwork] = optimizer.create_population(population_size)
 
-        # Evolve the generation.
+        # Evolve over the specified number of generations.
         for i in range(generations):
             logging.info("***Doing generation %d of %d***" % (i + 1, generations))
             logging.info('-' * 80)

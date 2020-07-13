@@ -4,7 +4,6 @@ from tensorflow.python.keras.layers import Dropout, Dense
 from tensorflow.python.keras.models import Sequential
 
 from .layer import DenseLayer, DropoutLayer, LayerType, ActivationFunction
-from ..config.network_config import NetworkConfig
 from .optimizers import Optimizers
 from ..config.dicebox_config import DiceboxConfig
 from ..factories.layer_factory import LayerFactory
@@ -16,21 +15,21 @@ class Network(LayerFactory):
     __optimizer: Optimizers
     __layers: List[Union[DenseLayer, DropoutLayer]]
 
-    def __init__(self, config: DiceboxConfig, network_config: Union[NetworkConfig, None]):
+    def __init__(self, config: DiceboxConfig, input_shape: int, output_size: int, optimizer: Optimizers, layers: List[Union[DropoutLayer, DenseLayer]] = None):
         super().__init__(config=config)
-
-        # allow a null startup state
-        if network_config is not None:
-            self.__input_shape: int = network_config.input_shape
-            self.__output_size: int = network_config.output_size
-            self.__optimizer: Optimizers = network_config.optimizer
-
-            self.__layers: List[Union[DenseLayer, DropoutLayer]] = network_config.layers
-            self.model = None
-            self.compile()
+        self.__input_shape: int = input_shape
+        self.__output_size: int = output_size
+        self.__optimizer: Optimizers = optimizer
+        if layers is not None:
+            self.__layers: List[Union[DropoutLayer, DenseLayer]] = layers
+        else:
+            self.__layers: List[Union[DropoutLayer, DenseLayer]] = []
+        self.model: Union[Sequential, None] = None
+        self.compile()
 
     def add_layer(self, layer: Union[DropoutLayer, DenseLayer]) -> None:
         self.__layers.append(layer)
+        self.compile()
 
     def __clear_model(self):
         if self.model:

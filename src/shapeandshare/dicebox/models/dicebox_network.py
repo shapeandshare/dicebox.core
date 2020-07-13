@@ -2,18 +2,18 @@
 import logging
 import os
 from datetime import datetime
-from typing import Union, Any
+from typing import Union, Any, List
 
 import numpy
 from numpy import ndarray
 from tensorflow.keras.callbacks import EarlyStopping
 
+from .layer import DropoutLayer, DenseLayer
+from .optimizers import Optimizers
 from ..config.dicebox_config import DiceboxConfig
 from ..connectors.filesystem_connector import FileSystemConnector
 from ..connectors.sensory_service_connector import SensoryServiceConnector
-from .layer import DropoutLayer, DenseLayer
-from .network import Network, Optimizers
-from ..config.network_config import NetworkConfig
+from .network import Network
 
 
 class DiceboxNetwork(Network):
@@ -38,11 +38,14 @@ class DiceboxNetwork(Network):
 
     def __init__(self,
                  config: DiceboxConfig,
-                 network_config: Union[NetworkConfig, None] = None,
+                 input_shape: int,
+                 output_size: int,
+                 optimizer: Optimizers,
+                 layers: List[Union[DropoutLayer, DenseLayer]] = None,
                  create_fsc: bool = True,
                  disable_data_indexing: bool = False):
 
-        super().__init__(config=config, network_config=network_config)
+        super().__init__(config=config, input_shape=input_shape, output_size=output_size, optimizer=optimizer, layers=layers)
 
         self.__accuracy: float = 0.0
 
