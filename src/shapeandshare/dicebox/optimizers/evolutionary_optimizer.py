@@ -56,11 +56,12 @@ class EvolutionaryOptimizer(NetworkFactory):
         summed: float = reduce(add, (self.fitness(network) for network in population))
         return summed / float((len(population)))
 
+    ## This function operates on the genome of the individual, and not the higher order constructs.
     # TODO: this should include variation between the N parents as well.
     # TODO: what would it mean if the config 's came from the parents..?
-    def breed(self, mother: DiceboxNetwork, father: DiceboxNetwork, offspringCount: int = 2) -> List[DiceboxNetwork]:
+    def breed(self, mother, father, offspringCount: int = 2) -> List[Any]:
         # Creates offspring
-        children: List[DiceboxNetwork] = []
+        children: List[Any] = []
 
         for _ in range(offspringCount):
             #
@@ -76,17 +77,17 @@ class EvolutionaryOptimizer(NetworkFactory):
             # Pick which parent's optimization function is passed on to offspring
             #
             if lucky(0.5):
-                child['optimizer'] = mother.get_optimizer().value
+                child['optimizer'] = mother['optimizer']
             else:
-                child['optimizer'] = father.get_optimizer().value
+                child['optimizer'] = father['optimizer']
 
             #
             # Determine the number of layers
             #
             if lucky(0.5):
-                layer_count: int = len(mother.get_layers())
+                layer_count: int = len(mother['layers'])
             else:
-                layer_count: int = len(father.get_layers())
+                layer_count: int = len(father['layers'])
 
             #
             # build layers
@@ -96,28 +97,24 @@ class EvolutionaryOptimizer(NetworkFactory):
                 # Pick which parent's layer is passed on to the offspring
                 # TODO: this should include variation between the N parents as well.
                 if lucky(0.5):
-                    if layer_index < len(mother.get_layers()):
-                        layer = mother.get_layer(layer_index=layer_index)
-                        child['layers'].append(self.decompile_layer(layer=layer))
-                    elif layer_index < len(father.get_layers()):
-                        layer = father.get_layer(layer_index=layer_index)
-                        child['layers'].append(self.decompile_layer(layer=layer))
+                    if layer_index < len(mother['layers']):
+                        layer = mother['layers'][layer_index]
+                        child['layers'].append(layer)
+                    elif layer_index < len(father['layers']):
+                        layer = father['layers'][layer_index]
+                        child['layers'].append(layer)
                     else:
                         raise Exception('impossible breeding event occurred?')
                 else:
-                    if layer_index < len(father.get_layers()):
-                        layer = father.get_layer(layer_index=layer_index)
-                        child['layers'].append(self.decompile_layer(layer=layer))
-                    elif layer_index < len(mother.get_layers()):
-                        layer = mother.get_layer(layer_index=layer_index)
-                        child['layers'].append(self.decompile_layer(layer=layer))
+                    if layer_index < len(father['layers']):
+                        layer = father['layers'][layer_index]
+                        child['layers'].append(layer)
+                    elif layer_index < len(mother['layers']):
+                        layer = mother['layers'][layer_index]
+                        child['layers'].append(layer)
                     else:
                         raise Exception('impossible breeding event occurred?')
-
-            child_network: Network = self.create_network(network_definition=child)
-            dicebox_child_network: DiceboxNetwork = self.build_dicebox_network(network=child_network)
-            children.append(dicebox_child_network)
-
+            children.append(child)
         return children
 
     ## Note:
@@ -217,15 +214,21 @@ class EvolutionaryOptimizer(NetworkFactory):
                 # then we can bread normally
                 # Assuming they aren't the same network...
                 # for a very small populations this might be required..
+                print('-----------------------------------------------------------------------------------------------')
+                print(male_index)
+                print(parent_genomes[male_index])
+                print(female_index)
+                print(parent_genomes[female_index])
+                print('-----------------------------------------------------------------------------------------------')
                 if male_index != female_index:
                     male = parent_genomes[male_index]
                     female = parent_genomes[female_index]
 
                     # Breed them.
-                    babies: List[Any] = self.breed(male, female)
+                    offspring: List[Any] = self.breed(male, female)
 
                     # Add the children one at a time.
-                    for baby in babies:
+                    for baby in offspring:
                         # Don't grow larger than desired length.
                         if len(children) < desired_length:
                             children.append(baby)

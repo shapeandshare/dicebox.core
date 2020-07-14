@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+3.1.0
+-----
+- Updated exports for external usage.
+- Addressed issue in evolve and serialized networks
+
 3.0.0
 -----
 - Updated interface, and code layout.

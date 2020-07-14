@@ -1,10 +1,8 @@
 import logging
-# import os
 import unittest
 
 from src.shapeandshare.dicebox.primordialpool import PrimordialPool
 from src.shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
-# from src.shapeandshare.dicebox.utils import make_sure_path_exists
 
 ###############################################################################
 # Setup logging.
