@@ -11,16 +11,12 @@ from .optimizers.evolutionary_optimizer import EvolutionaryOptimizer
 class PrimordialPool:
     config: DiceboxConfig
 
-    def __init__(self, config: DiceboxConfig):
+    def __init__(self, config: DiceboxConfig) -> None:
         self.config = config
 
-    def train_networks(self, networks: List[DiceboxNetwork]):
-        """Train each network.
-
-        Args:
-            networks (list): Current population of networks
-            dataset (str): Dataset to use for training/evaluating
-        """
+    # Updates (Trains) the set of networks passed in.
+    @staticmethod
+    def train_networks(networks: List[DiceboxNetwork]) -> None:
         pbar = tqdm(total=len(networks))
         for network in networks:
             accuracy: float = network.train()
@@ -28,17 +24,24 @@ class PrimordialPool:
             pbar.update(1)
         pbar.close()
 
-    def get_average_accuracy(self, networks: List[DiceboxNetwork]) -> float:
+    @staticmethod
+    def get_average_accuracy(networks: List[DiceboxNetwork]) -> float:
         """Get the average accuracy for a group of networks."""
         total_accuracy: float = 0.0
         for network in networks:
             total_accuracy += network.get_accuracy()
-
         return total_accuracy / len(networks)
 
-    def generate(self):
-        """Apply evolution"""
+    # TODO: JSON serialization..
+    @staticmethod
+    def export_networks(networks: List[DiceboxNetwork]) -> None:
+        """Print a list of networks."""
+        logging.info('-' * 80)
+        for network in networks:
+            logging.info(network.decompile())
 
+    # The real entry point.  Invocation of this will apply the entire process.
+    def generate(self) -> None:
         generations: int = self.config.GENERATIONS
         population_size: int = self.config.POPULATION
         logging.info('Generations: %s' % generations)
@@ -55,14 +58,14 @@ class PrimordialPool:
             logging.info("***Doing generation %d of %d***" % (i + 1, generations))
             logging.info('-' * 80)
             logging.info('Individuals in current generation')
-            self.export_networks(networks)
+            PrimordialPool.export_networks(networks)
             logging.info('-' * 80)
 
             # Train and get accuracy for networks.
-            self.train_networks(networks)
+            PrimordialPool.train_networks(networks)
 
             # Get the average accuracy for this generation.
-            average_accuracy = self.get_average_accuracy(networks)
+            average_accuracy = PrimordialPool.get_average_accuracy(networks)
 
             # Print out the average accuracy each generation.
             logging.info("Generation average: %.2f%%" % (average_accuracy * 100))
@@ -74,7 +77,7 @@ class PrimordialPool:
             current_networks = sorted(networks, key=lambda x: x.get_accuracy(), reverse=True)
 
             # Print out the top 5 networks.
-            self.export_networks(current_networks[:5])
+            PrimordialPool.export_networks(current_networks[:5])
 
             # Evolve, except on the last iteration.
             if i != generations - 1:
@@ -84,11 +87,5 @@ class PrimordialPool:
         # Sort our final population.
         networks = sorted(networks, key=lambda x: x.get_accuracy(), reverse=True)
 
-        # Print out the top 5 networks.
-        self.export_networks(networks[:5])
-
-    def export_networks(self, networks: List[DiceboxNetwork]):
-        """Print a list of networks."""
-        logging.info('-' * 80)
-        for network in networks:
-            logging.info(network.decompile())
+        # Print out the top 5(at max) networks.
+        PrimordialPool.export_networks(networks[:5])

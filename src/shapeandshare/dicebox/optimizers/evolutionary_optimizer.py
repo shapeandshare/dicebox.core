@@ -56,86 +56,17 @@ class EvolutionaryOptimizer(NetworkFactory):
         summed: float = reduce(add, (self.fitness(network) for network in population))
         return summed / float((len(population)))
 
-    # TODO: Support parents of N numbers..
-    # offspring should would not be deterministic (the number should varry by some hyper-parameter controllable value)
-    # def breed(self, mother: DiceboxNetwork, father: DiceboxNetwork, offspringCount: int = 2) -> List[DiceboxNetwork]:
-    #     # Creates offspring
-    #     children: List[DiceboxNetwork] = []
-    #     for _ in range(offspringCount):
-    #         #
-    #         # TODO: what would it mean if the config 's came from the parents..?
-    #         #
-    #
-    #         child: DiceboxNetwork = DiceboxNetwork(config=self.config)
-    #
-    #         #
-    #         # build our network definition
-    #         #
-    #
-    #         # TODO: what would it mean if the config 's came from the parents..?
-    #         network_definition: Any = {
-    #             'input_shape': self.config.INPUT_SHAPE,
-    #             'output_size': self.config.NB_CLASSES
-    #         }
-    #
-    #         #
-    #         # Pick which parent's optimization function is passed on to offspring
-    #         #
-    #         # TODO: Support N parents
-    #         if lucky(0.5):
-    #             network_definition['optimizer'] = mother.get_optimizer().value
-    #         else:
-    #             network_definition['optimizer'] = father.get_optimizer().value
-    #
-    #         #
-    #         # Determine the number of layers
-    #         #
-    #         # TODO: this should include variation between the N parents as well.
-    #         if lucky(0.5):
-    #             layer_count: int = mother.get_layer_count()
-    #         else:
-    #             layer_count: int = father.get_layer_count()
-    #
-    #         #
-    #         # build layers
-    #         #
-    #         network_definition['layers'] = []
-    #         for layer_index in range(0, layer_count):
-    #             # Pick which parent's layer is passed on to the offspring
-    #             # TODO: this should include variation between the N parents as well.
-    #             if lucky(0.5):
-    #                 if layer_index < mother.get_layer_count():
-    #                     layer = mother.get_layer(layer_index=layer_index)
-    #                     network_definition['layers'].append(self.decompile_layer(layer))
-    #                 elif layer_index < father.get_layer_count():
-    #                     layer = father.get_layer(layer_index=layer_index)
-    #                     network_definition['layers'].append(self.decompile_layer(layer))
-    #                 else:
-    #                     raise Exception('impossible breeding event occurred?')
-    #             else:
-    #                 if layer_index < father.get_layer_count():
-    #                     layer = father.get_layer(layer_index=layer_index)
-    #                     network_definition['layers'].append(self.decompile_layer(layer))
-    #                 elif layer_index < mother.get_layer_count():
-    #                     layer = mother.get_layer(layer_index=layer_index)
-    #                     network_definition['layers'].append(self.decompile_layer(layer))
-    #                 else:
-    #                     raise Exception('impossible breeding event occurred?')
-    #         child_network = self.create_network(network_definition=network_definition)
-    #         child.load_network(network=child_network)
-    #         children.append(child)
-    #     return children
-
+    # TODO: this should include variation between the N parents as well.
+    # TODO: what would it mean if the config 's came from the parents..?
     def breed(self, mother: DiceboxNetwork, father: DiceboxNetwork, offspringCount: int = 2) -> List[DiceboxNetwork]:
         # Creates offspring
         children: List[DiceboxNetwork] = []
 
         for _ in range(offspringCount):
             #
-            # build our network definition
+            # build our network genome
             #
 
-            # TODO: what would it mean if the config 's came from the parents..?
             child = {
                 'input_shape': self.config.INPUT_SHAPE,
                 'output_size': self.config.NB_CLASSES
@@ -144,7 +75,6 @@ class EvolutionaryOptimizer(NetworkFactory):
             #
             # Pick which parent's optimization function is passed on to offspring
             #
-            # TODO: Support N parents
             if lucky(0.5):
                 child['optimizer'] = mother.get_optimizer().value
             else:
@@ -153,7 +83,6 @@ class EvolutionaryOptimizer(NetworkFactory):
             #
             # Determine the number of layers
             #
-            # TODO: this should include variation between the N parents as well.
             if lucky(0.5):
                 layer_count: int = len(mother.get_layers())
             else:
@@ -191,8 +120,10 @@ class EvolutionaryOptimizer(NetworkFactory):
 
         return children
 
-    def mutate(self, individual: Any) -> Any:
-        mutant: Any = copy.deepcopy(individual)
+    ## Note:
+    ## This function operates on the genome of the individual, and not the higher order constructs.
+    def mutate(self, individual):
+        mutant = copy.deepcopy(individual)
 
         # this introduces chaos into the new entity
         local_noise: float = self.mutate_chance
@@ -232,50 +163,6 @@ class EvolutionaryOptimizer(NetworkFactory):
                 else:
                     raise Exception('Not yet implemented!')
         return mutant
-
-    # def mutate(self, individual: DiceboxNetwork) -> DiceboxNetwork:
-    #     mutant_genome = individual.decompile()
-    #
-    #     # this introduces chaos into the new entity
-    #     local_noise: float = self.mutate_chance
-    #
-    #     # TODO: possibly only of the parents types..
-    #     # see if the optimizer is mutated
-    #     if lucky(local_noise):
-    #         mutant_genome['optimizer'] = select_random_optimizer().value
-    #
-    #     # Determine the number of layers..
-    #     layer_count = len(mutant_genome['layers'])
-    #
-    #     # TODO: adjust the number of layers (its easy to remove, adding could be random)?
-    #     # now mess around within the layers
-    #     for index in range(0, layer_count):
-    #         # see if the layer is mutated
-    #         if lucky(local_noise):
-    #             # then change the layer type
-    #             mutant_genome['layers'][index - 1] = self.decompile_layer(self.build_random_layer())
-    #         else:
-    #             layer = mutant_genome['layers'][index - 1]
-    #
-    #             # keep checking the individual layer attributes
-    #             if layer['type'] == 'dropout':
-    #                 if lucky(local_noise):
-    #                     # mutate the dropout rate
-    #                     layer['rate'] = random_strict()
-    #             elif layer['type'] == 'dense':
-    #                 if lucky(local_noise):
-    #                     # mutate the layer size
-    #                     layer['size'] = random_index_between(self.config.TAXONOMY['min_neurons'],
-    #                                                          self.config.TAXONOMY['max_neurons'])
-    #                 if lucky(local_noise):
-    #                     # mutate activation function
-    #                     activation_index = random_index(len(self.config.TAXONOMY['activation']))
-    #                     layer['activation'] = self.config.TAXONOMY['activation'][activation_index - 1]
-    #             else:
-    #                 raise Exception('Not yet implemented!')
-    #     mutant_network: Network = self.create_network(network_definition=mutant_genome)
-    #     mutant = self.build_dicebox_network(mutant_network)
-    #     return mutant
 
     def evolve(self, population: List[DiceboxNetwork]) -> List[DiceboxNetwork]:
         """Evolve a population of networks."""
