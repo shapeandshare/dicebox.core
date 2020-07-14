@@ -31,9 +31,9 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
         father: DiceboxNetwork = eo.build_dicebox_network(father_network)
 
         # Breed them.
-        babies = eo.breed(mother, father)
-        self.assertTrue(len(babies) == 2)
-        for child in babies:
+        offspring = eo.breed(mother.decompile(), father.decompile())
+        self.assertTrue(len(offspring) == 2)
+        for child in offspring:
             # child.print_network()
             self.assertNotEqual(mother_network.decompile(), child)
             self.assertNotEqual(father_network.decompile(), child)
