@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+3.0.0
+-----
+- Updated interface, and code layout.
+
 2.1.2 (07/04/2020)
 -----
 - Addressed a cross-platform seperator bug.
