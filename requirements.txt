@@ -9,3 +9,4 @@ typing==3.7.4.1
 
 # primordial pool
 tqdm==4.47.0
+uuid==1.30
