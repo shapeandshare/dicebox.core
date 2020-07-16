@@ -1,6 +1,9 @@
 Change Log
 ==========
 
+3.2.0
+- Added basic support to save and load populations of individuals during the evolution process.
+
 3.1.0
 -----
 - Updated exports for external usage.
