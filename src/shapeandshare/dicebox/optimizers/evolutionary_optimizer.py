@@ -29,21 +29,32 @@ class EvolutionaryOptimizer(NetworkFactory):
         self.random_select: float = random_select
         self.retain: float = retain
 
-    def create_population(self, count: int) -> List[DiceboxNetwork]:
+    def create_population(self, size: int, population_definition=None) -> List[DiceboxNetwork]:
         # Create a population of random networks.
         population: List[DiceboxNetwork] = []
-        for _ in range(0, count):
-            # Create a random network.
 
-            random_network: Network = self.create_random_network()
-            dn: DiceboxNetwork = DiceboxNetwork(config=self.config,
-                                                input_shape=random_network.get_input_shape(),
-                                                output_size=random_network.get_output_size(),
-                                                optimizer=random_network.get_optimizer(),
-                                                layers=random_network.get_layers())
+        if population_definition is not None:
+            # build from config...
+            print('Building population from external source')
+            for proto_individual in population_definition['population']:
+                individual_genome = proto_individual['genome']
+                individual_network: Network = self.create_network(network_definition=individual_genome)
+                individual_dicebox_network = self.build_dicebox_network(network=individual_network)
+                population.append(individual_dicebox_network)
+        else:
+            # else we build a random network.
+            for _ in range(0, size):
+                # Create a random network.
 
-            # Add the network to our population.
-            population.append(dn)
+                random_network: Network = self.create_random_network()
+                dn: DiceboxNetwork = DiceboxNetwork(config=self.config,
+                                                    input_shape=random_network.get_input_shape(),
+                                                    output_size=random_network.get_output_size(),
+                                                    optimizer=random_network.get_optimizer(),
+                                                    layers=random_network.get_layers())
+
+                # Add the network to our population.
+                population.append(dn)
         return population
 
     @staticmethod
@@ -213,13 +224,6 @@ class EvolutionaryOptimizer(NetworkFactory):
             else:
                 # then we can bread normally
                 # Assuming they aren't the same network...
-                # for a very small populations this might be required..
-                print('-----------------------------------------------------------------------------------------------')
-                print(male_index)
-                print(parent_genomes[male_index])
-                print(female_index)
-                print(parent_genomes[female_index])
-                print('-----------------------------------------------------------------------------------------------')
                 if male_index != female_index:
                     male = parent_genomes[male_index]
                     female = parent_genomes[female_index]

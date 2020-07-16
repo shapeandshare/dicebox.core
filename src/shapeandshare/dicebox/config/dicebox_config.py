@@ -129,6 +129,9 @@ class DiceboxConfig(BaseConfig):
         if 'TMP_DIR' in os.environ:
             self.TMP_DIR = os.environ['TMP_DIR']
 
+        if 'POPULATION_DIR' in os.environ:
+            self.POPULATION_DIR = os.environ['POPULATION_DIR']
+
         ###############################################################################
         # Server Options
         ###############################################################################
