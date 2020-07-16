@@ -77,6 +77,7 @@ class BaseConfig(ABC):
         self.LOGS_DIR = local_config.get('DIRECTORY', 'logs_dir')
         self.WEIGHTS_DIR = local_config.get('DIRECTORY', 'weights_dir')
         self.TMP_DIR = local_config.get('DIRECTORY', 'tmp_dir')
+        self.POPULATION_DIR = local_config.get('DIRECTORY', 'population_dir')
 
         ###############################################################################
         # Server Options
