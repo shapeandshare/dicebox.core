@@ -1,7 +1,13 @@
 Change Log
 ==========
 
+3.3.0
+-----
+- Pathing fixes for Windows
+- Additional logging
+
 3.2.0
+-----
 - Added basic support to save and load populations of individuals during the evolution process.
 
 3.1.0

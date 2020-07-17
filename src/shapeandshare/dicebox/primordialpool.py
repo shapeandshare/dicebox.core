@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from typing import List
 
 import uuid
@@ -44,10 +45,12 @@ class PrimordialPool:
             logging.info(network.decompile())
 
     def export_population(self, population_id: str, generation: int, population: List[DiceboxNetwork]) -> None:
-        output_drectory: str = "%s/%s/%i/" % (self.config.POPULATION_DIR, population_id, generation)
-        make_sure_path_exists(output_drectory)
+        output_directory: str = str(os.path.join(self.config.POPULATION_DIR, population_id, str(generation)))
+        output_file: str = str(os.path.join(output_directory, 'population.json'))
+        logging.info("Writing populations to: (%s)" % output_file)
+        make_sure_path_exists(output_directory)
 
-        with open("%s/population.json" % output_drectory, 'w') as file:
+        with open(output_file, 'w') as file:
             population_genome = []
             for individual in population:
                 individual_full = {
