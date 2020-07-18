@@ -1,7 +1,9 @@
 from typing import List, Union, Any, Tuple
 
 from tensorflow.python.keras.layers import Dropout, Dense, Conv2D, Flatten
+from tensorflow.python.keras.losses import sparse_categorical_crossentropy
 from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.optimizer_v2.adam import Adam
 
 from .layer import DenseLayer, DropoutLayer, Conv2DLayer, LayerType, ActivationFunction, Conv2DPadding
 from .optimizers import Optimizers
@@ -11,18 +13,18 @@ from ..factories.layer_factory import LayerFactory
 
 class Network(LayerFactory):
     # genomotype
-    __input_shape: Tuple[int, int, int]
-    __output_size: int
+    # __input_shape: Tuple[int, int, int]
+    # __output_size: int
     __optimizer: Optimizers
     __layers: List[Union[DenseLayer, DropoutLayer, Conv2DLayer]]
 
     # phenotype
     model: Union[Sequential, None]
 
-    def __init__(self, config: DiceboxConfig, input_shape: Tuple[int, int, int], output_size: int, optimizer: Optimizers, layers: List[Union[DropoutLayer, DenseLayer, Conv2DLayer]] = None):
+    def __init__(self, config: DiceboxConfig, optimizer: Optimizers, layers: List[Union[DropoutLayer, DenseLayer, Conv2DLayer]] = None):
         super().__init__(config=config)
-        self.__input_shape: Tuple[int, int, int] = input_shape
-        self.__output_size: int = output_size
+        # self.__input_shape: Tuple[int, int, int] = self.config.INPUT_SHAPE
+        # self.__output_size: int = self.config.NB_CLASSES
         self.__optimizer: Optimizers = optimizer
         if layers is not None:
             self.__layers: List[Union[DropoutLayer, DenseLayer, Conv2DLayer]] = layers
@@ -54,13 +56,13 @@ class Network(LayerFactory):
             # build and add layer
             if layer.layer_type == LayerType.DROPOUT:
                 # handle dropout
-                model.add(Dropout(layer.rate))
+                model.add(Dropout(rate=layer.rate))
             elif layer.layer_type == LayerType.DENSE:
                 neurons: int = layer.size
                 activation: ActivationFunction = layer.activation
                 if first_layer is True:
                     first_layer = False
-                    model.add(Dense(neurons, activation=activation.value, input_shape=self.__input_shape))
+                    model.add(Dense(neurons, activation=activation.value, input_shape=self.config.INPUT_SHAPE))
                 else:
                     model.add(Dense(neurons, activation=activation.value))
             elif layer.layer_type == LayerType.CONV2D:
@@ -73,17 +75,28 @@ class Network(LayerFactory):
                 print("filters=%i, kernel_size=%s, strides=%s, padding=%s, activation=%s" % (filters, kernel_size, strides, padding.value, activation.value))
                 if first_layer is True:
                     first_layer = False
-                    # model.add(Conv2D(filters=filters, kernel_size=kernel_size, strides=strides, padding=padding.value, activation=activation.value, input_shape=self.__input_shape))
-                    model.add(Conv2D(filters=filters, kernel_size=kernel_size, activation=activation.value, input_shape=self.__input_shape))
+                    model.add(Conv2D(filters=filters, kernel_size=kernel_size, strides=strides, padding=padding.value, activation=activation.value, input_shape=self.config.INPUT_SHAPE))
                 else:
-                    model.add(Conv2D(filters=filters, kernel_size=kernel_size, activation=activation.value))
-                    # model.add(Conv2D(filters=filters, kernel_size=kernel_size, strides=strides, padding=padding.value, activation=activation.value))
+                    model.add(Conv2D(filters=filters, kernel_size=kernel_size, strides=strides, padding=padding.value, activation=activation.value))
             else:
                 raise
-        # add final output layer.
-        model.add(Dense(self.__output_size,
-                        activation='softmax'))  # TODO: Make it possible to define with from the enum...
-        model.compile(loss='categorical_crossentropy', optimizer=self.__optimizer.value, metrics=['accuracy'])
+
+        # # we never added a first layer..
+        # if first_layer is True:
+        #     print('----------------------------------------------------------')
+        #     print(self.__layers)
+        #     print('----------------------------------------------------------')
+        #     # TODO: there was no initial mapping of input size under this condition,
+        #     # hoew to resolve?
+        #     model.add(Dense(self.config.NB_CLASSES, activation='softmax'))
+        #     # raise
+
+        # add final output layers.
+        model.add(Flatten())
+        model.add(Dense(self.config.NB_CLASSES, activation='softmax'))
+        # model.compile(loss='categorical_crossentropy', optimizer=self.__optimizer.value, metrics=['accuracy'])
+        # model.compile(loss=sparse_categorical_crossentropy, optimizer=Adam(), metrics=['accuracy'])
+        model.compile(loss=sparse_categorical_crossentropy, optimizer=self.__optimizer.value, metrics=['accuracy'])
 
         # return model
         self.model = model
@@ -98,15 +111,15 @@ class Network(LayerFactory):
         return self.__optimizer
 
     def get_input_shape(self) -> int:
-        return self.__input_shape
+        return self.config.INPUT_SHAPE
 
     def get_output_size(self) -> int:
-        return self.__output_size
+        return self.config.NB_CLASSES
 
     def decompile(self) -> Any:
         definition = {
-            'input_shape': self.__input_shape,
-            'output_size': self.__output_size,
+            'input_shape': self.config.INPUT_SHAPE,
+            'output_size': self.config.NB_CLASSES,
             'optimizer': self.__optimizer.value,
             'layers': []
         }

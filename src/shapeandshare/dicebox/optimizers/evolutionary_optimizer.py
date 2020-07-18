@@ -49,8 +49,6 @@ class EvolutionaryOptimizer(NetworkFactory):
 
                 random_network: Network = self.create_random_network()
                 dn: DiceboxNetwork = DiceboxNetwork(config=self.config,
-                                                    input_shape=random_network.get_input_shape(),
-                                                    output_size=random_network.get_output_size(),
                                                     optimizer=random_network.get_optimizer(),
                                                     layers=random_network.get_layers())
 
@@ -274,7 +272,5 @@ class EvolutionaryOptimizer(NetworkFactory):
 
     def build_dicebox_network(self, network: Network) -> DiceboxNetwork:
         return DiceboxNetwork(config=self.config,
-                              input_shape=network.get_input_shape(),
-                              output_size=network.get_output_size(),
                               optimizer=network.get_optimizer(),
                               layers=network.get_layers())

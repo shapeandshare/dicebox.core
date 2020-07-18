@@ -15,7 +15,6 @@ from ..connectors.filesystem_connector import FileSystemConnector
 from ..connectors.sensory_service_connector import SensoryServiceConnector
 from .network import Network
 
-from tensorflow import make_ndarray
 
 class DiceboxNetwork(Network):
     __accuracy: float
@@ -40,14 +39,12 @@ class DiceboxNetwork(Network):
 
     def __init__(self,
                  config: DiceboxConfig,
-                 input_shape: Tuple[int, int, int],
-                 output_size: int,
                  optimizer: Optimizers,
                  layers: List[Union[DropoutLayer, DenseLayer]] = None,
                  create_fsc: bool = True,
                  disable_data_indexing: bool = False):
 
-        super().__init__(config=config, input_shape=input_shape, output_size=output_size, optimizer=optimizer, layers=layers)
+        super().__init__(config=config, optimizer=optimizer, layers=layers)
 
         self.__accuracy: float = 0.0
 
@@ -202,6 +199,7 @@ class DiceboxNetwork(Network):
         logging.debug('test_batch_size: %s' % test_batch_size)
 
         train_image_data, train_image_labels = self.__fsc.get_batch(train_batch_size, noise=noise)
+
         # train_collection = self.__fsc.get_batch(train_batch_size, noise=noise)
         # train_image_data: List[Optional[ndarray]] = train_collection[0]
         # train_image_labels: List[ndarray] = train_collection[1]
@@ -213,12 +211,12 @@ class DiceboxNetwork(Network):
         # train_image_labels = numpy.array(train_image_labels)
         # train_image_labels = make_ndarray(train_image_labels)
 
-        # normalize
-        train_image_data_normalized = []
-        for data in train_image_data:
-            norm_data = data.astype('float32')
-            norm_data /= 255
-            train_image_data_normalized.append(norm_data)
+        # # normalize
+        # train_image_data_normalized = []
+        # for data in train_image_data:
+        #     norm_data = data.astype('float32')
+        #     norm_data /= 255
+        #     train_image_data_normalized.append(norm_data)
 
         test_image_data, test_image_labels = self.__fsc.get_batch(test_batch_size, noise=noise)
         # test_image_data = numpy.array(test_image_data)
@@ -228,19 +226,19 @@ class DiceboxNetwork(Network):
         # test_image_labels = numpy.array(test_image_labels)
         # test_image_labels = make_ndarray(test_image_labels)
 
-        # normalize
-        test_image_data_normalized = []
-        for data in test_image_data:
-            norm_data = data.astype('float32')
-            norm_data /= 255
-            test_image_data_normalized.append(norm_data)
+        # # normalize
+        # test_image_data_normalized = []
+        # for data in test_image_data:
+        #     norm_data = data.astype('float32')
+        #     norm_data /= 255
+        #     test_image_data_normalized.append(norm_data)
 
         # x_train: ndarray = train_image_data
         # x_test: ndarray = test_image_data
         # y_train: ndarray = train_image_labels
         # y_test: ndarray = test_image_labels
-        x_train = train_image_data_normalized
-        x_test = test_image_data_normalized
+        x_train = train_image_data
+        x_test = test_image_data
         y_train = train_image_labels
         y_test = test_image_labels
 

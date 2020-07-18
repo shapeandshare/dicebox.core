@@ -28,9 +28,10 @@ class LayerFactory(ABC):
 
             return LayerFactory.build_dense_layer(size=size, activation=ActivationFunction(activation))
         elif layer_type == LayerType.CONV2D.value:
-            filters: int = random_index(256)  # TODO?
-            kernel_size: Tuple[int, int] = (random_index_between(0, self.config.IMAGE_WIDTH), random_index_between(0, self.config.IMAGE_HEIGHT))
-            strides: Tuple[int, int] = (random_index_between(0, self.config.IMAGE_WIDTH), random_index_between(0, self.config.IMAGE_HEIGHT))
+            # https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv2D
+            filters: int = random_index_between(1, self.config.MAX_NEURONS)  # TODO?
+            kernel_size: Tuple[int, int] = (random_index_between(1, 4), random_index_between(1, 4))
+            strides: Tuple[int, int] = (1, 1) # (random_index_between(1, 2), random_index_between(1, 2))
 
             activation_index: int = random_index(len(self.config.TAXONOMY['activation']))
             activation: str = self.config.TAXONOMY['activation'][activation_index - 1]

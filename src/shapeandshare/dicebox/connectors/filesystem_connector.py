@@ -13,6 +13,7 @@ from ..config.dicebox_config import DiceboxConfig
 from ..utils.helpers import lucky
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow import shape
+from tensorflow.keras.datasets import cifar10
 
 class FileSystemConnector:
     """File System Connector Class"""
@@ -167,7 +168,19 @@ class FileSystemConnector:
         # print('*******************************************************************************')
         # print('*******************************************************************************')
         # print('*******************************************************************************')
-        return [image_data, image_labels]
+        # return [image_data, image_labels]
+
+        (input_train, target_train), (input_test, target_test) = cifar10.load_data()
+        # Parse numbers as floats
+        input_train = input_train.astype('float32')
+        input_test = input_test.astype('float32')
+
+        # Scale data
+        input_train = input_train / 255
+        input_test = input_test / 255
+
+        return [input_train, target_train]
+
 
     def process_image(self, filename: str, noise: float = 0.0) -> Optional[ndarray]:
         """For a given filename, and noise level, will return a numpy array of pixel data.

@@ -19,7 +19,7 @@ class NetworkFactory(LayerFactory):
         input_shape: int = network_definition['input_shape']
         output_size: int = network_definition['output_size']
 
-        new_network = Network(config=self.config, input_shape=input_shape, output_size=output_size, optimizer=optimizer)
+        new_network = Network(config=self.config, optimizer=optimizer)
 
         if 'layers' not in network_definition:
             network_definition['layers'] = []
@@ -54,8 +54,6 @@ class NetworkFactory(LayerFactory):
         optimizer: str = self.config.TAXONOMY['optimizer'][optimizer_index - 1]
 
         network: Network = Network(config=self.config,
-                                   input_shape=self.config.INPUT_SHAPE,
-                                   output_size=self.config.NB_CLASSES,
                                    optimizer=Optimizers(optimizer))
 
         # Determine the number of layers..

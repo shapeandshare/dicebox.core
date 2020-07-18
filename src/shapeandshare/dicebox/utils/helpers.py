@@ -30,7 +30,11 @@ def random_index_between(min_index: int = 0, max_index: int = 1) -> int:
 
     rand: float = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
     delta: int = max_index - min_index
-    delta_offset: int = int(math.ceil(rand * delta))
+
+    if ((float(ord(struct.unpack('c', os.urandom(1))[0])) / 255) >= 0.5):
+        delta_offset: int = int(math.floor(rand * delta))
+    else:
+        delta_offset: int = int(math.ceil(rand * delta))
     return min_index + delta_offset
 
 
