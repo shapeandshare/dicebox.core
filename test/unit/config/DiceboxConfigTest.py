@@ -96,7 +96,7 @@ class DiceboxConfigTest(unittest.TestCase):
         self.assertEqual(dc.NETWORK_NAME, 'DATASET_200x300')
 
         # composite
-        self.assertEqual(dc.INPUT_SHAPE, (60000,))
+        self.assertEqual(dc.INPUT_SHAPE, (dc.IMAGE_WIDTH, dc.IMAGE_HEIGHT, 3))
 
         # composite
         self.assertEqual(dc.DATA_DIRECTORY, '/some/datasets/DATASET_200x300/data/')

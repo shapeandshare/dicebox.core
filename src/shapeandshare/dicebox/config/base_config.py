@@ -27,7 +27,8 @@ class BaseConfig(ABC):
 
         # Build Calculated Configs
         self.NETWORK_NAME = "%s_%ix%i" % (self.DATASET, self.IMAGE_WIDTH, self.IMAGE_HEIGHT)
-        self.INPUT_SHAPE = (self.IMAGE_WIDTH * self.IMAGE_HEIGHT,)
+        # self.INPUT_SHAPE = (self.IMAGE_WIDTH * self.IMAGE_HEIGHT,)
+        self.INPUT_SHAPE = (self.IMAGE_WIDTH, self.IMAGE_HEIGHT, 3)
         self.DATA_DIRECTORY = "%s/%s/data/" % (self.DATA_BASE_DIRECTORY, self.NETWORK_NAME)
 
         ###############################################################################

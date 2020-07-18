@@ -36,7 +36,6 @@ class PrimordialPool:
             total_accuracy += network.get_accuracy()
         return total_accuracy / len(networks)
 
-    # TODO: JSON serialization..
     @staticmethod
     def print_networks(networks: List[DiceboxNetwork]) -> None:
         """Print a list of networks."""

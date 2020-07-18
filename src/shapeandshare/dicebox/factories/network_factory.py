@@ -1,8 +1,8 @@
-from typing import Any
+from typing import Any, Tuple
 
 from .layer_factory import LayerFactory
 from ..config.dicebox_config import DiceboxConfig
-from ..models.layer import LayerType, ActivationFunction
+from ..models.layer import LayerType, ActivationFunction, Conv2DLayer, Conv2DPadding, DenseLayer, DropoutLayer
 from ..models.network import Network, Optimizers
 from ..utils.helpers import random_index, random_index_between
 
@@ -29,14 +29,21 @@ class NetworkFactory(LayerFactory):
             if layer['type'] == LayerType.DENSE.value:
                 size: int = layer['size']
                 activation: ActivationFunction = ActivationFunction(layer['activation'])
-                new_layer = self.build_dense_layer(size=size, activation=activation)
+                new_layer: DenseLayer = self.build_dense_layer(size=size, activation=activation)
                 new_network.add_layer(new_layer)
             elif layer['type'] == LayerType.DROPOUT.value:
                 rate: float = layer['rate']
-                new_layer = self.build_dropout_layer(rate=rate)
+                new_layer: DropoutLayer = self.build_dropout_layer(rate=rate)
+                new_network.add_layer(new_layer)
+            elif layer['type'] == LayerType.CONV2D.value:
+                kernel_size: Tuple[int, int] = layer['kernel_size']
+                strides: Tuple[int, int] = layer['strides']
+                padding: Conv2DPadding = layer['padding']
+                activation: ActivationFunction = layer['activation']
+                new_layer: Conv2DLayer = Conv2DLayer(kernel_size=kernel_size, strides=strides, padding=padding, activation=activation)
                 new_network.add_layer(new_layer)
             else:
-                raise
+                raise Exception("Unsupported layer type: (%s) provided." % layer['type'])
 
         new_network.compile()
         return new_network

@@ -3,22 +3,24 @@ from random import choices
 
 
 class Optimizers(Enum):
-    RMSPROP = 'rmsprop'
-    ADAM = 'adam'
-    SGD = 'sgd'
-    ADAGRAD = 'adagrad'
     ADADELTA = 'adadelta'
+    ADAGRAD = 'adagrad'
+    ADAM = 'adam'
     ADAMAX = 'adamax'
+    FTRL = 'ftrl'
     NADAM = 'nadam'
+    RMSPROP = 'rmsprop'
+    SGD = 'sgd'
 
 
 def select_random_optimizer() -> Optimizers:
     return choices([
-        Optimizers.RMSPROP,
-        Optimizers.ADAM,
-        Optimizers.SGD,
-        Optimizers.ADAGRAD,
         Optimizers.ADADELTA,
+        Optimizers.ADAGRAD,
+        Optimizers.ADAM,
         Optimizers.ADAMAX,
-        Optimizers.NADAM
+        Optimizers.FTRL,
+        Optimizers.NADAM,
+        Optimizers.RMSPROP,
+        Optimizers.SGD
     ])[0]

@@ -23,7 +23,7 @@ class BaseConfigTest(unittest.TestCase):
         self.assertEqual(self.dc.NETWORK_NAME, 'mnist_training_28x28')
 
         # composite
-        self.assertEqual(self.dc.INPUT_SHAPE, (784,))
+        self.assertEqual(self.dc.INPUT_SHAPE, (28, 28, 3))
 
         # composite
         self.assertEqual(self.dc.DATA_DIRECTORY, '/dicebox/datasets/mnist_training_28x28/data/')
