@@ -26,8 +26,8 @@ class NetworkTest(unittest.TestCase):
             'optimizer': Optimizers.ADAM.value
         }
         network = self.network_factory.create_network(network_definition=definition)
-        self.assertEqual(network.get_input_shape(), 1)
-        self.assertEqual(network.get_output_size(), 1)
+        self.assertEqual(network.get_input_shape(), (28, 28, 3))
+        self.assertEqual(network.get_output_size(), 10)
 
 
 
