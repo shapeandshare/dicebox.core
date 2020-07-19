@@ -39,14 +39,7 @@ class Conv2DPadding(Enum):
     SAME = 'same'
 
 
-def select_random_conv2d_padding_type():
-    return choices([
-        Conv2DPadding.VALID,
-        Conv2DPadding.SAME
-    ])[0]
-
-
-def select_random_conv2d_padding() -> Conv2DPadding:
+def select_random_conv2d_padding_type() -> Conv2DPadding:
     return choices([
         Conv2DPadding.VALID,
         Conv2DPadding.SAME

@@ -159,35 +159,6 @@ class DiceboxNetwork(Network):
 
         return x_test
 
-    # GREY SCALE IMPLEMENTATION
-    # def get_dicebox_filesystem(self) -> [ndarray, ndarray, ndarray, ndarray]:
-    #     noise = self.config.NOISE
-    #     test_batch_size = self.config.TEST_BATCH_SIZE
-    #     train_batch_size = self.config.TRAIN_BATCH_SIZE
-    #
-    #     logging.debug('noise: %s' % noise)
-    #     logging.debug('train_batch_size: %s' % train_batch_size)
-    #     logging.debug('test_batch_size: %s' % test_batch_size)
-    #
-    #     train_image_data, train_image_labels = self.__fsc.get_batch(train_batch_size, noise=noise)
-    #     train_image_data = numpy.array(train_image_data)
-    #     train_image_data = train_image_data.astype('float32')
-    #     train_image_data /= 255
-    #     train_image_labels = numpy.array(train_image_labels)
-    #
-    #     test_image_data, test_image_labels = self.__fsc.get_batch(test_batch_size, noise=noise)
-    #     test_image_data = numpy.array(test_image_data)
-    #     test_image_data = test_image_data.astype('float32')
-    #     test_image_data /= 255
-    #     test_image_labels = numpy.array(test_image_labels)
-    #
-    #     x_train: ndarray = train_image_data
-    #     x_test: ndarray = test_image_data
-    #     y_train: ndarray = train_image_labels
-    #     y_test: ndarray = test_image_labels
-    #
-    #     return x_train, x_test, y_train, y_test
-
     # def get_dicebox_filesystem(self) -> [ndarray, ndarray, ndarray, ndarray]:
     def get_dicebox_filesystem(self):
         noise = self.config.NOISE
@@ -199,44 +170,8 @@ class DiceboxNetwork(Network):
         logging.debug('test_batch_size: %s' % test_batch_size)
 
         train_image_data, train_image_labels = self.__fsc.get_batch(train_batch_size, noise=noise)
-
-        # train_collection = self.__fsc.get_batch(train_batch_size, noise=noise)
-        # train_image_data: List[Optional[ndarray]] = train_collection[0]
-        # train_image_labels: List[ndarray] = train_collection[1]
-
-        # train_image_data = numpy.array(train_image_data)
-        # train_image_data = make_ndarray(train_image_data)
-        # train_image_data = train_image_data.astype('float32')
-        # train_image_data /= 255
-        # train_image_labels = numpy.array(train_image_labels)
-        # train_image_labels = make_ndarray(train_image_labels)
-
-        # # normalize
-        # train_image_data_normalized = []
-        # for data in train_image_data:
-        #     norm_data = data.astype('float32')
-        #     norm_data /= 255
-        #     train_image_data_normalized.append(norm_data)
-
         test_image_data, test_image_labels = self.__fsc.get_batch(test_batch_size, noise=noise)
-        # test_image_data = numpy.array(test_image_data)
-        # train_image_data = make_ndarray(train_image_data)
-        # test_image_data = test_image_data.astype('float32')
-        # test_image_data /= 255
-        # test_image_labels = numpy.array(test_image_labels)
-        # test_image_labels = make_ndarray(test_image_labels)
 
-        # # normalize
-        # test_image_data_normalized = []
-        # for data in test_image_data:
-        #     norm_data = data.astype('float32')
-        #     norm_data /= 255
-        #     test_image_data_normalized.append(norm_data)
-
-        # x_train: ndarray = train_image_data
-        # x_test: ndarray = test_image_data
-        # y_train: ndarray = train_image_labels
-        # y_test: ndarray = test_image_labels
         x_train = train_image_data
         x_test = test_image_data
         y_train = train_image_labels

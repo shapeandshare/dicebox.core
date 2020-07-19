@@ -182,7 +182,7 @@ class EvolutionaryOptimizer(NetworkFactory):
                         original_kernel: Tuple[int, int] = layer['kernel_size']
                         layer['kernel_size'] = (original_kernel[0], random_index_between(0, self.config.IMAGE_HEIGHT))
 
-                    # TODO - I need to review the math requirements for these combos to avoid invalid
+                    # TODO - I need to review the math requirements for these combos to avoid invalid layers
 
                     # # strides mutate (tuple part 1)
                     # if lucky(local_noise):

@@ -3,9 +3,12 @@ import logging
 import json
 import numpy
 import numpy.testing
+from PIL.Image import Image
 
 from src.shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
 from src.shapeandshare.dicebox.connectors.filesystem_connector import FileSystemConnector
+
+from tensorflow.keras.preprocessing.image import array_to_img
 
 
 class FileSystemConnectorTest(unittest.TestCase):
@@ -88,6 +91,8 @@ class FileSystemConnectorTest(unittest.TestCase):
         expected_data = numpy.fromfile('%s/0/mnist_testing_0_28x28_3.png.nbarray.binary' % self.DATASET_LOCATION,
                                        dtype=numpy.uint8)
         returned_data = self.fsc.process_image(filename, noise)
+        # local_image: Image = array_to_img(returned_data)
+        # local_image.save('test_output.png', format='png')
         # returned_data.tofile('test/fixtures/test_dataset/data/0/mnist_testing_0_28x28_3.png.nbarray.binary')
         numpy.testing.assert_array_equal(returned_data, expected_data)
 

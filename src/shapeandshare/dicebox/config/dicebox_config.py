@@ -41,10 +41,7 @@ class DiceboxConfig(BaseConfig):
         # Build Calculated Configs
         ###############################################################################
         self.NETWORK_NAME = "%s_%ix%i" % (self.DATASET, self.IMAGE_WIDTH, self.IMAGE_HEIGHT)
-
-        # self.INPUT_SHAPE = (self.IMAGE_WIDTH * self.IMAGE_HEIGHT,)
-        self.INPUT_SHAPE = (self.IMAGE_WIDTH, self.IMAGE_HEIGHT, 3)  # last lave is number of channels (for RGB this is three)
-
+        self.INPUT_SHAPE = (self.IMAGE_WIDTH, self.IMAGE_HEIGHT, 3)  # 3 indicates the number of channels (RGB) so 3.
         self.DATA_DIRECTORY = "%s/%s/data/" % (self.DATA_BASE_DIRECTORY, self.NETWORK_NAME)
 
         ###############################################################################

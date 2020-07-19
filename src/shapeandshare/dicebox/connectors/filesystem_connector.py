@@ -1,4 +1,3 @@
-import array
 import fnmatch
 import logging
 import os
@@ -12,8 +11,10 @@ from numpy import ndarray, int32, float32
 from ..config.dicebox_config import DiceboxConfig
 from ..utils.helpers import lucky
 from tensorflow.keras.preprocessing.image import img_to_array
-from tensorflow import shape
-from tensorflow.keras.datasets import cifar10
+
+# can be used as a foreign (sane) data set for validation of structures.
+# from tensorflow import shape
+# from tensorflow.keras.datasets import cifar10
 
 
 class FileSystemConnector:
@@ -111,16 +112,13 @@ class FileSystemConnector:
             output.append(value_list[i])
         return output
 
-    def get_batch(self, batch_size: int, noise: float = 0.0):
+    def get_batch(self, batch_size: int, noise: float = 0.0) -> List[Union[ndarray, ndarray]]:
         """For a given batch size and noise level, returns a dictionary of data and labels.
 
         :param batch_size: integer
         :param noise: floating point number
         :return: dictionary of image data and labels
         """
-        # image_data: List[Optional[ndarray]] = []
-        # image_labels = []
-        # image_labels: ndarray = numpy.empty(self.config.NB_CLASSES)
         image_data: ndarray = numpy.empty((0, self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT, 3), dtype=float32)
         image_labels: ndarray = numpy.empty((0, 1), dtype=int32)
 
@@ -134,13 +132,6 @@ class FileSystemConnector:
             logging.debug("(%s)(%s)", category_map[item[1]], filename)
             # logging.info("  natural category label: (%s)" % item[1])
             # print("  neural network category label: (%i)" % category_map[item[1]])
-            # cat_one_hot = numpy.zeros(len(category_map))
-            # cat_one_hot[int(category_map[item[1]])] = 1
-            # image_labels.append(cat_one_hot)
-            # numpy.append(image_labels, cat_one_hot)
-
-            # numpy.concatenate((image_labels, numpy.asarray(category_map[item[1]])))
-            # image_labels = numpy.append(image_labels,  numpy.asarray(category_map[item[1]]))
 
             image_labels = numpy.append(image_labels, numpy.array([[category_map[item[1]]]], dtype=int32), axis=0)
 
@@ -151,8 +142,7 @@ class FileSystemConnector:
             if filename in self.pixel_cache and not lucky(noise):
                 del self.pixel_cache[filename]
 
-            # use pixel cache if possible
-            # [k,v] (filename, pixeldata)
+            # use pixel cache if possible, [k,v] (filename, pixeldata)
             if filename in self.pixel_cache:
                 # found in cache
                 pixel_data = self.pixel_cache[filename]
@@ -162,65 +152,24 @@ class FileSystemConnector:
                 self.pixel_cache[filename] = pixel_data  # add to cache
                 logging.debug("cached pixel data for (%s)", filename)
 
-            # entry = numpy.asarray(pixel_data)
+            # add new image to the set
             image_data = numpy.append(image_data, numpy.array([pixel_data], dtype=float32), axis=0)
-            # image_data.append(entry, 1)
-            # numpy.append(image_data, entry)
 
-        # print(shape(image_data))
-        # print('*******************************************************************************')
-        # print('*******************************************************************************')
-        # print('*******************************************************************************')
-        # print(shape(image_data))
-        # print(shape(image_labels))
-        # print(image_labels)
-        # print('*******************************************************************************')
-        # print('*******************************************************************************')
-        # print('*******************************************************************************')
-        # return [image_data, image_labels]
-
+        # Validation using another data set , note the dimensions are 32x32
         # (input_train, target_train), (input_test, target_test) = cifar10.load_data()
-        # print('*******************************************************************************')
-        # print('*******************************************************************************')
-        # print('*******************************************************************************')
-        # print(type(input_train))
-        # print(type(image_data))
-        # print(shape(input_train))
-        # print(shape(image_data))
-        # print(input_train)
-        # print(image_data)
-        # print(shape(target_train))
-        # print(shape(image_labels))
-        # print(type(target_train))
-        # print(type(image_labels))
-        # print(target_train)
-        # print(image_labels)
-        # print('*******************************************************************************')
-        # print('*******************************************************************************')
-        # print('*******************************************************************************')
-
         # Parse numbers as floats
         # input_train = input_train.astype('float32')
         # input_test = input_test.astype('float32')
-
         # Scale data
         # input_train = input_train / 255
         # input_test = input_test / 255
-
         # return [input_train, target_train]
 
         return [image_data, image_labels]
 
     def process_image(self, filename: str, noise: float = 0.0) -> Optional[ndarray]:
-        """For a given filename, and noise level, will return a numpy array of pixel data.
+        # For a given filename, and noise level, will return a numpy array of pixel data.
 
-        :param filename:
-        :param noise:
-        :return:
-        """
-        # pixel_data = array.array('B')
-
-        # local_image = Image.open(filename).convert('L')  # Load as gray
         local_image = Image.open(filename).convert('RGB')  # Load as RGB
 
         original_width, original_height = local_image.size
@@ -283,25 +232,6 @@ class FileSystemConnector:
         # dump to file for manual review
         # filename = datetime.now().strftime('transform_%Y-%m-%d_%H_%M_%S_%f.png')
         # local_image.save("./tmp/%s" % filename)
-
-        # single dimension grey scal
-        # pixel = local_image.load()
-        #
-        # width, height = local_image.size
-        #
-        # for x in range(0, width):
-        #     for y in range(0, height):
-        #         pixel_value = pixel[x, y]
-        #         # logging.info("(%f)" % float(noise))
-        #         # chance = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
-        #         # logging.info("(%f)" % chance)
-        #         # if float(noise) >= float(chance):
-        #         #  # logging.info("  adding pixel noise (%f/%f)" % (float(noise), chance)) # add noise
-        #         #  pixel_value = int(ord(struct.unpack('c', os.urandom(1))[0]))
-        #         pixel_data.append(pixel_value)
-        #
-        # data = numpy.frombuffer(pixel_data, dtype=numpy.uint8)
-        # return data
 
         # https://www.tensorflow.org/api_docs/python/tf/keras/preprocessing/image/img_to_array
         image_data = img_to_array(local_image)

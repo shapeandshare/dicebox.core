@@ -2,7 +2,7 @@ from abc import ABC
 from typing import Union, Any, Tuple
 
 from ..config.dicebox_config import DiceboxConfig
-from ..models.layer import ActivationFunction, LayerType, DropoutLayer, DenseLayer, Conv2DLayer, Conv2DPadding, select_random_conv2d_padding
+from ..models.layer import ActivationFunction, LayerType, DropoutLayer, DenseLayer, Conv2DLayer, Conv2DPadding, select_random_conv2d_padding_type
 from ..utils.helpers import random_index, random_index_between, random_strict
 
 
@@ -39,7 +39,7 @@ class LayerFactory(ABC):
             return LayerFactory.build_conv2d_layer(filters=filters,
                                                    kernel_size=kernel_size,
                                                    strides=strides,
-                                                   padding=select_random_conv2d_padding(),
+                                                   padding=select_random_conv2d_padding_type(),
                                                    activation=ActivationFunction(activation))
         else:
             raise Exception("Unsupported layer type: (%s) provided." % layer_type)
