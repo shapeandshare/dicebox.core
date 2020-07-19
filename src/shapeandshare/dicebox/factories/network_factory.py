@@ -36,11 +36,12 @@ class NetworkFactory(LayerFactory):
                 new_layer: DropoutLayer = self.build_dropout_layer(rate=rate)
                 new_network.add_layer(new_layer)
             elif layer['type'] == LayerType.CONV2D.value:
+                filters: int = layer['filters']
                 kernel_size: Tuple[int, int] = layer['kernel_size']
                 strides: Tuple[int, int] = layer['strides']
                 padding: Conv2DPadding = layer['padding']
                 activation: ActivationFunction = layer['activation']
-                new_layer: Conv2DLayer = Conv2DLayer(kernel_size=kernel_size, strides=strides, padding=padding, activation=activation)
+                new_layer: Conv2DLayer = Conv2DLayer(filters=filters, kernel_size=kernel_size, strides=strides, padding=padding, activation=activation)
                 new_network.add_layer(new_layer)
             else:
                 raise Exception("Unsupported layer type: (%s) provided." % layer['type'])
