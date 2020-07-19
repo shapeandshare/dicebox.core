@@ -1,11 +1,14 @@
 Change Log
 ==========
 
-3.3.0
+3.4.0
 -----
 - RGB Support
 - Additional activation functions, and optimizers
 - Added Conv2D layer support
+
+3.3.0
+-----
 - Pathing fixes for Windows
 - Additional logging
 
