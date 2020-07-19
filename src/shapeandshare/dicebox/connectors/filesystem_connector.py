@@ -7,13 +7,14 @@ from typing import Dict, Any, List, Union, Optional
 
 import numpy
 from PIL import Image
-from numpy import ndarray
+from numpy import ndarray, int32, float32
 
 from ..config.dicebox_config import DiceboxConfig
 from ..utils.helpers import lucky
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow import shape
 from tensorflow.keras.datasets import cifar10
+
 
 class FileSystemConnector:
     """File System Connector Class"""
@@ -117,13 +118,14 @@ class FileSystemConnector:
         :param noise: floating point number
         :return: dictionary of image data and labels
         """
-        image_data: List[Optional[ndarray]] = []
-        image_labels: List[ndarray] = []
-        # image_data: ndarray = numpy.empty(1)
+        # image_data: List[Optional[ndarray]] = []
+        # image_labels = []
         # image_labels: ndarray = numpy.empty(self.config.NB_CLASSES)
+        image_data: ndarray = numpy.empty((0, self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT, 3), dtype=float32)
+        image_labels: ndarray = numpy.empty((0, 1), dtype=int32)
 
         category_map: Dict[Any, int] = self.category_map
-        batch_list: [] = self.get_batch_list(batch_size)
+        batch_list: List[int] = self.get_batch_list(batch_size)
 
         # build file path
         for i in range(0, batch_size):
@@ -131,12 +133,16 @@ class FileSystemConnector:
             filename = "%s/%s/%s" % (self.data_directory, item[1], item[0])
             logging.debug("(%s)(%s)", category_map[item[1]], filename)
             # logging.info("  natural category label: (%s)" % item[1])
-            # logging.info("  neural __network category label: (%i)" % category_map[item[1]])
-            cat_one_hot = numpy.zeros(len(category_map))
-            cat_one_hot[int(category_map[item[1]])] = 1
-            image_labels.append(cat_one_hot)
+            # print("  neural network category label: (%i)" % category_map[item[1]])
+            # cat_one_hot = numpy.zeros(len(category_map))
+            # cat_one_hot[int(category_map[item[1]])] = 1
+            # image_labels.append(cat_one_hot)
             # numpy.append(image_labels, cat_one_hot)
-            # image_labels.append(category_map[item[1]])
+
+            # numpy.concatenate((image_labels, numpy.asarray(category_map[item[1]])))
+            # image_labels = numpy.append(image_labels,  numpy.asarray(category_map[item[1]]))
+
+            image_labels = numpy.append(image_labels, numpy.array([[category_map[item[1]]]], dtype=int32), axis=0)
 
             ### Cache Invalidation, hahahaha!
             # Help prevent over-fitting, and allow for new
@@ -156,8 +162,11 @@ class FileSystemConnector:
                 self.pixel_cache[filename] = pixel_data  # add to cache
                 logging.debug("cached pixel data for (%s)", filename)
 
-            image_data.append(pixel_data)
-            # numpy.append(image_data, pixel_data)
+            # entry = numpy.asarray(pixel_data)
+            image_data = numpy.append(image_data, numpy.array([pixel_data], dtype=float32), axis=0)
+            # image_data.append(entry, 1)
+            # numpy.append(image_data, entry)
+
         # print(shape(image_data))
         # print('*******************************************************************************')
         # print('*******************************************************************************')
@@ -170,17 +179,37 @@ class FileSystemConnector:
         # print('*******************************************************************************')
         # return [image_data, image_labels]
 
-        (input_train, target_train), (input_test, target_test) = cifar10.load_data()
+        # (input_train, target_train), (input_test, target_test) = cifar10.load_data()
+        # print('*******************************************************************************')
+        # print('*******************************************************************************')
+        # print('*******************************************************************************')
+        # print(type(input_train))
+        # print(type(image_data))
+        # print(shape(input_train))
+        # print(shape(image_data))
+        # print(input_train)
+        # print(image_data)
+        # print(shape(target_train))
+        # print(shape(image_labels))
+        # print(type(target_train))
+        # print(type(image_labels))
+        # print(target_train)
+        # print(image_labels)
+        # print('*******************************************************************************')
+        # print('*******************************************************************************')
+        # print('*******************************************************************************')
+
         # Parse numbers as floats
-        input_train = input_train.astype('float32')
-        input_test = input_test.astype('float32')
+        # input_train = input_train.astype('float32')
+        # input_test = input_test.astype('float32')
 
         # Scale data
-        input_train = input_train / 255
-        input_test = input_test / 255
+        # input_train = input_train / 255
+        # input_test = input_test / 255
 
-        return [input_train, target_train]
+        # return [input_train, target_train]
 
+        return [image_data, image_labels]
 
     def process_image(self, filename: str, noise: float = 0.0) -> Optional[ndarray]:
         """For a given filename, and noise level, will return a numpy array of pixel data.
@@ -274,8 +303,6 @@ class FileSystemConnector:
         # data = numpy.frombuffer(pixel_data, dtype=numpy.uint8)
         # return data
 
-
         # https://www.tensorflow.org/api_docs/python/tf/keras/preprocessing/image/img_to_array
         image_data = img_to_array(local_image)
         return image_data
-
