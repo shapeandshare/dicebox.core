@@ -72,8 +72,8 @@ class LayerFactory(ABC):
             definition['filters'] = layer.filters
             definition['kernel_size'] = layer.kernel_size
             definition['strides'] = layer.strides
-            definition['padding'] = layer.padding
-            definition['activation'] = layer.activation
+            definition['padding'] = layer.padding.value
+            definition['activation'] = layer.activation.value
         else:
             raise
 
