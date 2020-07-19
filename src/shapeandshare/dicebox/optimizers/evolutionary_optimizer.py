@@ -6,7 +6,7 @@ from typing import List, Any, Tuple
 from ..config.dicebox_config import DiceboxConfig
 from ..factories.network_factory import NetworkFactory
 from ..models.dicebox_network import DiceboxNetwork
-from ..models.layer import Conv2DPadding
+from ..models.layer import Conv2DPadding, select_random_conv2d_padding_type
 from ..models.network import Network
 from ..models.optimizers import select_random_optimizer
 from ..utils.helpers import lucky, random_index, random_index_between, dicebox_random, random_strict
@@ -168,6 +168,10 @@ class EvolutionaryOptimizer(NetworkFactory):
                         activation_index = random_index(len(self.config.TAXONOMY['activation']))
                         layer['activation'] = self.config.TAXONOMY['activation'][activation_index - 1]
                 elif layer['type'] == 'conv2d':
+                    # filters
+                    if lucky(local_noise):
+                        layer['filters'] = random_index_between(1, self.config.MAX_NEURONS)
+
                     # kernel size mutate (tuple part 1)
                     if lucky(local_noise):
                         original_kernel: Tuple[int, int] = layer['kernel_size']
@@ -178,19 +182,22 @@ class EvolutionaryOptimizer(NetworkFactory):
                         original_kernel: Tuple[int, int] = layer['kernel_size']
                         layer['kernel_size'] = (original_kernel[0], random_index_between(0, self.config.IMAGE_HEIGHT))
 
-                    # strides mutate (tuple part 1)
-                    if lucky(local_noise):
-                        original_strides: Tuple[int, int] = layer['strides']
-                        layer['strides'] = (random_index_between(0, self.config.IMAGE_WIDTH), original_strides[1])
+                    # I need to review the math requirements for these combos to avoid invalid
 
-                    # strides mutate (tuple part 2)
-                    if lucky(local_noise):
-                        original_strides: Tuple[int, int] = layer['strides']
-                        layer['strides'] = (original_strides[0], random_index_between(0, self.config.IMAGE_HEIGHT))
+                    # # strides mutate (tuple part 1)
+                    # if lucky(local_noise):
+                    #     original_strides: Tuple[int, int] = layer['strides']
+                    #     layer['strides'] = (random_index_between(0, self.config.IMAGE_WIDTH), original_strides[1])
+
+                    # # strides mutate (tuple part 2)
+                    # if lucky(local_noise):
+                    #     original_strides: Tuple[int, int] = layer['strides']
+                    #     layer['strides'] = (original_strides[0], random_index_between(0, self.config.IMAGE_HEIGHT))
 
                     # padding mutate
                     if lucky(local_noise):
-                        layer['padding']= Conv2DPadding[random_index_between(0, 1)].value
+                        # layer['padding']= Conv2DPadding[random_index_between(0, 1)].value
+                        layer['padding'] = select_random_conv2d_padding_type().value
 
                     # activation mutate
                     if lucky(local_noise):
