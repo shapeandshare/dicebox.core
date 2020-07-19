@@ -3,6 +3,9 @@ Change Log
 
 3.3.0
 -----
+- RGB Support
+- Additional activation functions, and optimizers
+- Added Conv2D layer support
 - Pathing fixes for Windows
 - Additional logging
 
