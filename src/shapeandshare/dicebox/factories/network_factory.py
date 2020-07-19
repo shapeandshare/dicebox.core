@@ -1,8 +1,8 @@
-from typing import Any
+from typing import Any, Tuple
 
 from .layer_factory import LayerFactory
 from ..config.dicebox_config import DiceboxConfig
-from ..models.layer import LayerType, ActivationFunction
+from ..models.layer import LayerType, ActivationFunction, Conv2DLayer, Conv2DPadding, DenseLayer, DropoutLayer
 from ..models.network import Network, Optimizers
 from ..utils.helpers import random_index, random_index_between
 
@@ -19,7 +19,7 @@ class NetworkFactory(LayerFactory):
         input_shape: int = network_definition['input_shape']
         output_size: int = network_definition['output_size']
 
-        new_network = Network(config=self.config, input_shape=input_shape, output_size=output_size, optimizer=optimizer)
+        new_network = Network(config=self.config, optimizer=optimizer)
 
         if 'layers' not in network_definition:
             network_definition['layers'] = []
@@ -29,14 +29,22 @@ class NetworkFactory(LayerFactory):
             if layer['type'] == LayerType.DENSE.value:
                 size: int = layer['size']
                 activation: ActivationFunction = ActivationFunction(layer['activation'])
-                new_layer = self.build_dense_layer(size=size, activation=activation)
+                new_layer: DenseLayer = self.build_dense_layer(size=size, activation=activation)
                 new_network.add_layer(new_layer)
             elif layer['type'] == LayerType.DROPOUT.value:
                 rate: float = layer['rate']
-                new_layer = self.build_dropout_layer(rate=rate)
+                new_layer: DropoutLayer = self.build_dropout_layer(rate=rate)
+                new_network.add_layer(new_layer)
+            elif layer['type'] == LayerType.CONV2D.value:
+                filters: int = layer['filters']
+                kernel_size: Tuple[int, int] = layer['kernel_size']
+                strides: Tuple[int, int] = layer['strides']
+                padding: Conv2DPadding = Conv2DPadding(layer['padding'])
+                activation: ActivationFunction = ActivationFunction(layer['activation'])
+                new_layer: Conv2DLayer = Conv2DLayer(filters=filters, kernel_size=kernel_size, strides=strides, padding=padding, activation=activation)
                 new_network.add_layer(new_layer)
             else:
-                raise
+                raise Exception("Unsupported layer type: (%s) provided." % layer['type'])
 
         new_network.compile()
         return new_network
@@ -47,8 +55,6 @@ class NetworkFactory(LayerFactory):
         optimizer: str = self.config.TAXONOMY['optimizer'][optimizer_index - 1]
 
         network: Network = Network(config=self.config,
-                                   input_shape=self.config.INPUT_SHAPE,
-                                   output_size=self.config.NB_CLASSES,
                                    optimizer=Optimizers(optimizer))
 
         # Determine the number of layers..

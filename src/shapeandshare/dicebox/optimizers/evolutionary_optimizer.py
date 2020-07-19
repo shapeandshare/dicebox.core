@@ -6,6 +6,7 @@ from typing import List, Any, Tuple
 from ..config.dicebox_config import DiceboxConfig
 from ..factories.network_factory import NetworkFactory
 from ..models.dicebox_network import DiceboxNetwork
+from ..models.layer import select_random_conv2d_padding_type
 from ..models.network import Network
 from ..models.optimizers import select_random_optimizer
 from ..utils.helpers import lucky, random_index, random_index_between, dicebox_random, random_strict
@@ -48,8 +49,6 @@ class EvolutionaryOptimizer(NetworkFactory):
 
                 random_network: Network = self.create_random_network()
                 dn: DiceboxNetwork = DiceboxNetwork(config=self.config,
-                                                    input_shape=random_network.get_input_shape(),
-                                                    output_size=random_network.get_output_size(),
                                                     optimizer=random_network.get_optimizer(),
                                                     layers=random_network.get_layers())
 
@@ -168,6 +167,41 @@ class EvolutionaryOptimizer(NetworkFactory):
                         # mutate activation function
                         activation_index = random_index(len(self.config.TAXONOMY['activation']))
                         layer['activation'] = self.config.TAXONOMY['activation'][activation_index - 1]
+                elif layer['type'] == 'conv2d':
+                    # filters
+                    if lucky(local_noise):
+                        layer['filters'] = random_index_between(1, self.config.MAX_NEURONS)
+
+                    # kernel size mutate (tuple part 1)
+                    if lucky(local_noise):
+                        original_kernel: Tuple[int, int] = layer['kernel_size']
+                        layer['kernel_size'] = (random_index_between(0, self.config.IMAGE_WIDTH), original_kernel[1])
+
+                    # kernel size mutate (tuple part 2)
+                    if lucky(local_noise):
+                        original_kernel: Tuple[int, int] = layer['kernel_size']
+                        layer['kernel_size'] = (original_kernel[0], random_index_between(0, self.config.IMAGE_HEIGHT))
+
+                    # TODO - I need to review the math requirements for these combos to avoid invalid layers
+
+                    # # strides mutate (tuple part 1)
+                    # if lucky(local_noise):
+                    #     original_strides: Tuple[int, int] = layer['strides']
+                    #     layer['strides'] = (random_index_between(0, self.config.IMAGE_WIDTH), original_strides[1])
+
+                    # # strides mutate (tuple part 2)
+                    # if lucky(local_noise):
+                    #     original_strides: Tuple[int, int] = layer['strides']
+                    #     layer['strides'] = (original_strides[0], random_index_between(0, self.config.IMAGE_HEIGHT))
+
+                    # padding mutate
+                    if lucky(local_noise):
+                        layer['padding'] = select_random_conv2d_padding_type().value
+
+                    # activation mutate
+                    if lucky(local_noise):
+                        activation_index = random_index(len(self.config.TAXONOMY['activation']))
+                        layer['activation'] = self.config.TAXONOMY['activation'][activation_index - 1]
                 else:
                     raise Exception('Not yet implemented!')
         return mutant
@@ -244,7 +278,5 @@ class EvolutionaryOptimizer(NetworkFactory):
 
     def build_dicebox_network(self, network: Network) -> DiceboxNetwork:
         return DiceboxNetwork(config=self.config,
-                              input_shape=network.get_input_shape(),
-                              output_size=network.get_output_size(),
                               optimizer=network.get_optimizer(),
                               layers=network.get_layers())

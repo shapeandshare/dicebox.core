@@ -2,7 +2,7 @@
 import logging
 import os
 from datetime import datetime
-from typing import Union, Any, List
+from typing import Union, Any, List, Tuple, Optional
 
 import numpy
 from numpy import ndarray
@@ -19,6 +19,7 @@ from .network import Network
 class DiceboxNetwork(Network):
     __accuracy: float
 
+    # Sensory input (unique) per network - individual memory
     __fsc: FileSystemConnector  # file system connector
     __ssc: SensoryServiceConnector  # sensory service connector
 
@@ -38,14 +39,12 @@ class DiceboxNetwork(Network):
 
     def __init__(self,
                  config: DiceboxConfig,
-                 input_shape: int,
-                 output_size: int,
                  optimizer: Optimizers,
                  layers: List[Union[DropoutLayer, DenseLayer]] = None,
                  create_fsc: bool = True,
                  disable_data_indexing: bool = False):
 
-        super().__init__(config=config, input_shape=input_shape, output_size=output_size, optimizer=optimizer, layers=layers)
+        super().__init__(config=config, optimizer=optimizer, layers=layers)
 
         self.__accuracy: float = 0.0
 
@@ -104,6 +103,7 @@ class DiceboxNetwork(Network):
 
         return model_prediction
 
+    ## Phenometype
     ## Weights Storage Functions
 
     def save_model_weights(self, filename: str) -> None:
@@ -159,7 +159,8 @@ class DiceboxNetwork(Network):
 
         return x_test
 
-    def get_dicebox_filesystem(self) -> [ndarray, ndarray, ndarray, ndarray]:
+    # def get_dicebox_filesystem(self) -> [ndarray, ndarray, ndarray, ndarray]:
+    def get_dicebox_filesystem(self):
         noise = self.config.NOISE
         test_batch_size = self.config.TEST_BATCH_SIZE
         train_batch_size = self.config.TRAIN_BATCH_SIZE
@@ -169,23 +170,12 @@ class DiceboxNetwork(Network):
         logging.debug('test_batch_size: %s' % test_batch_size)
 
         train_image_data, train_image_labels = self.__fsc.get_batch(train_batch_size, noise=noise)
-        # train_image_data, train_image_labels = Network.__ssc.get_batch(train_batch_size, noise=noise)
-        train_image_data = numpy.array(train_image_data)
-        train_image_data = train_image_data.astype('float32')
-        train_image_data /= 255
-        train_image_labels = numpy.array(train_image_labels)
-
         test_image_data, test_image_labels = self.__fsc.get_batch(test_batch_size, noise=noise)
-        # test_image_data, test_image_labels = Network.__ssc.get_batch(test_batch_size, noise=noise)
-        test_image_data = numpy.array(test_image_data)
-        test_image_data = test_image_data.astype('float32')
-        test_image_data /= 255
-        test_image_labels = numpy.array(test_image_labels)
 
-        x_train: ndarray = train_image_data
-        x_test: ndarray = test_image_data
-        y_train: ndarray = train_image_labels
-        y_test: ndarray = test_image_labels
+        x_train = train_image_data
+        x_test = test_image_data
+        y_train = train_image_labels
+        y_test = test_image_labels
 
         return x_train, x_test, y_train, y_test
 

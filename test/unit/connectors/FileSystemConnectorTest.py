@@ -1,11 +1,15 @@
+import pickle
 import unittest
 import logging
 import json
 import numpy
 import numpy.testing
+from PIL.Image import Image
 
 from src.shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
 from src.shapeandshare.dicebox.connectors.filesystem_connector import FileSystemConnector
+
+from tensorflow.keras.preprocessing.image import array_to_img
 
 
 class FileSystemConnectorTest(unittest.TestCase):
@@ -83,12 +87,21 @@ class FileSystemConnectorTest(unittest.TestCase):
 
     def test_process_image(self):
         filename = '%s/0/mnist_testing_0_28x28_3.png' % self.DATASET_LOCATION
-
         noise = 0
-        expected_data = numpy.fromfile('%s/0/mnist_testing_0_28x28_3.png.nbarray.binary' % self.DATASET_LOCATION,
-                                       dtype=numpy.uint8)
         returned_data = self.fsc.process_image(filename, noise)
-        # returned_data.tofile('test/fixtures/test_dataset/data/0/mnist_testing_0_28x28_3.png.nbarray.binary')
+
+        # with open("test/fixtures/test_dataset/data/0/mnist_testing_0_28x28_3.png.pickle", "wb") as file:
+            # Pickle the 'data' dictionary using the highest protocol available.
+            # pickle.dump(returned_data, file, pickle.HIGHEST_PROTOCOL)
+
+        with open("%s/0/mnist_testing_0_28x28_3.png.pickle" % self.DATASET_LOCATION, 'rb') as f:
+            # The protocol version used is detected automatically, so we do not
+            # have to specify it.
+            expected_data = pickle.load(f)
+
+        # local_image: Image = array_to_img(returned_data)
+        # local_image.save('test_output.png', format='png')
+
         numpy.testing.assert_array_equal(returned_data, expected_data)
 
     def test_get_data_set_categories(self):

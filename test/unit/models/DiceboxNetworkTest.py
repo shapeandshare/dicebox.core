@@ -41,7 +41,9 @@ class DiceboxNetworkTest(unittest.TestCase):
 
     def test_load_network(self):
         dc = DiceboxConfig(config_file=self.local_config_file)
-        expected_dicebox_serialized_model = json.load(open(self.local_lonestar_model_file))
+
+        with open(self.local_lonestar_model_file, 'r') as json_file:
+            expected_dicebox_serialized_model = json.load(json_file)
 
         expected_compiled_model: Any = None
         with open('%s/lonestar.model.json' % self.TEST_DATA_BASE) as json_file:
