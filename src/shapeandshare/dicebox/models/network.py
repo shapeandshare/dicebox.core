@@ -1,9 +1,9 @@
+import logging
 from typing import List, Union, Any, Tuple
 
 from tensorflow.python.keras.layers import Dropout, Dense, Conv2D, Flatten
 from tensorflow.python.keras.losses import sparse_categorical_crossentropy
 from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.optimizer_v2.adam import Adam
 
 from .layer import DenseLayer, DropoutLayer, Conv2DLayer, LayerType, ActivationFunction, Conv2DPadding
 from .optimizers import Optimizers
@@ -12,9 +12,7 @@ from ..factories.layer_factory import LayerFactory
 
 
 class Network(LayerFactory):
-    # genomotype
-    # __input_shape: Tuple[int, int, int]
-    # __output_size: int
+    # genomotype (not included in the superclass via the dice)
     __optimizer: Optimizers
     __layers: List[Union[DenseLayer, DropoutLayer, Conv2DLayer]]
 
@@ -23,8 +21,6 @@ class Network(LayerFactory):
 
     def __init__(self, config: DiceboxConfig, optimizer: Optimizers, layers: List[Union[DropoutLayer, DenseLayer, Conv2DLayer]] = None):
         super().__init__(config=config)
-        # self.__input_shape: Tuple[int, int, int] = self.config.INPUT_SHAPE
-        # self.__output_size: int = self.config.NB_CLASSES
         self.__optimizer: Optimizers = optimizer
         if layers is not None:
             self.__layers: List[Union[DropoutLayer, DenseLayer, Conv2DLayer]] = layers
@@ -72,7 +68,7 @@ class Network(LayerFactory):
                 strides: Tuple[int, int] = layer.strides
                 padding: Conv2DPadding = layer.padding
                 activation: ActivationFunction = layer.activation
-                print("filters=%i, kernel_size=%s, strides=%s, padding=%s, activation=%s" % (filters, kernel_size, strides, padding.value, activation.value))
+                logging.debug("filters=%i, kernel_size=%s, strides=%s, padding=%s, activation=%s" % (filters, kernel_size, strides, padding.value, activation.value))
                 if first_layer is True:
                     first_layer = False
                     model.add(Conv2D(filters=filters, kernel_size=kernel_size, strides=strides, padding=padding.value, activation=activation.value, input_shape=self.config.INPUT_SHAPE))
@@ -81,21 +77,11 @@ class Network(LayerFactory):
             else:
                 raise
 
-        # # we never added a first layer..
-        # if first_layer is True:
-        #     print('----------------------------------------------------------')
-        #     print(self.__layers)
-        #     print('----------------------------------------------------------')
-        #     # TODO: there was no initial mapping of input size under this condition,
-        #     # hoew to resolve?
-        #     model.add(Dense(self.config.NB_CLASSES, activation='softmax'))
-        #     # raise
-
-        # add final output layers.
+        # add final output layers..
+        # https://www.machinecurve.com/index.php/2020/03/30/how-to-use-conv2d-with-keras/
+        # https://jovianlin.io/cat-crossentropy-vs-sparse-cat-crossentropy/
         model.add(Flatten())
         model.add(Dense(self.config.NB_CLASSES, activation='softmax'))
-        # model.compile(loss='categorical_crossentropy', optimizer=self.__optimizer.value, metrics=['accuracy'])
-        # model.compile(loss=sparse_categorical_crossentropy, optimizer=Adam(), metrics=['accuracy'])
         model.compile(loss=sparse_categorical_crossentropy, optimizer=self.__optimizer.value, metrics=['accuracy'])
 
         # return model
@@ -129,4 +115,3 @@ class Network(LayerFactory):
             definition['layers'].append(layer)
 
         return definition
-
