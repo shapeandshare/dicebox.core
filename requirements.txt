@@ -1,5 +1,5 @@
 numpy==1.19.0
-tensorflow==2.2.0
+tensorflow==2.2.1
 pillow==7.2.0
 configparser==5.0.0
 pika==1.1.0
