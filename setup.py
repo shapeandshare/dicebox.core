@@ -93,7 +93,7 @@ setup(
         # 'Programming Language :: Python :: 3.5',
         # 'Programming Language :: Python :: 3.6',
         "Programming Language :: Python :: 3.7",
-        'Programming Language :: Python :: 3.8',
+        "Programming Language :: Python :: 3.8",
         # 'Programming Language :: Python :: 3 :: Only',
     ],
     # This field adds keywords for your project which will appear on the
@@ -137,7 +137,7 @@ setup(
         "requests==2.25.1",
         "typing==3.7.4.3",
         "tqdm==4.55.1",
-        "uuid==1.30"
+        "uuid==1.30",
     ],  # Optional
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
