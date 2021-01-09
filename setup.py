@@ -129,7 +129,7 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        "numpy==1.18.5",
+        "numpy==1.19.2",
         "tensorflow==2.4.0",
         "pillow==8.1.0",
         "configparser==5.0.1",

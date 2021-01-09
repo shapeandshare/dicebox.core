@@ -1,4 +1,6 @@
-numpy==1.18.5
+# 1.18.5 used for arm support currently
+#numpy==1.18.5
+numpy==1.19.2
 tensorflow==2.4.0
 
 pillow==8.1.0
