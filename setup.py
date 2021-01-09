@@ -36,7 +36,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version="3.4.0",  # Required
+    version="3.5.0",  # Required
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
@@ -93,7 +93,7 @@ setup(
         # 'Programming Language :: Python :: 3.5',
         # 'Programming Language :: Python :: 3.6',
         "Programming Language :: Python :: 3.7",
-        # 'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.8',
         # 'Programming Language :: Python :: 3 :: Only',
     ],
     # This field adds keywords for your project which will appear on the
@@ -129,14 +129,15 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        "numpy==1.19.0",
-        "tensorflow==2.2.0",
-        "pillow==7.2.0",
-        "configparser==5.0.0",
+        "numpy==1.18.5",
+        "tensorflow==2.4.0",
+        "pillow==8.2.0",
+        "configparser==5.0.1",
         "pika==1.1.0",
-        "requests==2.24.0",
-        "typing==3.7.4.1",
-        "tqdm==4.47.0",
+        "requests==2.25.1",
+        "typing==3.7.4.3",
+        "tqdm==4.55.1",
+        "uuid==1.30"
     ],  # Optional
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"

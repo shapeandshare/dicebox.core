@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+3.5.0
+-----
+- Dependency updates
+
 3.4.0
 -----
 - RGB Support
