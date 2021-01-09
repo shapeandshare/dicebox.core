@@ -4,7 +4,6 @@ from src.shapeandshare.dicebox.models.optimizers import select_random_optimizer
 
 
 class OptimizersTest(unittest.TestCase):
-
     def setUp(self):
         self.maxDiff = None
 
@@ -12,6 +11,6 @@ class OptimizersTest(unittest.TestCase):
         self.assertNotEqual(select_random_optimizer().value, select_random_optimizer().value)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     runner = unittest.TextTestRunner()
     runner.run(OptimizersTest())

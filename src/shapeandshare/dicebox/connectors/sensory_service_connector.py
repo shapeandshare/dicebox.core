@@ -17,7 +17,7 @@ class SensoryServiceConnector:
     config = None
 
     def __init__(self, role, config: DiceboxConfig):
-        logging.debug('Three wise monkeys')
+        logging.debug("Three wise monkeys")
 
         self.config = config
 
@@ -25,41 +25,40 @@ class SensoryServiceConnector:
             self.interface_role = role
 
         # Consuming side
-        if role == 'client':
+        if role == "client":
             logging.debug("[%s] client side sensory interface code goes here.", self.interface_role)
 
-        if role == 'server':
+        if role == "server":
             if self.fsc is None:
                 logging.debug("[%s] creating a new __fsc..", self.interface_role)
-                self.fsc = FileSystemConnector(data_directory=self.config.DATA_DIRECTORY,
-                                               config=self.config)
+                self.fsc = FileSystemConnector(data_directory=self.config.DATA_DIRECTORY, config=self.config)
 
     def get_batch(self, batch_size=0, noise=0):
-        logging.debug('-' * 80)
+        logging.debug("-" * 80)
         logging.debug("get_batch(batch_size=%i, noise=%i)" % (batch_size, noise))
-        logging.debug('-' * 80)
+        logging.debug("-" * 80)
 
-        if self.interface_role == 'client':
-            logging.debug('-' * 80)
-            logging.debug('we are client')
-            logging.debug('-' * 80)
+        if self.interface_role == "client":
+            logging.debug("-" * 80)
+            logging.debug("we are client")
+            logging.debug("-" * 80)
             # TODO: We assemble our data through successive calls to the message service
             # or rest for small..
 
             outjson = {}
-            outjson['batch_size'] = batch_size
-            outjson['noise'] = noise
+            outjson["batch_size"] = batch_size
+            outjson["noise"] = noise
 
             json_data = json.dumps(outjson)
-            batch_request_id = self.make_sensory_api_call('api/sensory/batch', json_data, 'POST')
+            batch_request_id = self.make_sensory_api_call("api/sensory/batch", json_data, "POST")
 
             # Check the value of the response!
             if batch_request_id is None or batch_request_id == {}:
                 # Then we failed to contact the sensory service, or some other error occurred..
-                logging.error('Error getting a sensory batch request id!')
-                raise Exception('Error getting a sensory batch request id from the sensory service!')
+                logging.error("Error getting a sensory batch request id!")
+                raise Exception("Error getting a sensory batch request id from the sensory service!")
 
-            batch_id = batch_request_id['batch_id']
+            batch_id = batch_request_id["batch_id"]
 
             logging.debug(batch_id)
 
@@ -67,7 +66,7 @@ class SensoryServiceConnector:
             # call the sensory service to poll and pop our messages off, it will interface with rabbitmq for us
 
             outjson = {}
-            outjson['batch_id'] = batch_id
+            outjson["batch_id"] = batch_id
             json_data = json.dumps(outjson)
 
             image_label = []
@@ -138,12 +137,12 @@ class SensoryServiceConnector:
                     # lets attempt to cache to file here and convert the one-hot value to the directory structure
                     # first convert label to one-hot value
                     if cat_index < 0:
-                        logging.error('unable to decode one hot category value')
-                        raise Exception('unable to decode one hot category value')
+                        logging.error("unable to decode one hot category value")
+                        raise Exception("unable to decode one hot category value")
                     else:
                         logging.debug("decoded one hot category to: (%i)" % cat_index)
 
-                        newimage = Image.new('L', (self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT))  # type, size
+                        newimage = Image.new("L", (self.config.IMAGE_WIDTH, self.config.IMAGE_HEIGHT))  # type, size
                         newimage.putdata(new_image_data)
 
                         #############################################################
@@ -166,12 +165,12 @@ class SensoryServiceConnector:
                         count += 1
                 except Exception as e:
                     logging.error(e)
-                    logging.debug('.')
+                    logging.debug(".")
                     # raise e
 
-            logging.debug('-' * 80)
-            logging.debug('Done receiving batch.')
-            logging.debug('-' * 80)
+            logging.debug("-" * 80)
+            logging.debug("Done receiving batch.")
+            logging.debug("-" * 80)
             return image_data, image_label
 
             # small batch approach
@@ -180,10 +179,10 @@ class SensoryServiceConnector:
             # image_data = response['data']
             # return image_data, image_labels
 
-        elif self.interface_role == 'server':
-            logging.debug('-' * 80)
-            logging.debug('we are server')
-            logging.debug('-' * 80)
+        elif self.interface_role == "server":
+            logging.debug("-" * 80)
+            logging.debug("we are server")
+            logging.debug("-" * 80)
             return self.fsc.get_batch(batch_size, noise=noise)
         return None
 
@@ -191,21 +190,25 @@ class SensoryServiceConnector:
         # This should implement retry...
 
         headers = {
-            'Content-type': 'application/json',
-            'API-ACCESS-KEY': self.config.API_ACCESS_KEY,
-            'API-VERSION': self.config.API_VERSION
+            "Content-type": "application/json",
+            "API-ACCESS-KEY": self.config.API_ACCESS_KEY,
+            "API-VERSION": self.config.API_VERSION,
         }
 
         try:
             url = "%s%s:%s/%s" % (
-                self.config.SENSORY_URI, self.config.SENSORY_SERVER, self.config.SENSORY_PORT, end_point)
+                self.config.SENSORY_URI,
+                self.config.SENSORY_SERVER,
+                self.config.SENSORY_PORT,
+                end_point,
+            )
             # logging.debug('-' * 80)
             # logging.debug(url)
             # logging.debug('-' * 80)
             response = None
-            if call_type == 'GET':
+            if call_type == "GET":
                 response = requests.get(url, data=json_data, headers=headers)
-            elif call_type == 'POST':
+            elif call_type == "POST":
                 response = requests.post(url, data=json_data, headers=headers)
 
             if response is not None:
@@ -219,7 +222,7 @@ class SensoryServiceConnector:
     # TODO: temporary - we should calculate this using one of the provided methods this is really for testing the threaded-caching
     def get_category_map(self):
         jdata = {}
-        with open('%s/category_map.json' % self.config.WEIGHTS_DIR) as data_file:
+        with open("%s/category_map.json" % self.config.WEIGHTS_DIR) as data_file:
             raw_cat_data = json.load(data_file)
         for d in raw_cat_data:
             jdata[str(raw_cat_data[d])] = str(d)
@@ -227,7 +230,7 @@ class SensoryServiceConnector:
 
     # TODO: temporary - we should calculate this using one of the provided methods this is really for testing the threaded-caching
     def image_sensory_store(self, data_dir, data_category, image_obj):
-        filename = "%s" % datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.png')
+        filename = "%s" % datetime.now().strftime("%Y-%m-%d_%H_%M_%S_%f.png")
         path = "%s/%s/" % (data_dir, data_category)
         full_filename = "%s%s" % (path, filename)
         logging.debug("(%s)" % (full_filename))
@@ -255,13 +258,13 @@ class SensoryServiceConnector:
             if method_frame:
                 # logging.debug("%s %s %s" % (method_frame, header_frame, body))
                 message = json.loads(body)
-                label = message['label']
-                data = message['data']
+                label = message["label"]
+                data = message["data"]
                 # logging.debug(label)
                 # logging.debug(data)
                 channel.basic_ack(method_frame.delivery_tag)
             else:
-                logging.debug('no message returned')
+                logging.debug("no message returned")
         except Exception as e:
             logging.warning(e)
         finally:

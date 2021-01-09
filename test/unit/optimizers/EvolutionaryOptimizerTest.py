@@ -13,16 +13,14 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
     """
     The basic class that inherits unittest.TestCase
     """
-    TEST_DATA_BASE = 'test/fixtures'
-    local_config_file = '%s/dicebox.config' % TEST_DATA_BASE
-    local_lonestar_model_file = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
+
+    TEST_DATA_BASE = "test/fixtures"
+    local_config_file = "%s/dicebox.config" % TEST_DATA_BASE
+    local_lonestar_model_file = "%s/dicebox.lonestar.json" % TEST_DATA_BASE
 
     def test_breed(self):
         dc: DiceboxConfig = DiceboxConfig(config_file=self.local_config_file)
-        eo = EvolutionaryOptimizer(config=dc,
-                                   retain=0.4,
-                                   random_select=0.1,
-                                   mutate_chance=0.2)
+        eo = EvolutionaryOptimizer(config=dc, retain=0.4, random_select=0.1, mutate_chance=0.2)
 
         mother_network: Network = eo.create_random_network()
         mother: DiceboxNetwork = eo.build_dicebox_network(mother_network)
@@ -62,6 +60,6 @@ class EvolutionaryOptimizerTest(unittest.TestCase):
     #     self.assertNotEqual(before_network, after_network)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     runner = unittest.TextTestRunner()
     runner.run(EvolutionaryOptimizerTest())

@@ -37,26 +37,28 @@ class DiceboxNetwork(Network):
 
     __callbacks_list = [__early_stopper]
 
-    def __init__(self,
-                 config: DiceboxConfig,
-                 optimizer: Optimizers,
-                 layers: List[Union[DropoutLayer, DenseLayer]] = None,
-                 create_fsc: bool = True,
-                 disable_data_indexing: bool = False):
+    def __init__(
+        self,
+        config: DiceboxConfig,
+        optimizer: Optimizers,
+        layers: List[Union[DropoutLayer, DenseLayer]] = None,
+        create_fsc: bool = True,
+        disable_data_indexing: bool = False,
+    ):
 
         super().__init__(config=config, optimizer=optimizer, layers=layers)
 
         self.__accuracy: float = 0.0
 
         if create_fsc is True:
-            logging.debug('creating a new fsc..')
-            logging.info('self.config.DATA_DIRECTORY: (%s)' % self.config.DATA_DIRECTORY)
-            self.__fsc = FileSystemConnector(config=config,
-                                             data_directory=self.config.DATA_DIRECTORY,
-                                             disable_data_indexing=disable_data_indexing)
+            logging.debug("creating a new fsc..")
+            logging.info("self.config.DATA_DIRECTORY: (%s)" % self.config.DATA_DIRECTORY)
+            self.__fsc = FileSystemConnector(
+                config=config, data_directory=self.config.DATA_DIRECTORY, disable_data_indexing=disable_data_indexing
+            )
         else:
-            logging.debug('creating a new ssc..')
-            self.__ssc = SensoryServiceConnector(role='client', config=self.config)
+            logging.debug("creating a new ssc..")
+            self.__ssc = SensoryServiceConnector(role="client", config=self.config)
 
     ## Training
 
@@ -64,16 +66,19 @@ class DiceboxNetwork(Network):
         if self.config.DICEBOX_COMPLIANT_DATASET is True:
             x_train, x_test, y_train, y_test = self.get_dicebox_filesystem()
         else:
-            raise Exception('Unknown dataset type!  Please define, or correct.')
+            raise Exception("Unknown dataset type!  Please define, or correct.")
 
         self.compile()
 
-        self.model.fit(x_train, y_train,
-                       batch_size=self.config.BATCH_SIZE,
-                       epochs=self.config.EPOCHS, # using early stopping, so this limit acts like a max
-                       verbose=1,
-                       validation_data=(x_test, y_test),
-                       callbacks=[self.__early_stopper])
+        self.model.fit(
+            x_train,
+            y_train,
+            batch_size=self.config.BATCH_SIZE,
+            epochs=self.config.EPOCHS,  # using early stopping, so this limit acts like a max
+            verbose=1,
+            validation_data=(x_test, y_test),
+            callbacks=[self.__early_stopper],
+        )
 
         score = self.model.evaluate(x_test, y_test, verbose=0)
 
@@ -95,8 +100,8 @@ class DiceboxNetwork(Network):
             raise Exception("UNKNOWN DATASET (%s) passed to classify" % self.config.NETWORK_NAME)
 
         if self.model is None:
-            logging.error('No model! Compile the network first.')
-            raise Exception('No model! Compile the network first.')
+            logging.error("No model! Compile the network first.")
+            raise Exception("No model! Compile the network first.")
 
         model_prediction: ndarray = self.model.predict_classes(x_test, batch_size=1, verbose=0)
         logging.info(model_prediction)
@@ -108,27 +113,27 @@ class DiceboxNetwork(Network):
 
     def save_model_weights(self, filename: str) -> None:
         if self.model is None:
-            logging.error('No model! Compile the network first.')
-            raise Exception('No model! Compile the network first.')
+            logging.error("No model! Compile the network first.")
+            raise Exception("No model! Compile the network first.")
 
-        logging.debug('loading weights file..')
+        logging.debug("loading weights file..")
         try:
             self.model.save_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
         except Exception as e:
-            logging.error('Unable to save weights file.')
+            logging.error("Unable to save weights file.")
             logging.error(e)
             raise e
 
     def load_model_weights(self, filename: str) -> None:
         if self.model is None:
-            logging.error('No model! Compile the network first.')
-            raise Exception('No model! Compile the network first.')
+            logging.error("No model! Compile the network first.")
+            raise Exception("No model! Compile the network first.")
 
-        logging.debug('loading weights file..')
+        logging.debug("loading weights file..")
         try:
             self.model.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
         except Exception as e:
-            logging.error('Unable to load weights file.')
+            logging.error("Unable to load weights file.")
             logging.error(e)
             raise e
 
@@ -138,20 +143,20 @@ class DiceboxNetwork(Network):
         # TODO: variable reuse needs to be cleaned up..
 
         # ugh dump to file for the time being
-        filename = "%s/%s" % (self.config.TMP_DIR, datetime.now().strftime('%Y-%m-%d_%H_%M_%S_%f.tmp.png'))
-        with open(filename, 'wb') as f:
+        filename = "%s/%s" % (self.config.TMP_DIR, datetime.now().strftime("%Y-%m-%d_%H_%M_%S_%f.tmp.png"))
+        with open(filename, "wb") as f:
             f.write(raw_image_data)
 
         try:
             test_image_data = self.__fsc.process_image(filename)
         except:
-            logging.error('Exception caught processing image data.')
-            raise Exception('Exception caught processing image data.')
+            logging.error("Exception caught processing image data.")
+            raise Exception("Exception caught processing image data.")
         finally:
             os.remove(filename)
 
         test_image_data = numpy.array(test_image_data)
-        test_image_data = test_image_data.astype('float32')
+        test_image_data = test_image_data.astype("float32")
         test_image_data /= 255
 
         x_test = [test_image_data]
@@ -165,9 +170,9 @@ class DiceboxNetwork(Network):
         test_batch_size = self.config.TEST_BATCH_SIZE
         train_batch_size = self.config.TRAIN_BATCH_SIZE
 
-        logging.debug('noise: %s' % noise)
-        logging.debug('train_batch_size: %s' % train_batch_size)
-        logging.debug('test_batch_size: %s' % test_batch_size)
+        logging.debug("noise: %s" % noise)
+        logging.debug("train_batch_size: %s" % train_batch_size)
+        logging.debug("test_batch_size: %s" % test_batch_size)
 
         train_image_data, train_image_labels = self.__fsc.get_batch(train_batch_size, noise=noise)
         test_image_data, test_image_labels = self.__fsc.get_batch(test_batch_size, noise=noise)
@@ -180,9 +185,9 @@ class DiceboxNetwork(Network):
         return x_train, x_test, y_train, y_test
 
     def get_dicebox_sensory_data(self) -> [ndarray, ndarray, ndarray, ndarray]:
-        logging.debug('-' * 80)
-        logging.debug('get_dicebox_sensory_data(self)')
-        logging.debug('-' * 80)
+        logging.debug("-" * 80)
+        logging.debug("get_dicebox_sensory_data(self)")
+        logging.debug("-" * 80)
 
         noise = self.config.NOISE
         train_batch_size = self.config.TRAIN_BATCH_SIZE
@@ -192,55 +197,55 @@ class DiceboxNetwork(Network):
             # train_image_data, train_image_labels = Network.__fsc.get_batch(train_batch_size, noise=noise)
             train_image_data, train_image_labels = self.__ssc.get_batch(train_batch_size, noise=noise)
 
-            logging.debug('-' * 80)
-            logging.debug('train_image_data to numpy.array')
+            logging.debug("-" * 80)
+            logging.debug("train_image_data to numpy.array")
             # logging.debug(train_image_data)
 
             train_image_data = numpy.array(train_image_data)
             # logging.debug(train_image_data)
 
-            logging.debug('train_image_data astype float32')
-            train_image_data = train_image_data.astype('float32')
+            logging.debug("train_image_data astype float32")
+            train_image_data = train_image_data.astype("float32")
             # logging.debug(train_image_data)
 
-            logging.debug('train_image_data /255')
+            logging.debug("train_image_data /255")
             train_image_data /= 255
             # logging.debug(train_image_data)
 
-            logging.debug('train_image_labels to numpy.array')
+            logging.debug("train_image_labels to numpy.array")
             train_image_labels = numpy.array(train_image_labels)
             # logging.debug(train_image_labels)
-            logging.debug('-' * 80)
+            logging.debug("-" * 80)
         except ValueError:
-            logging.debug('Caught ValueError when processing training data.')
-            logging.debug('failing out..')
+            logging.debug("Caught ValueError when processing training data.")
+            logging.debug("failing out..")
             raise ValueError
 
         try:
             # test_image_data, test_image_labels = Network.__fsc.get_batch(test_batch_size, noise=noise)
             test_image_data, test_image_labels = self.__ssc.get_batch(test_batch_size, noise=noise)
 
-            logging.debug('-' * 80)
-            logging.debug('test_image_data to numpy.array')
+            logging.debug("-" * 80)
+            logging.debug("test_image_data to numpy.array")
             # logging.debug(test_image_data)
 
             test_image_data = numpy.array(test_image_data)
             # logging.debug(test_image_data)
 
-            logging.debug('test_image_data astype float32')
-            test_image_data = test_image_data.astype('float32')
+            logging.debug("test_image_data astype float32")
+            test_image_data = test_image_data.astype("float32")
             # logging.debug(test_image_data)
 
-            logging.debug('test_image_data /255')
+            logging.debug("test_image_data /255")
             test_image_data /= 255
             # logging.debug(test_image_data)
 
-            logging.debug('test_image_labels to numpy.array')
+            logging.debug("test_image_labels to numpy.array")
             test_image_labels = numpy.array(test_image_labels)
             # logging.debug(test_image_labels)
         except ValueError:
-            logging.debug('Caught ValueError when processing test data.')
-            logging.debug('failing out..')
+            logging.debug("Caught ValueError when processing test data.")
+            logging.debug("failing out..")
             raise ValueError
 
         x_train: ndarray = train_image_data

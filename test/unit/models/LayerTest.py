@@ -4,7 +4,6 @@ from src.shapeandshare.dicebox.models.layer import DenseLayer, ActivationFunctio
 
 
 class LayerTest(unittest.TestCase):
-
     def setUp(self):
         self.maxDiff = None
 
@@ -20,6 +19,6 @@ class LayerTest(unittest.TestCase):
         self.assertEqual(dropout.rate, 0.0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     runner = unittest.TextTestRunner()
     runner.run(LayerTest())
