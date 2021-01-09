@@ -131,7 +131,7 @@ setup(
     install_requires=[
         "numpy==1.18.5",
         "tensorflow==2.4.0",
-        "pillow==8.2.0",
+        "pillow==8.1.0",
         "configparser==5.0.1",
         "pika==1.1.0",
         "requests==2.25.1",
