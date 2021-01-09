@@ -6,44 +6,37 @@ from typing import Tuple
 
 
 class LayerType(Enum):
-    DROPOUT = 'dropout'
-    DENSE = 'dense'
-    CONV2D = 'conv2d'  # https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv2D
+    DROPOUT = "dropout"
+    DENSE = "dense"
+    CONV2D = "conv2d"  # https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv2D
 
 
 def select_random_layer_type() -> LayerType:
-    return choices([
-        LayerType.DROPOUT,
-        LayerType.DENSE,
-        LayerType.CONV2D
-    ])[0]
+    return choices([LayerType.DROPOUT, LayerType.DENSE, LayerType.CONV2D])[0]
 
 
 class ActivationFunction(Enum):
-    ELU = 'elu'
-    EXPONENTIAL = 'exponential'
-    HARD_SIGMOID = 'hard_sigmoid'
-    LINEAR = 'linear'
-    RELU = 'relu'
-    SELU = 'selu'
-    SIGMOID = 'sigmoid'
-    SOFTMAX = 'softmax'
-    SOFTPLUS = 'softplus'
-    SOFTSIGN = 'softsign'
-    SWISH = 'swish'
-    TANH = 'tanh'
+    ELU = "elu"
+    EXPONENTIAL = "exponential"
+    HARD_SIGMOID = "hard_sigmoid"
+    LINEAR = "linear"
+    RELU = "relu"
+    SELU = "selu"
+    SIGMOID = "sigmoid"
+    SOFTMAX = "softmax"
+    SOFTPLUS = "softplus"
+    SOFTSIGN = "softsign"
+    SWISH = "swish"
+    TANH = "tanh"
 
 
 class Conv2DPadding(Enum):
-    VALID = 'valid'
-    SAME = 'same'
+    VALID = "valid"
+    SAME = "same"
 
 
 def select_random_conv2d_padding_type() -> Conv2DPadding:
-    return choices([
-        Conv2DPadding.VALID,
-        Conv2DPadding.SAME
-    ])[0]
+    return choices([Conv2DPadding.VALID, Conv2DPadding.SAME])[0]
 
 
 class Layer(ABC):
@@ -79,8 +72,14 @@ class Conv2DLayer(Layer):
     padding: Conv2DPadding
     activation: ActivationFunction
 
-    def __init__(self, filters: int, kernel_size: Tuple[int, int], strides: Tuple[int, int], padding: Conv2DPadding,
-                 activation: ActivationFunction):
+    def __init__(
+        self,
+        filters: int,
+        kernel_size: Tuple[int, int],
+        strides: Tuple[int, int],
+        padding: Conv2DPadding,
+        activation: ActivationFunction,
+    ):
         super().__init__(layer_type=LayerType.CONV2D)
         self.filters = filters
         self.kernel_size = kernel_size

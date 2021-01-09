@@ -14,24 +14,24 @@ def lucky(noise=0.0) -> bool:
         return True
     if noise == 0.0:
         return False
-    if noise > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
+    if noise > float(ord(struct.unpack("c", os.urandom(1))[0])) / 255:
         return True
     return False
 
 
 def random_index(set_size: int) -> int:
-    rand: float = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
+    rand: float = float(ord(struct.unpack("c", os.urandom(1))[0])) / 255
     return int(math.ceil(rand * set_size))
 
 
 def random_index_between(min_index: int = 0, max_index: int = 1) -> int:
     if min_index > max_index:
-        raise Exception('max must be greater than or equal to the min')
+        raise Exception("max must be greater than or equal to the min")
 
-    rand: float = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
+    rand: float = float(ord(struct.unpack("c", os.urandom(1))[0])) / 255
     delta: int = max_index - min_index
 
-    if ((float(ord(struct.unpack('c', os.urandom(1))[0])) / 255) >= 0.5):
+    if (float(ord(struct.unpack("c", os.urandom(1))[0])) / 255) >= 0.5:
         delta_offset: int = int(math.floor(rand * delta))
     else:
         delta_offset: int = int(math.ceil(rand * delta))
@@ -39,7 +39,7 @@ def random_index_between(min_index: int = 0, max_index: int = 1) -> int:
 
 
 def dicebox_random() -> float:
-    return float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
+    return float(ord(struct.unpack("c", os.urandom(1))[0])) / 255
 
 
 # A dropout layer can is [0, 1), we can not actually use a '1' value.
@@ -61,4 +61,3 @@ def make_sure_path_exists(path) -> None:
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise exception
-

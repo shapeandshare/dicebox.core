@@ -19,7 +19,12 @@ class Network(LayerFactory):
     # phenotype
     model: Union[Sequential, None]
 
-    def __init__(self, config: DiceboxConfig, optimizer: Optimizers, layers: List[Union[DropoutLayer, DenseLayer, Conv2DLayer]] = None):
+    def __init__(
+        self,
+        config: DiceboxConfig,
+        optimizer: Optimizers,
+        layers: List[Union[DropoutLayer, DenseLayer, Conv2DLayer]] = None,
+    ):
         super().__init__(config=config)
         self.__optimizer: Optimizers = optimizer
         if layers is not None:
@@ -68,12 +73,32 @@ class Network(LayerFactory):
                 strides: Tuple[int, int] = layer.strides
                 padding: Conv2DPadding = layer.padding
                 activation: ActivationFunction = layer.activation
-                logging.debug("filters=%i, kernel_size=%s, strides=%s, padding=%s, activation=%s" % (filters, kernel_size, strides, padding.value, activation.value))
+                logging.debug(
+                    "filters=%i, kernel_size=%s, strides=%s, padding=%s, activation=%s"
+                    % (filters, kernel_size, strides, padding.value, activation.value)
+                )
                 if first_layer is True:
                     first_layer = False
-                    model.add(Conv2D(filters=filters, kernel_size=kernel_size, strides=strides, padding=padding.value, activation=activation.value, input_shape=self.config.INPUT_SHAPE))
+                    model.add(
+                        Conv2D(
+                            filters=filters,
+                            kernel_size=kernel_size,
+                            strides=strides,
+                            padding=padding.value,
+                            activation=activation.value,
+                            input_shape=self.config.INPUT_SHAPE,
+                        )
+                    )
                 else:
-                    model.add(Conv2D(filters=filters, kernel_size=kernel_size, strides=strides, padding=padding.value, activation=activation.value))
+                    model.add(
+                        Conv2D(
+                            filters=filters,
+                            kernel_size=kernel_size,
+                            strides=strides,
+                            padding=padding.value,
+                            activation=activation.value,
+                        )
+                    )
             else:
                 raise
 
@@ -81,8 +106,8 @@ class Network(LayerFactory):
         # https://www.machinecurve.com/index.php/2020/03/30/how-to-use-conv2d-with-keras/
         # https://jovianlin.io/cat-crossentropy-vs-sparse-cat-crossentropy/
         model.add(Flatten())
-        model.add(Dense(self.config.NB_CLASSES, activation='softmax'))
-        model.compile(loss=sparse_categorical_crossentropy, optimizer=self.__optimizer.value, metrics=['accuracy'])
+        model.add(Dense(self.config.NB_CLASSES, activation="softmax"))
+        model.compile(loss=sparse_categorical_crossentropy, optimizer=self.__optimizer.value, metrics=["accuracy"])
 
         # return model
         self.model = model
@@ -104,14 +129,14 @@ class Network(LayerFactory):
 
     def decompile(self) -> Any:
         definition = {
-            'input_shape': self.config.INPUT_SHAPE,
-            'output_size': self.config.NB_CLASSES,
-            'optimizer': self.__optimizer.value,
-            'layers': []
+            "input_shape": self.config.INPUT_SHAPE,
+            "output_size": self.config.NB_CLASSES,
+            "optimizer": self.__optimizer.value,
+            "layers": [],
         }
 
         for i in range(0, len(self.__layers)):
             layer = self.decompile_layer(self.__layers[i])
-            definition['layers'].append(layer)
+            definition["layers"].append(layer)
 
         return definition

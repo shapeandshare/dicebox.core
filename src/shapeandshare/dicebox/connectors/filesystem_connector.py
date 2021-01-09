@@ -30,19 +30,19 @@ class FileSystemConnector:
         self.config = config
 
         self.data_directory = os.path.normpath(data_directory)
-        logging.info('data directory: (%s)', self.data_directory)
+        logging.info("data directory: (%s)", self.data_directory)
 
         if disable_data_indexing is False:
 
             self.dataset_index: dict = self.get_data_set()
-            logging.debug('dataset_index')
+            logging.debug("dataset_index")
             logging.debug(self.dataset_index)
 
             self.category_map: Dict[Any, int] = self.get_data_set_categories()
-            logging.debug('CATEGORY_MAP')
+            logging.debug("CATEGORY_MAP")
             logging.debug(self.category_map)
         else:
-            logging.info('File System Connector Data Indexing Disabled.')
+            logging.info("File System Connector Data Indexing Disabled.")
 
     def get_data_set(self) -> dict:
         """
@@ -54,9 +54,9 @@ class FileSystemConnector:
         category: Dict[str, Any]
         # filename: str
         for root, _, filenames in os.walk(self.data_directory):
-            for filename in fnmatch.filter(filenames, '*.png'):
+            for filename in fnmatch.filter(filenames, "*.png"):
                 new_entry = str(os.path.join(root, filename))
-                new_entry = new_entry.replace('%s%s' % (self.data_directory, os.path.sep), '')
+                new_entry = new_entry.replace("%s%s" % (self.data_directory, os.path.sep), "")
                 new_entry = os.path.normpath(new_entry)
                 category, filename = new_entry.split(os.path.sep)
                 # logging.info("category: (%s), filename: (%s)" % (category, filename))
@@ -96,7 +96,7 @@ class FileSystemConnector:
         set_size: int = len(self.dataset_index)
         value_list = list(self.dataset_index.values())
         if batch_size > set_size:
-            raise Exception('Max batch size: %s, but %s was specified!' % (set_size, batch_size))
+            raise Exception("Max batch size: %s, but %s was specified!" % (set_size, batch_size))
 
         set_indices: List[int] = []
         for i in range(0, set_size):
@@ -104,7 +104,7 @@ class FileSystemConnector:
 
         output_list: List[int] = []
         while len(output_list) < batch_size:
-            index: int = int(round((float(ord(struct.unpack('c', os.urandom(1))[0])) / 255) * (len(set_indices) - 1)))
+            index: int = int(round((float(ord(struct.unpack("c", os.urandom(1))[0])) / 255) * (len(set_indices) - 1)))
             output_list.append(set_indices[index])
             set_indices.remove(set_indices[index])
 
@@ -170,28 +170,28 @@ class FileSystemConnector:
     def process_image(self, filename: str, noise: float = 0.0) -> Optional[ndarray]:
         # For a given filename, and noise level, will return a numpy array of pixel data.
 
-        local_image = Image.open(filename).convert('RGB')  # Load as RGB
+        local_image = Image.open(filename).convert("RGB")  # Load as RGB
 
         original_width, original_height = local_image.size
         # original_size = original_width, original_height
         logging.debug("original size: (%i, %i)", original_width, original_height)
 
         # See if there is noise
-        if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
+        if float(noise) > float(ord(struct.unpack("c", os.urandom(1))[0])) / 255:
             #  # then we introduce noise
-            rotation_angle = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255 * 10
-            if float(ord(struct.unpack('c', os.urandom(1))[0])) / 255 > 0.5:
+            rotation_angle = float(ord(struct.unpack("c", os.urandom(1))[0])) / 255 * 10
+            if float(ord(struct.unpack("c", os.urandom(1))[0])) / 255 > 0.5:
                 rotation_angle = rotation_angle * -1
             logging.debug("Rotating image %f", rotation_angle)
             local_image = local_image.rotate(rotation_angle)
             logging.debug("new size: (%i, %i)", local_image.size[0], local_image.size[1])
 
         # Perform a random scale
-        if float(noise) > float(ord(struct.unpack('c', os.urandom(1))[0])) / 255:
+        if float(noise) > float(ord(struct.unpack("c", os.urandom(1))[0])) / 255:
             # random_scale = float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
-            random_scale = 1.5 * float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
+            random_scale = 1.5 * float(ord(struct.unpack("c", os.urandom(1))[0])) / 255
             while random_scale < 0.7:
-                random_scale = 1.5 * float(ord(struct.unpack('c', os.urandom(1))[0])) / 255
+                random_scale = 1.5 * float(ord(struct.unpack("c", os.urandom(1))[0])) / 255
 
             logging.debug("Scaling image %f", random_scale)
             width, height = local_image.size
@@ -205,7 +205,7 @@ class FileSystemConnector:
                 logging.debug("new size: (%i, %i)", local_image.size[0], local_image.size[1])
 
         # Crop Image If Required
-        logging.debug('Crop image if required')
+        logging.debug("Crop image if required")
 
         # Now ensure we are the same dimensions as when we started
         new_width, new_height = local_image.size

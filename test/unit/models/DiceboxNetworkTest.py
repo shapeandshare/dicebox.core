@@ -10,9 +10,10 @@ class DiceboxNetworkTest(unittest.TestCase):
     """
     The basic class that inherits unittest.TestCase
     """
-    TEST_DATA_BASE = 'test/fixtures'
-    local_config_file = '%s/dicebox.config' % TEST_DATA_BASE
-    local_lonestar_model_file = '%s/dicebox.lonestar.json' % TEST_DATA_BASE
+
+    TEST_DATA_BASE = "test/fixtures"
+    local_config_file = "%s/dicebox.config" % TEST_DATA_BASE
+    local_lonestar_model_file = "%s/dicebox.lonestar.json" % TEST_DATA_BASE
 
     # local_create_fcs = True
     # local_disable_data_indexing = True
@@ -42,67 +43,34 @@ class DiceboxNetworkTest(unittest.TestCase):
     def test_load_network(self):
         dc = DiceboxConfig(config_file=self.local_config_file)
 
-        with open(self.local_lonestar_model_file, 'r') as json_file:
+        with open(self.local_lonestar_model_file, "r") as json_file:
             expected_dicebox_serialized_model = json.load(json_file)
 
         expected_compiled_model: Any = None
-        with open('%s/lonestar.model.json' % self.TEST_DATA_BASE) as json_file:
+        with open("%s/lonestar.model.json" % self.TEST_DATA_BASE) as json_file:
             expected_compiled_model = json.load(json_file)
 
         local_input_size = 784
         local_output_size = 10
-        local_optimizer = 'adamax'
+        local_optimizer = "adamax"
         local_network_definition = {
-            'optimizer': local_optimizer,
-            'input_shape': [local_input_size, ],
-            'output_size': local_output_size,
-            'layers': [
-                {
-                    'type': 'dense',
-                    'size': 987,
-                    'activation': 'elu'
-                },
-                {
-                    'type': 'dropout',
-                    'rate': 0.2
-                },
-                {
-                    'type': 'dense',
-                    'size': 89,
-                    'activation': 'elu'
-                },
-                {
-                    'type': 'dropout',
-                    'rate': 0.2
-                },
-                {
-                    'type': 'dense',
-                    'size': 987,
-                    'activation': 'elu'
-                },
-                {
-                    'type': 'dropout',
-                    'rate': 0.2
-                },
-                {
-                    'type': 'dense',
-                    'size': 987,
-                    'activation': 'elu'
-                },
-                {
-                    'type': 'dropout',
-                    'rate': 0.2
-                },
-                {
-                    'type': 'dense',
-                    'size': 987,
-                    'activation': 'elu'
-                },
-                {
-                    'type': 'dropout',
-                    'rate': 0.2
-                }
-            ]
+            "optimizer": local_optimizer,
+            "input_shape": [
+                local_input_size,
+            ],
+            "output_size": local_output_size,
+            "layers": [
+                {"type": "dense", "size": 987, "activation": "elu"},
+                {"type": "dropout", "rate": 0.2},
+                {"type": "dense", "size": 89, "activation": "elu"},
+                {"type": "dropout", "rate": 0.2},
+                {"type": "dense", "size": 987, "activation": "elu"},
+                {"type": "dropout", "rate": 0.2},
+                {"type": "dense", "size": 987, "activation": "elu"},
+                {"type": "dropout", "rate": 0.2},
+                {"type": "dense", "size": 987, "activation": "elu"},
+                {"type": "dropout", "rate": 0.2},
+            ],
         }
 
         nf = NetworkFactory(config=dc)
@@ -200,6 +168,6 @@ class DiceboxNetworkTest(unittest.TestCase):
     #     dn = None
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     runner = unittest.TextTestRunner()
     runner.run(DiceboxNetworkTest())
