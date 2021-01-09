@@ -2,6 +2,9 @@
 # autopep8==1.5.3
 # flake8-annotations==2.3.0
 # isort==4.3.21
+
+flake8==3.8.4
+
 wheel
 setuptools
 build
