@@ -25,3 +25,4 @@ jobs:
         # stop the build if there are Python syntax errors or undefined names
         # Apply repo managed rules
         flake8 --config=setup.cfg ./src  --statistics --exit-zero
+        black -l 120 . --check
