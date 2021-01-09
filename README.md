@@ -1,6 +1,6 @@
 # Dicebox Core Libraries
 
-Core libraries for the dicebox API platform.
+Core libraries for the Dicebox API platform.
 
 Notes
 -----
@@ -19,7 +19,7 @@ The requirements can be automatically installed using the below command:
 References
 ----------
 
-[Matt Harvey](https://github.com/harvitronix) thank you, for without you dicebox would not be.  Much of the current implementation of dicebox comes from Matt's project below.  I originally forked Matt's work and used it until it outgrew what it was.
+[Matt Harvey](https://github.com/harvitronix) thank you, for without you Dicebox would not be.  Much of the current implementation of dicebox comes from Matt's project below.  I originally forked Matt's work and used it until it outgrew what it was.
 
 * [Blog Post](https://blog.coast.ai/lets-evolve-a-neural-network-with-a-genetic-algorithm-code-included-8809bece164) & [Code](https://github.com/harvitronix/neural-network-genetic-algorithm)
 
@@ -29,7 +29,7 @@ References
 * [Tensorflow models](https://github.com/tensorflow/models)
 * [EasyTensorflow](https://github.com/calvinschmdt/EasyTensorflow)
 
-**Additional projects used here, or were reference material for dicebox**
+**Additional projects used here, or where reference material for Dicebox**
 
 * D20 Roll Fairness Evaluation | [Blog Post](http://www.markfickett.com/stuff/artPage.php?id=389) & [Code](https://github.com/markfickett/dicehistogram)
 * Keras | [Site](https://keras.io/) & [Code](https://github.com/fchollet/keras)
@@ -49,7 +49,7 @@ License and Authors
 -------------------
 MIT License
 
-Copyright (c) 2017-2020 Joshua C. Burt
+Copyright (c) 2017-2021 Joshua C. Burt
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
