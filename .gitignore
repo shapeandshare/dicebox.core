@@ -31,3 +31,6 @@ __pycache__/
 htmlcov/
 
 test/fixtures/mnist/population/
+projects/mnist/mnist_test_28x28/
+projects/mnist/mnist_train_28x28/
+vendored-libraries/
