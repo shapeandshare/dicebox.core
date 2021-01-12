@@ -21,7 +21,7 @@ def main():
         datefmt='%m/%d/%Y %I:%M:%S %p',
         level=logging.INFO,
         filemode='w',
-        filename="%s/primordialpool.%s.log" % (dicebox_config.LOGS_DIR, os.uname()[1])
+        filename="%s/primordialpool.%s.log" % (dicebox_config.LOGS_DIR, os.environ['COMPUTERNAME'])
     )
 
     logging.info("Application Version (%s), Dicebox API Version: (%s)", VERSION, dicebox_config.API_VERSION)
