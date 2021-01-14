@@ -22,6 +22,31 @@ def make_sure_path_exists(path):
             raise
 
 
+def extract_data_set():
+    for i in range(len(images)):
+        category = str(labels[i])
+        image_data = images[i]
+
+        img = Image.new('RGB', (image_height,image_width))
+        pixels = img.load()
+        index = 0
+        for y in range(image_height):
+            for x in range(image_width):
+                pixels[x,y] = (image_data[index], image_data[index], image_data[index])
+                index += 1
+
+        path = "./data/%s/%s/" % (dataset_name, category)
+        make_sure_path_exists(path)
+        img.save("%s/mnist_%s_%s_%ix%i_%i.png" % (
+            path,
+            dataset_name,
+            category,
+            image_width,
+            image_height,
+            i
+        ))
+
+
 ###############################################################################
 # Decode and store ..
 ###############################################################################
@@ -33,32 +58,11 @@ image_height = 28
 
 
 # training data
-# images, labels = mndata.load_training()
-# dataset_name = 'train'
+images, labels = mndata.load_training()
+dataset_name = 'train'
+extract_data_set()
 
 # testing data
 images, labels = mndata.load_testing()
 dataset_name = 'test'
-
-for i in range(len(images)):
-    category = str(labels[i])
-    image_data = images[i]
-
-    img = Image.new('RGB', (image_height,image_width))
-    pixels = img.load()
-    index = 0
-    for y in range(image_height):
-        for x in range(image_width):
-            pixels[x,y] = (image_data[index], image_data[index], image_data[index])
-            index += 1
-
-    path = "./data/%s/%s/" % (dataset_name, category)
-    make_sure_path_exists(path)
-    img.save("%s/mnist_%s_%s_%ix%i_%i.png" % (
-        path,
-        dataset_name,
-        category,
-        image_width,
-        image_height,
-        i
-    ))
+extract_data_set()
