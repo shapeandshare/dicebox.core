@@ -25,6 +25,8 @@ class PrimordialPool:
         for network in networks:
             accuracy: float = network.train()
             logging.info("accuracy: %f" % accuracy)
+            if accuracy != network.get_accuracy():
+                raise Exception('was not able to validate internal network accuracy against trained value!')
             pbar.update(1)
         pbar.close()
 
