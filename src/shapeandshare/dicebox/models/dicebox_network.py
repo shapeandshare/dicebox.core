@@ -62,6 +62,7 @@ class DiceboxNetwork(Network):
 
     ## Training
 
+    # TODO: Why is this default to False, please review and document (and/or change).
     def train(self, update_accuracy=False) -> float:
         if self.config.DICEBOX_COMPLIANT_DATASET is True:
             x_train, x_test, y_train, y_test = self.get_dicebox_filesystem()
