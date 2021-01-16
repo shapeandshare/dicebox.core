@@ -43,7 +43,7 @@ class DiceboxNetwork(Network):
         optimizer: Optimizers,
         layers: List[Union[DropoutLayer, DenseLayer]] = None,
         create_fsc: bool = True,
-        disable_data_indexing: bool = False
+        disable_data_indexing: bool = False,
     ):
 
         super().__init__(config=config, optimizer=optimizer, layers=layers)
