@@ -23,7 +23,7 @@ class PrimordialPool:
     def train_networks(networks: List[DiceboxNetwork]) -> None:
         pbar = tqdm(total=len(networks))
         for network in networks:
-            accuracy: float = network.train()
+            accuracy: float = network.train(update_accuracy=True)
             logging.info("accuracy: %f" % accuracy)
             if accuracy != network.get_accuracy():
                 raise Exception('was not able to validate internal network accuracy against trained value!')
