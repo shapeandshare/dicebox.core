@@ -2,7 +2,7 @@
 import logging
 import os
 from datetime import datetime
-from typing import Union, Any, List, Tuple, Optional
+from typing import Union, Any, List, Tuple, Optional, Dict
 
 import numpy
 from numpy import ndarray
@@ -43,7 +43,7 @@ class DiceboxNetwork(Network):
         optimizer: Optimizers,
         layers: List[Union[DropoutLayer, DenseLayer]] = None,
         create_fsc: bool = True,
-        disable_data_indexing: bool = False,
+        disable_data_indexing: bool = False
     ):
 
         super().__init__(config=config, optimizer=optimizer, layers=layers)
@@ -83,7 +83,7 @@ class DiceboxNetwork(Network):
         score = self.model.evaluate(x_test, y_test, verbose=0)
 
         if update_accuracy is True:
-            self.__accuracy = score
+            self.__accuracy = score[1]
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
@@ -253,3 +253,6 @@ class DiceboxNetwork(Network):
         y_train: ndarray = train_image_labels
         y_test: ndarray = test_image_labels
         return x_train, x_test, y_train, y_test
+
+    def get_category_map(self) -> Dict[Any, int]:
+        return self.__fsc.get_data_set_categories()
