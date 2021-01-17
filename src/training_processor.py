@@ -29,7 +29,7 @@ logging.basicConfig(
     datefmt="%m/%d/%Y %I:%M:%S %p",
     level=logging.DEBUG,
     filemode="w",
-    filename="%s/trainingprocessor.%s.log" % (dicebox_config.LOGS_DIR, os.uname()[1]),
+    filename="%s/trainingprocessor.%s.log" % (dicebox_config.LOGS_DIR, os.environ["COMPUTERNAME"]),
 )
 
 
@@ -41,20 +41,8 @@ def lonestar() -> Any:
     return {
         "input_shape": [28, 28, 3],
         "output_size": 10,
-        "optimizer": "adagrad",
-        "layers": [
-            {"type": "dense", "size": 715, "activation": "hard_sigmoid"},
-            {"type": "dropout", "rate": 0.803921568627451},
-            {"type": "dense", "size": 601, "activation": "softmax"},
-            {"type": "dense", "size": 433, "activation": "linear"},
-            {"type": "dropout", "rate": 0.5529411764705883},
-            {"type": "dense", "size": 764, "activation": "softmax"},
-            {"type": "dense", "size": 1327, "activation": "elu"},
-            {"type": "dropout", "rate": 0.8980392156862745},
-            {"type": "dropout", "rate": 0.2823529411764706},
-            {"type": "dense", "size": 1546, "activation": "linear"},
-            {"type": "dropout", "rate": 0.1803921568627451},
-        ],
+        "optimizer": "sgd",
+        "layers": [{"type": "dense", "size": 427, "activation": "softmax"}],
     }
 
 
@@ -74,6 +62,16 @@ def main():
     network_factory: NetworkFactory = NetworkFactory(config=dicebox_config)
     network: Network = network_factory.create_network(network_definition=lonestar())
     dicebox_network: DiceboxNetwork = build_dicebox_network(config=dicebox_config, network=network)
+    if dicebox_config.LOAD_BEST_WEIGHTS_ON_START is True:
+        logging.debug("-" * 80)
+        logging.debug("attempting to restart training from previous session..")
+        logging.debug("-" * 80)
+        dicebox_network.load_model_weights(
+            filename=f"{dicebox_config.WEIGHTS_DIR}/{dicebox_config.MODEL_WEIGHTS_FILENAME}"
+        )
+        logging.debug("-" * 80)
+        logging.debug("Done")
+        logging.debug("-" * 80)
 
     # network = DiceboxNetwork(CONFIG.NN_PARAM_CHOICES, True)
     # individual_network: Network = self.create_network(network_definition=individual_genome)
@@ -99,6 +97,7 @@ def main():
     #
 
     # if dicebox_network.__fsc is not None:  # we only have fsc at this point, the sensory service is deprecated until more performant.
+
     logging.debug("-" * 80)
     logging.debug("writing category map to %s for later use with the weights.", dicebox_config.TMP_DIR)
     logging.debug("-" * 80)
