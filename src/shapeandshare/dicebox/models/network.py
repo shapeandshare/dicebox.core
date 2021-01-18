@@ -111,6 +111,7 @@ class Network(LayerFactory):
 
         # return model
         self.model = model
+        print('model has been compiled.')
 
     def get_layer(self, layer_index: int) -> Union[DenseLayer, DropoutLayer, Conv2DLayer]:
         return self.__layers[layer_index]

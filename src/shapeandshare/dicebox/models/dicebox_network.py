@@ -119,7 +119,7 @@ class DiceboxNetwork(Network):
 
         logging.debug("loading weights file..")
         try:
-            self.model.save_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
+            self.model.save_weights(filepath=str(filename))  # https://github.com/keras-team/keras/issues/11269
         except Exception as e:
             logging.error("Unable to save weights file.")
             logging.error(e)
@@ -132,7 +132,7 @@ class DiceboxNetwork(Network):
 
         logging.debug("loading weights file..")
         try:
-            self.model.load_weights(str(filename))  # https://github.com/keras-team/keras/issues/11269
+            self.model.load_weights(filepath=str(filename))  # https://github.com/keras-team/keras/issues/11269
         except Exception as e:
             logging.error("Unable to load weights file.")
             logging.error(e)

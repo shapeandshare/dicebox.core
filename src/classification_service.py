@@ -3,13 +3,15 @@
 # Classification Service
 #   Handles requests for classification of data from a client.
 #
-# Copyright (c) 2017-2019 Joshua Burt
+# Copyright (c) 2017-2021 Joshua Burt
 ###############################################################################
 
 
 ###############################################################################
 # Dependencies
 ###############################################################################
+from typing import Any
+
 from flask import Flask, jsonify, request, make_response, abort
 from flask_cors import CORS, cross_origin
 import base64
@@ -35,15 +37,34 @@ dicebox_config = DiceboxConfig(config_file)
 
 
 def build_dicebox_network(config: DiceboxConfig, network: Network) -> DiceboxNetwork:
-    return DiceboxNetwork(config=config, optimizer=network.get_optimizer(), layers=network.get_layers())
+    return DiceboxNetwork(config=config, optimizer=network.get_optimizer(), layers=network.get_layers(), disable_data_indexing=True)
 
 
 def lonestar() -> Any:
     return {
-        "input_shape": [28, 28, 3],
+        "input_shape": [
+            28,
+            28,
+            3
+        ],
         "output_size": 10,
-        "optimizer": "sgd",
-        "layers": [{"type": "dense", "size": 427, "activation": "softmax"}],
+        "optimizer": "adagrad",
+        "layers": [
+            {
+                "type": "dropout",
+                "rate": 0.6274509803921569
+            },
+            {
+                "type": "dense",
+                "size": 533,
+                "activation": "sigmoid"
+            },
+            {
+                "type": "dense",
+                "size": 902,
+                "activation": "elu"
+            }
+        ]
     }
 
 
@@ -65,7 +86,8 @@ logging.basicConfig(
 network_factory: NetworkFactory = NetworkFactory(config=dicebox_config)
 network: Network = network_factory.create_network(network_definition=lonestar())
 dicebox_network: DiceboxNetwork = build_dicebox_network(config=dicebox_config, network=network)
-dicebox_network.load_model_weights()
+dicebox_network.compile()
+dicebox_network.load_model_weights(f"{dicebox_config.WEIGHTS_DIR}/{dicebox_config.MODEL_WEIGHTS_FILENAME}")
 
 ###############################################################################
 # Load categories for the model
@@ -87,20 +109,9 @@ cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:*"}})
 ###############################################################################
 # Method call that creates the classification response.
 # We are loading a specific model (lonestar), with a pre-created weights file.
-# Here we elect to create_model, which will also load the model weights on
-# first use.
 ###############################################################################
 def get_classification(image_data):
-    try:
-        network.create_lonestar(
-            create_model=True,
-            weights_filename="%s/%s" % (dicebox_config.WEIGHTS_DIR, dicebox_config.MODEL_WEIGHTS_FILENAME)
-        )
-    except:
-        logging.error("Error summoning lonestar")
-        return -1
-
-    classification = network.classify(image_data)
+    classification = dicebox_network.classify(network_input=image_data)
     logging.info("classification: (%s)", classification)
     return classification[0]
 
@@ -141,7 +152,7 @@ def make_api_get_classify_public():
         abort(400)
     if not request.json:
         abort(400)
-    if "data" in request.json and type(request.json["data"]) != unicode:
+    if "data" in request.json: # and type(request.json["data"]) != unicode:
         abort(400)
 
     encoded_image_data = request.json.get("data")

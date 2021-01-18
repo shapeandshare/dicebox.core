@@ -8,6 +8,7 @@ import os
 import errno
 import json
 import uuid
+from datetime import datetime
 from typing import Any
 
 from shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
@@ -39,16 +40,34 @@ def build_dicebox_network(config: DiceboxConfig, network: Network) -> DiceboxNet
 
 def lonestar() -> Any:
     return {
-        "input_shape": [28, 28, 3],
+        "input_shape": [
+            28,
+            28,
+            3
+        ],
         "output_size": 10,
-        "optimizer": "sgd",
-        "layers": [{"type": "dense", "size": 427, "activation": "softmax"}],
+        "optimizer": "adagrad",
+        "layers": [
+            {
+                "type": "dropout",
+                "rate": 0.6274509803921569
+            },
+            {
+                "type": "dense",
+                "size": 533,
+                "activation": "sigmoid"
+            },
+            {
+                "type": "dense",
+                "size": 902,
+                "activation": "elu"
+            }
+        ]
     }
 
-
-"""
-Training Logic
-"""
+    """
+    Training Logic
+    """
 
 
 def main():
@@ -118,10 +137,11 @@ def main():
         logging.debug(f"dicebox_config.WEIGHTS_DIR={dicebox_config.WEIGHTS_DIR}")
         logging.debug(f"training_request_id={training_request_id}")
         logging.debug(f"accuracy={dicebox_network.get_accuracy() * 100}")
-        full_path = "%s/%s.%.2f.hdf5" % (
+        full_path = "%s/%s.%.2f.%s.tf" % (
             dicebox_config.WEIGHTS_DIR,
             training_request_id,
             (dicebox_network.get_accuracy() * 100),
+            datetime.now().strftime("%Y%m%d-%H%M%S")
         )
         logging.debug("saving model weights after epoch %i to file %s" % (i, full_path))
         logging.debug("-" * 80)
