@@ -104,7 +104,8 @@ class DiceboxNetwork(Network):
             logging.error("No model! Compile the network first.")
             raise Exception("No model! Compile the network first.")
 
-        model_prediction: ndarray = self.model.predict_classes(x_test, batch_size=1, verbose=0)
+        # model_prediction: ndarray = self.model.predict_classes(x_test, batch_size=1, verbose=0)
+        model_prediction: ndarray = numpy.argmax(self.model.predict(x_test), axis=-1)
         logging.info(model_prediction)
 
         return model_prediction

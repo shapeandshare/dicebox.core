@@ -40,29 +40,14 @@ def build_dicebox_network(config: DiceboxConfig, network: Network) -> DiceboxNet
 
 def lonestar() -> Any:
     return {
-        "input_shape": [
-            28,
-            28,
-            3
-        ],
+        "input_shape": [28, 28, 3],
         "output_size": 10,
         "optimizer": "adagrad",
         "layers": [
-            {
-                "type": "dropout",
-                "rate": 0.6274509803921569
-            },
-            {
-                "type": "dense",
-                "size": 533,
-                "activation": "sigmoid"
-            },
-            {
-                "type": "dense",
-                "size": 902,
-                "activation": "elu"
-            }
-        ]
+            {"type": "dropout", "rate": 0.6274509803921569},
+            {"type": "dense", "size": 533, "activation": "sigmoid"},
+            {"type": "dense", "size": 902, "activation": "elu"},
+        ],
     }
 
     """
@@ -141,7 +126,7 @@ def main():
             dicebox_config.WEIGHTS_DIR,
             training_request_id,
             (dicebox_network.get_accuracy() * 100),
-            datetime.now().strftime("%Y%m%d-%H%M%S")
+            datetime.now().strftime("%Y%m%d-%H%M%S"),
         )
         logging.debug("saving model weights after epoch %i to file %s" % (i, full_path))
         logging.debug("-" * 80)

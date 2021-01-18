@@ -12,6 +12,7 @@
 ###############################################################################
 from typing import Any
 
+import numpy
 from flask import Flask, jsonify, request, make_response, abort
 from flask_cors import CORS, cross_origin
 import base64
@@ -37,34 +38,21 @@ dicebox_config = DiceboxConfig(config_file)
 
 
 def build_dicebox_network(config: DiceboxConfig, network: Network) -> DiceboxNetwork:
-    return DiceboxNetwork(config=config, optimizer=network.get_optimizer(), layers=network.get_layers(), disable_data_indexing=True)
+    return DiceboxNetwork(
+        config=config, optimizer=network.get_optimizer(), layers=network.get_layers(), disable_data_indexing=True
+    )
 
 
 def lonestar() -> Any:
     return {
-        "input_shape": [
-            28,
-            28,
-            3
-        ],
+        "input_shape": [28, 28, 3],
         "output_size": 10,
         "optimizer": "adagrad",
         "layers": [
-            {
-                "type": "dropout",
-                "rate": 0.6274509803921569
-            },
-            {
-                "type": "dense",
-                "size": 533,
-                "activation": "sigmoid"
-            },
-            {
-                "type": "dense",
-                "size": 902,
-                "activation": "elu"
-            }
-        ]
+            {"type": "dropout", "rate": 0.6274509803921569},
+            {"type": "dense", "size": 533, "activation": "sigmoid"},
+            {"type": "dense", "size": 902, "activation": "elu"},
+        ],
     }
 
 
@@ -77,7 +65,7 @@ logging.basicConfig(
     datefmt="%m/%d/%Y %I:%M:%S %p",
     level=logging.DEBUG,
     filemode="w",
-    filename="%s/classificationservice.%s.log" % (dicebox_config.LOGS_DIR, os.environ["COMPUTERNAME"]),
+    filename="%s/classificationservice.%s.log" % (dicebox_config.LOGS_DIR, "macos"),
 )
 
 ###############################################################################
@@ -110,8 +98,8 @@ cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:*"}})
 # Method call that creates the classification response.
 # We are loading a specific model (lonestar), with a pre-created weights file.
 ###############################################################################
-def get_classification(image_data):
-    classification = dicebox_network.classify(network_input=image_data)
+def get_classification(image_data) -> int:
+    classification = dicebox_network.classify(network_input=image_data).tolist()
     logging.info("classification: (%s)", classification)
     return classification[0]
 
@@ -152,7 +140,7 @@ def make_api_get_classify_public():
         abort(400)
     if not request.json:
         abort(400)
-    if "data" in request.json: # and type(request.json["data"]) != unicode:
+    if "data" not in request.json:  # and type(request.json["data"]) != unicode:
         abort(400)
 
     encoded_image_data = request.json.get("data")
@@ -173,7 +161,7 @@ def make_api_version_public():
 ###############################################################################
 # Super generic health end-point
 ###############################################################################
-@app.route("/health/plain", methods=["GET"])
+@app.route("/health", methods=["GET"])
 @cross_origin()
 def make_health_plain_public():
     return make_response("true", 200)

@@ -33,7 +33,6 @@ class FileSystemConnector:
         logging.info("data directory: (%s)", self.data_directory)
 
         if disable_data_indexing is False:
-
             self.dataset_index: dict = self.get_data_set()
             logging.debug("dataset_index")
             logging.debug(self.dataset_index)
@@ -44,7 +43,7 @@ class FileSystemConnector:
         else:
             logging.info("File System Connector Data Indexing Disabled.")
 
-    def get_data_set(self) -> dict:
+    def get_data_set(self) -> Dict[str, List[Union[str, Dict[str, Any]]]]:
         """
         Returns a dictionary of [k:filename, v:array of filename and category] for the entire data set.
 
@@ -60,7 +59,7 @@ class FileSystemConnector:
                 new_entry = os.path.normpath(new_entry)
                 category, filename = new_entry.split(os.path.sep)
                 # logging.info("category: (%s), filename: (%s)" % (category, filename))
-                data_set[new_entry]: Union[str, Dict[str, Any]] = [filename, category]
+                data_set[new_entry]: Union[str, Dict[str]] = [filename, category]
         # logging.info(data_set)
         return data_set
 
