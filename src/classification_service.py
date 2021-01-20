@@ -145,7 +145,7 @@ def make_api_get_classify_public():
 
     encoded_image_data = request.json.get("data")
     decoded_image_data = base64.b64decode(encoded_image_data)
-    classification = get_classification(decoded_image_data.decode("utf-8"))
+    classification = get_classification(decoded_image_data)
 
     return make_response(jsonify({"classification": classification}), 200)
 
