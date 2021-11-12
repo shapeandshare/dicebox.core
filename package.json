@@ -10,7 +10,7 @@
     "build": "npm run clean && npm run build:wheel",
     "build:wheel": "python setup.py bdist_wheel",
     "build:image": "docker build . -t dicebox.core",
-    "clean": "rimraf htmlcov .coverage build dist src/shapeandshare_dicebox_core.egg-info",
+    "clean": "rimraf htmlcov .coverage coverage.xml build dist src/shapeandshare_dicebox_core.egg-info primordialpool.log",
     "test": "npm run test:unit && npm run test:coverage",
     "test:unit": "coverage run --branch -m unittest discover -s test -p '*Test.py'",
     "test:coverage": "coverage report -m && coverage xml && coverage html",

@@ -73,17 +73,21 @@ class DiceboxNetwork(Network):
         if update_accuracy is False or self.model is None:
             self.compile()
 
-        self.model.fit(
-            x_train,
-            y_train,
-            batch_size=self.config.BATCH_SIZE,
-            epochs=self.config.EPOCHS,  # using early stopping, so this limit acts like a max
-            verbose=1,
-            validation_data=(x_test, y_test),
-            callbacks=[self.__early_stopper],
-        )
+        try:
+            self.model.fit(
+                x_train,
+                y_train,
+                batch_size=self.config.BATCH_SIZE,
+                epochs=self.config.EPOCHS,  # using early stopping, so this limit acts like a max
+                verbose=1,
+                validation_data=(x_test, y_test),
+                callbacks=[self.__early_stopper],
+            )
 
-        score = self.model.evaluate(x_test, y_test, verbose=0)
+            score = self.model.evaluate(x_test, y_test, verbose=0)
+        except Exception as error:
+            print(f"Exception caught! error: ({str(error)})")
+            return -1
 
         if update_accuracy is True:
             self.__accuracy = score[1]
