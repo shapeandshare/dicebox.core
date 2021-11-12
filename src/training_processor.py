@@ -30,15 +30,12 @@ logging.basicConfig(
     datefmt="%m/%d/%Y %I:%M:%S %p",
     level=logging.DEBUG,
     filemode="w",
-    filename="%s/trainingprocessor.%s.log" % (dicebox_config.LOGS_DIR, os.environ["COMPUTERNAME"]),
+    # filename="%s/trainingprocessor.%s.log" % (dicebox_config.LOGS_DIR, os.environ["COMPUTERNAME"]),
+    filename="%s/trainingprocessor.%s.log" % (dicebox_config.LOGS_DIR, os.uname()[1]),
 )
 
 
-def build_dicebox_network(config: DiceboxConfig, network: Network) -> DiceboxNetwork:
-    return DiceboxNetwork(config=config, optimizer=network.get_optimizer(), layers=network.get_layers())
-
-
-def lonestar() -> Any:
+def lonestar() -> object:
     return {
         "input_shape": [28, 28, 3],
         "output_size": 10,
@@ -65,7 +62,9 @@ def main():
     # create network factory
     network_factory: NetworkFactory = NetworkFactory(config=dicebox_config)
     network: Network = network_factory.create_network(network_definition=lonestar())
-    dicebox_network: DiceboxNetwork = build_dicebox_network(config=dicebox_config, network=network)
+    dicebox_network: DiceboxNetwork = DiceboxNetwork(config=dicebox_config, optimizer=network.get_optimizer(), layers=network.get_layers())
+    del network
+
     if dicebox_config.LOAD_BEST_WEIGHTS_ON_START is True:
         logging.debug("-" * 80)
         logging.debug("attempting to restart training from previous session..")
@@ -115,6 +114,7 @@ def main():
         logging.debug("epoch (%i of %i)" % (i, dicebox_config.EPOCHS))
         logging.debug("-" * 80)
         # dicebox_network.train_and_save(dicebox_config.DATASET)
+        # dicebox_network.compile()
         dicebox_network.train(update_accuracy=True)
 
         make_sure_path_exists(dicebox_config.WEIGHTS_DIR)

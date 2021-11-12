@@ -6,6 +6,7 @@ from typing import Union, Any, List, Tuple, Optional, Dict
 
 import numpy
 from numpy import ndarray
+from tensorflow import keras
 from tensorflow.keras.callbacks import EarlyStopping
 
 from .layer import DropoutLayer, DenseLayer
@@ -69,7 +70,8 @@ class DiceboxNetwork(Network):
         else:
             raise Exception("Unknown dataset type!  Please define, or correct.")
 
-        self.compile()
+        if update_accuracy is False or self.model is None:
+            self.compile()
 
         self.model.fit(
             x_train,
@@ -134,8 +136,10 @@ class DiceboxNetwork(Network):
 
         logging.debug("loading weights file..")
         try:
-            load_status = self.model.load_weights(filepath=str(filename))  # https://github.com/keras-team/keras/issues/11269
-            load_status.assert_consumed()  # validates restored state
+            # load_status = self.model.load_weights(filepath=str(filename))  # https://github.com/keras-team/keras/issues/11269
+            self.model = keras.models.load_model(filepath=str(filename))
+
+            # load_status.assert_consumed()  # validates restored state
         except Exception as e:
             logging.error("Unable to load weights file.")
             logging.error(e)

@@ -129,15 +129,15 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        "numpy==1.19.2",
-        "tensorflow==2.4.0",
-        "pillow==8.1.0",
-        "configparser==5.0.1",
-        "pika==1.1.0",
-        "requests==2.25.1",
-        "typing==3.7.4.3",
-        "tqdm==4.55.1",
-        "uuid==1.30",
+        "numpy>=1.19.2",
+        "tensorflow>=2.4.0",
+        "pillow>=8.2.0",
+        "configparser>=5.0.1",
+        "pika>=1.1.0",
+        "requests>=2.25.1",
+        "typing>=3.7.4.3",
+        "tqdm>=4.55.1",
+        "uuid>=1.30",
     ],  # Optional
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"

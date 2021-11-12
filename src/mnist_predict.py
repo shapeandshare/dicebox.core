@@ -111,7 +111,9 @@ def get_classification(image_data) -> int:
 network_factory: NetworkFactory = NetworkFactory(config=dicebox_config)
 network: Network = network_factory.create_network(network_definition=lonestar())
 dicebox_network: DiceboxNetwork = build_dicebox_network(config=dicebox_config, network=network)
+print("|| Compiling ..")
 dicebox_network.compile()
+print("|| Loading model..")
 dicebox_network.load_model_weights(f"{dicebox_config.WEIGHTS_DIR}/{dicebox_config.MODEL_WEIGHTS_FILENAME}")
 
 
