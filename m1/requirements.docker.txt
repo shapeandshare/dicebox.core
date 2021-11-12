@@ -1,0 +1,14 @@
+# 1.18.5 used for arm support currently
+numpy
+tensorflow-gpu
+pillow
+
+configparser
+pika
+requests
+typing
+
+
+# primordial pool
+tqdm
+uuid

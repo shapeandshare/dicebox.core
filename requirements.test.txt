@@ -1,6 +1,0 @@
-pylint
-black
-coverage==5.3.1
-python-dotenv==0.15.0
-
-python-mnist==0.7

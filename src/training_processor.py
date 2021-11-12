@@ -62,7 +62,9 @@ def main():
     # create network factory
     network_factory: NetworkFactory = NetworkFactory(config=dicebox_config)
     network: Network = network_factory.create_network(network_definition=lonestar())
-    dicebox_network: DiceboxNetwork = DiceboxNetwork(config=dicebox_config, optimizer=network.get_optimizer(), layers=network.get_layers())
+    dicebox_network: DiceboxNetwork = DiceboxNetwork(
+        config=dicebox_config, optimizer=network.get_optimizer(), layers=network.get_layers()
+    )
     del network
 
     if dicebox_config.LOAD_BEST_WEIGHTS_ON_START is True:

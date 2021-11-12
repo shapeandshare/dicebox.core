@@ -1,0 +1,15 @@
+numpy
+tensorflow
+
+pillow
+configparse
+pika
+requests
+
+
+# primordial pool
+tqdm
+
+# for serving
+flask
+flask-cors

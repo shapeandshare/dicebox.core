@@ -3,7 +3,9 @@
   "version": "3.6.0",
   "description": "Core libraries for the DiceBox API platform",
   "scripts": {
-    "lint": "black -l 120 . --check && pylint",
+    "prebuild": "conda init",
+    "audit": "safety check && npm audit",
+    "lint": "black -l 120 . --check && pylint --rcfile=.pylintrc src test tools projects",
     "lint:fix": "black -l 120 .",
     "build": "npm run clean && npm run build:wheel",
     "build:wheel": "python setup.py bdist_wheel",
@@ -11,7 +13,12 @@
     "clean": "rimraf htmlcov .coverage build dist src/shapeandshare_dicebox_core.egg-info",
     "test": "npm run test:unit && npm run test:coverage",
     "test:unit": "coverage run --branch -m unittest discover -s test -p '*Test.py'",
-    "test:coverage": "coverage report -m && coverage xml && coverage html"
+    "test:coverage": "coverage report -m && coverage xml && coverage html",
+    "environment:create": "conda create --name tensorflow_m1 python==3.9 -y",
+    "environment:dependencies:build": "conda install wheel setuptools build -y",
+    "environment:dependencies:test": "conda install pylint black coverage python-dotenv safety -y && pip install python-mnist",
+    "environment:dependencies:application": "conda install -c apple tensorflow-deps -y && pip install tensorflow-macos && pip install tensorflow-metal && conda install pillow configparser pika requests tqdm -y",
+    "environment:remove": "conda env remove -n tensorflow_m1"
   },
   "devDependencies": {
     "rimraf": "^3.0.2"
