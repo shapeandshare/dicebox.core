@@ -9,7 +9,7 @@ from ..models.layer import (
     DenseLayer,
     Conv2DLayer,
     Conv2DPadding,
-    select_random_conv2d_padding_type,
+    select_random_conv2d_padding_type, FlattenLayer,
 )
 from ..utils.helpers import random_index, random_index_between, random_strict
 
@@ -20,12 +20,14 @@ class LayerFactory(ABC):
     def __init__(self, config: DiceboxConfig):
         self.config = config
 
-    def build_random_layer(self) -> Union[DropoutLayer, DenseLayer, Conv2DLayer]:
+    def build_random_layer(self) -> Union[DropoutLayer, DenseLayer, Conv2DLayer, FlattenLayer]:
         # determine what the layer type will be
         layer_type_index = random_index_between(min_index=0, max_index=len(self.config.TAXONOMY["layer_types"]))
         # layer_type_index = random_index(len(self.config.TAXONOMY['layer_types']))
         layer_type = self.config.TAXONOMY["layer_types"][layer_type_index - 1]
-        if layer_type == LayerType.DROPOUT.value:
+        if layer_type == LayerType.FLATTEN.value:
+            return LayerFactory.build_flatten_layer()
+        elif layer_type == LayerType.DROPOUT.value:
             return LayerFactory.build_dropout_layer(rate=random_strict())
         elif layer_type == LayerType.DENSE.value:
             # determine the size and activation function to use.
@@ -54,6 +56,10 @@ class LayerFactory(ABC):
             raise Exception("Unsupported layer type: (%s) provided." % layer_type)
 
     @staticmethod
+    def build_flatten_layer() -> FlattenLayer:
+        return FlattenLayer()
+
+    @staticmethod
     def build_dropout_layer(rate: float) -> DropoutLayer:
         return DropoutLayer(rate=rate)
 
@@ -80,6 +86,8 @@ class LayerFactory(ABC):
         if layer.layer_type == LayerType.DROPOUT:
             definition["type"] = LayerType.DROPOUT.value
             definition["rate"] = layer.rate
+        elif layer.layer_type == LayerType.FLATTEN:
+            definition["type"] = LayerType.FLATTEN.value
         elif layer.layer_type == LayerType.DENSE:
             definition["type"] = LayerType.DENSE.value
             definition["size"] = layer.size

@@ -72,7 +72,8 @@ class DiceboxNetwork(Network):
 
         if update_accuracy is False or self.model is None:
             self.compile()
-
+        logging.debug("model fit..")
+        logging.info("model fit..")
         try:
             self.model.fit(
                 x_train,
@@ -124,7 +125,7 @@ class DiceboxNetwork(Network):
             logging.error("No model! Compile the network first.")
             raise Exception("No model! Compile the network first.")
 
-        logging.debug("loading weights file..")
+        logging.debug("saving weights file..")
         try:
             self.model.save(filepath=str(filename), save_format="tf")
             # self.model.save_weights(filepath=str(filename))  # https://github.com/keras-team/keras/issues/11269

@@ -41,11 +41,24 @@ def lonestar() -> object:
         "output_size": 10,
         "optimizer": "adagrad",
         "layers": [
-            {"type": "dropout", "rate": 0.6274509803921569},
-            {"type": "dense", "size": 533, "activation": "sigmoid"},
-            {"type": "dense", "size": 902, "activation": "elu"},
+            {"type": "flatten"},
+            {"type": "dense", "size": 128, "activation": "relu"},
+            {"type": "dropout", "rate": 0.01},
         ],
     }
+
+# def lonestar() -> Any:
+#     return {
+#         "input_shape": [28, 28, 3],
+#         "output_size": 10,
+#         "optimizer": "adagrad",
+#         "layers": [
+#             {"type": "dropout", "rate": 0.6274509803921569},
+#             {"type": "dense", "size": 533, "activation": "sigmoid"},
+#             {"type": "dense", "size": 902, "activation": "elu"},
+#         ],
+#     }
+
 
     """
     Training Logic

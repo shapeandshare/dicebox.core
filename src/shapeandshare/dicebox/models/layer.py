@@ -9,10 +9,11 @@ class LayerType(Enum):
     DROPOUT = "dropout"
     DENSE = "dense"
     CONV2D = "conv2d"  # https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv2D
+    FLATTEN = "flatten"
 
 
 def select_random_layer_type() -> LayerType:
-    return choices([LayerType.DROPOUT, LayerType.DENSE, LayerType.CONV2D])[0]
+    return choices([LayerType.DROPOUT, LayerType.DENSE, LayerType.CONV2D, LayerType.FLATTEN])[0]
 
 
 class ActivationFunction(Enum):
@@ -62,6 +63,11 @@ class DropoutLayer(Layer):
     def __init__(self, rate: float):
         super().__init__(layer_type=LayerType.DROPOUT)
         self.rate = rate
+
+
+class FlattenLayer(Layer):
+    def __init__(self):
+        super().__init__(layer_type=LayerType.FLATTEN)
 
 
 # https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv2D

@@ -5,7 +5,7 @@ from tensorflow.python.keras.layers import Dropout, Dense, Conv2D, Flatten
 from tensorflow.python.keras.losses import sparse_categorical_crossentropy
 from tensorflow.python.keras.models import Sequential
 
-from .layer import DenseLayer, DropoutLayer, Conv2DLayer, LayerType, ActivationFunction, Conv2DPadding
+from .layer import DenseLayer, DropoutLayer, Conv2DLayer, LayerType, ActivationFunction, Conv2DPadding, FlattenLayer
 from .optimizers import Optimizers
 from ..config.dicebox_config import DiceboxConfig
 from ..factories.layer_factory import LayerFactory
@@ -34,7 +34,7 @@ class Network(LayerFactory):
         self.model: Union[Sequential, None] = None
         self.compile()
 
-    def add_layer(self, layer: Union[DropoutLayer, DenseLayer, Conv2DLayer]) -> None:
+    def add_layer(self, layer: Union[DropoutLayer, DenseLayer, Conv2DLayer, FlattenLayer]) -> None:
         self.__layers.append(layer)
         self.compile()
 
@@ -46,7 +46,7 @@ class Network(LayerFactory):
     def compile(self) -> None:
         self.__clear_model()
 
-        # early exist for empty layers
+        # early exit for empty layers
         if len(self.__layers) < 1:
             return
 
@@ -55,15 +55,24 @@ class Network(LayerFactory):
         first_layer: bool = True
         for layer in self.__layers:
             # build and add layer
-            if layer.layer_type == LayerType.DROPOUT:
+            if layer.layer_type == LayerType.FLATTEN:
+                # flatten
+                if first_layer is True:
+                    model.add(Flatten(input_shape=self.config.INPUT_SHAPE))
+                    first_layer = False
+                else:
+                    model.add(Flatten())
+            elif layer.layer_type == LayerType.DROPOUT:
                 # handle dropout
                 model.add(Dropout(rate=layer.rate))
+                if first_layer:
+                    first_layer = False
             elif layer.layer_type == LayerType.DENSE:
                 neurons: int = layer.size
                 activation: ActivationFunction = layer.activation
                 if first_layer is True:
-                    first_layer = False
                     model.add(Dense(neurons, activation=activation.value, input_shape=self.config.INPUT_SHAPE))
+                    first_layer = False
                 else:
                     model.add(Dense(neurons, activation=activation.value))
             elif layer.layer_type == LayerType.CONV2D:

@@ -2,7 +2,8 @@ from typing import Any, Tuple
 
 from .layer_factory import LayerFactory
 from ..config.dicebox_config import DiceboxConfig
-from ..models.layer import LayerType, ActivationFunction, Conv2DLayer, Conv2DPadding, DenseLayer, DropoutLayer
+from ..models.layer import LayerType, ActivationFunction, Conv2DLayer, Conv2DPadding, DenseLayer, DropoutLayer, \
+    FlattenLayer
 from ..models.network import Network, Optimizers
 from ..utils.helpers import random_index, random_index_between
 
@@ -27,7 +28,10 @@ class NetworkFactory(LayerFactory):
 
         # Process layers
         for layer in network_definition["layers"]:
-            if layer["type"] == LayerType.DENSE.value:
+            if layer["type"] == LayerType.FLATTEN.value:
+              new_layer: FlattenLayer = self.build_flatten_layer()
+              new_network.add_layer(new_layer)
+            elif layer["type"] == LayerType.DENSE.value:
                 size: int = layer["size"]
                 activation: ActivationFunction = ActivationFunction(layer["activation"])
                 new_layer: DenseLayer = self.build_dense_layer(size=size, activation=activation)
