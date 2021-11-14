@@ -43,6 +43,7 @@ class Network(LayerFactory):
             del self.model
         self.model = None
 
+    # Not thread safe
     def compile(self) -> None:
         self.__clear_model()
 

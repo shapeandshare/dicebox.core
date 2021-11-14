@@ -11,6 +11,8 @@ import uuid
 from datetime import datetime
 from typing import Any
 
+from tqdm import tqdm
+
 from shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
 from shapeandshare.dicebox.factories.network_factory import NetworkFactory
 from shapeandshare.dicebox.models.dicebox_network import DiceboxNetwork
@@ -124,6 +126,7 @@ def main():
         category_mapping_file.write(json.dumps(dicebox_network.get_category_map()))
 
     i = 1
+    pbar = tqdm(total=dicebox_config.EPOCHS)
     while i <= dicebox_config.EPOCHS:
         logging.debug("-" * 80)
         logging.debug("epoch (%i of %i)" % (i, dicebox_config.EPOCHS))
@@ -150,6 +153,9 @@ def main():
 
         # the next epoch..
         i += 1
+        pbar.update(1)
+
+    pbar.close()
 
     logging.debug("-" * 80)
     logging.debug("network accuracy: %.2f%%" % (dicebox_network.get_accuracy() * 100))

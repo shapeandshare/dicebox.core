@@ -1,4 +1,4 @@
-from shapeandshare.dicebox import PrimordialPool
+from shapeandshare.dicebox.primordialpool import PrimordialPool
 from shapeandshare.dicebox.config.dicebox_config import DiceboxConfig
 from shapeandshare.dicebox.utils.helpers import make_sure_path_exists
 import logging
@@ -19,9 +19,10 @@ def main():
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(message)s",
         datefmt="%m/%d/%Y %I:%M:%S %p",
-        level=logging.INFO,
+        level=logging.DEBUG,
         filemode="w",
-        filename="%s/primordialpool.%s.log" % (dicebox_config.LOGS_DIR, os.environ["COMPUTERNAME"]),
+        # filename="%s/primordialpool.%s.log" % (dicebox_config.LOGS_DIR, os.environ["COMPUTERNAME"]),
+        filename="%s/primordialpool.%s.log" % (dicebox_config.LOGS_DIR, os.uname()[1]),
     )
 
     logging.info("Application Version (%s), Dicebox API Version: (%s)", VERSION, dicebox_config.API_VERSION)

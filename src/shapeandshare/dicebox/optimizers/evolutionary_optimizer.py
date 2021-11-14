@@ -3,6 +3,8 @@ from functools import reduce
 from operator import add
 from typing import List, Any, Tuple
 
+from tqdm import tqdm
+
 from ..config.dicebox_config import DiceboxConfig
 from ..factories.network_factory import NetworkFactory
 from ..models.dicebox_network import DiceboxNetwork
@@ -31,7 +33,6 @@ class EvolutionaryOptimizer(NetworkFactory):
     def create_population(self, size: int, population_definition=None) -> List[DiceboxNetwork]:
         # Create a population of random networks.
         population: List[DiceboxNetwork] = []
-
         if population_definition is not None:
             # build from config...
             print("Building population from external source")
@@ -42,16 +43,24 @@ class EvolutionaryOptimizer(NetworkFactory):
                 population.append(individual_dicebox_network)
         else:
             # else we build a random network.
+            print("Generating population")
+            pbar = tqdm(total=size)
             for _ in range(0, size):
                 # Create a random network.
+                try:
+                    random_network: Network = self.create_random_network()
+                    dn: DiceboxNetwork = DiceboxNetwork(
+                        config=self.config, optimizer=random_network.get_optimizer(), layers=random_network.get_layers()
+                    )
 
-                random_network: Network = self.create_random_network()
-                dn: DiceboxNetwork = DiceboxNetwork(
-                    config=self.config, optimizer=random_network.get_optimizer(), layers=random_network.get_layers()
-                )
-
-                # Add the network to our population.
-                population.append(dn)
+                    # Add the network to our population.
+                    population.append(dn)
+                    pbar.update(1)
+                except Exception as error:
+                    print("failure to compile model (DOA)")
+                    pbar.update(1)
+            pbar.close()
+        print("done creating population")
         return population
 
     @staticmethod

@@ -7,6 +7,7 @@ from typing import Dict, Any, List, Union, Optional
 import numpy
 from PIL import Image
 from numpy import ndarray, int32, float32
+from tqdm import tqdm
 
 from ..config.dicebox_config import DiceboxConfig
 from ..utils.helpers import lucky
@@ -124,8 +125,10 @@ class FileSystemConnector:
         category_map: Dict[Any, int] = self.category_map
         batch_list: List[int] = self.get_batch_list(batch_size)
 
+        pbar = tqdm(total=batch_size)
         # build file path
         for i in range(0, batch_size):
+
             item = batch_list[i]
             filename = "%s/%s/%s" % (self.data_directory, item[1], item[0])
             logging.debug("(%s)(%s)", category_map[item[1]], filename)
@@ -153,6 +156,8 @@ class FileSystemConnector:
 
             # add new image to the set
             image_data = numpy.append(image_data, numpy.array([pixel_data], dtype=float32), axis=0)
+            pbar.update(1)
+        pbar.close()
 
         # Validation using another data set , note the dimensions are 32x32
         # (input_train, target_train), (input_test, target_test) = cifar10.load_data()

@@ -36,17 +36,29 @@ def build_dicebox_network(config: DiceboxConfig, network: Network) -> DiceboxNet
     )
 
 
-def lonestar() -> Any:
+def lonestar() -> object:
     return {
         "input_shape": [28, 28, 3],
         "output_size": 10,
         "optimizer": "adagrad",
         "layers": [
-            {"type": "dropout", "rate": 0.6274509803921569},
-            {"type": "dense", "size": 533, "activation": "sigmoid"},
-            {"type": "dense", "size": 902, "activation": "elu"},
+            {"type": "flatten"},
+            {"type": "dense", "size": 128, "activation": "relu"},
+            {"type": "dropout", "rate": 0.01},
         ],
     }
+
+# def lonestar() -> Any:
+#     return {
+#         "input_shape": [28, 28, 3],
+#         "output_size": 10,
+#         "optimizer": "adagrad",
+#         "layers": [
+#             {"type": "dropout", "rate": 0.6274509803921569},
+#             {"type": "dense", "size": 533, "activation": "sigmoid"},
+#             {"type": "dense", "size": 902, "activation": "elu"},
+#         ],
+#     }
 
 
 def get_category_map():
@@ -169,7 +181,7 @@ for index in network_input_index:
         print(f"FAIL - Expected {metadata[1]}, but received {category}")
         summary_fail += 1
 
-    if count >= 1999:
+    if count >= 10000:
         count += 1
         break
     else:

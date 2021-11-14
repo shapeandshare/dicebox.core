@@ -56,6 +56,7 @@ class NetworkFactory(LayerFactory):
         new_network.compile()
         return new_network
 
+    # not thread safe
     def create_random_network(self) -> Network:
         # Select an optimizer
         optimizer_index: int = random_index(len(self.config.TAXONOMY["optimizer"]))
