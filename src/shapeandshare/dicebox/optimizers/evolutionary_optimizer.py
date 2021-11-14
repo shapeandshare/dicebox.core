@@ -162,6 +162,8 @@ class EvolutionaryOptimizer(NetworkFactory):
                     if lucky(local_noise):
                         # mutate the dropout rate
                         layer["rate"] = random_strict()
+                elif layer["type"] == "flatten":
+                    pass
                 elif layer["type"] == "dense":
                     if lucky(local_noise):
                         # mutate the layer size

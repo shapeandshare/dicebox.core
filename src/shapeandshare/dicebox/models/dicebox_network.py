@@ -19,6 +19,7 @@ from .network import Network
 
 class DiceboxNetwork(Network):
     __accuracy: float
+    __train_time: float
 
     # Sensory input (unique) per network - individual memory
     __fsc: FileSystemConnector  # file system connector
@@ -74,6 +75,9 @@ class DiceboxNetwork(Network):
             self.compile()
         logging.debug("model fit..")
         logging.info("model fit..")
+
+        # TODO:  get start time
+
         try:
             self.model.fit(
                 x_train,
@@ -90,8 +94,13 @@ class DiceboxNetwork(Network):
             print(f"Exception caught! error: ({str(error)})")
             return -1
 
+        # TODO:   get completion time
+
+        # TODO: complete. ..
         if update_accuracy is True:
             self.__accuracy = score[1]
+            # TODO: ..also record training time
+            self.__train_time = 0
 
         return score[1]  # 1 is accuracy. 0 is loss.
 
