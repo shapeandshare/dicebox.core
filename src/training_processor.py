@@ -36,18 +36,61 @@ logging.basicConfig(
     filename="%s/trainingprocessor.%s.log" % (dicebox_config.LOGS_DIR, os.uname()[1]),
 )
 
-
 def lonestar() -> object:
-    return {
-        "input_shape": [28, 28, 3],
-        "output_size": 10,
-        "optimizer": "adagrad",
-        "layers": [
-            {"type": "flatten"},
-            {"type": "dense", "size": 128, "activation": "relu"},
-            {"type": "dropout", "rate": 0.01},
-        ],
-    }
+    genome = {
+                "input_shape": [
+                    28,
+                    28,
+                    3
+                ],
+                "output_size": 10,
+                "optimizer": "adagrad",
+                "layers": [
+                    {
+                        "type": "dense",
+                        "size": 233,
+                        "activation": "softplus"
+                    },
+                    {
+                        "type": "dense",
+                        "size": 108,
+                        "activation": "tanh"
+                    },
+                    {
+                        "type": "dense",
+                        "size": 222,
+                        "activation": "tanh"
+                    },
+                    {
+                        "type": "flatten"
+                    },
+                    {
+                        "type": "dropout",
+                        "rate": 0.49411764705882355
+                    },
+                    {
+                        "type": "dense",
+                        "size": 174,
+                        "activation": "tanh"
+                    },
+                    {
+                        "type": "flatten"
+                    }
+                ]
+            }
+    return genome
+
+# def lonestar() -> object:
+#     return {
+#         "input_shape": [28, 28, 3],
+#         "output_size": 10,
+#         "optimizer": "adagrad",
+#         "layers": [
+#             {"type": "flatten"},
+#             {"type": "dense", "size": 128, "activation": "relu"},
+#             {"type": "dropout", "rate": 0.01},
+#         ],
+#     }
 
 # def lonestar() -> Any:
 #     return {

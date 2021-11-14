@@ -30,6 +30,7 @@ def main():
         "***Evolving %d generations with population %d***" % (dicebox_config.GENERATIONS, dicebox_config.POPULATION)
     )
     pool: PrimordialPool = PrimordialPool(config=dicebox_config)
+    # pool.generate(population_file="/Users/joshburt/Workbench/Repositories/dicebox.core/projects/mnist/population/20bfeb01-1aee-40a0-8c74-76723d9a211c/5/population.json")
     pool.generate()
 
 
