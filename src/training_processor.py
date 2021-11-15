@@ -20,7 +20,7 @@ from shapeandshare.dicebox.models.network import Network
 from shapeandshare.dicebox.utils.helpers import make_sure_path_exists
 
 # Config
-config_file = "./projects/mnist/dicebox.config"
+config_file = "./projects/mnist/dicebox.training.config"
 dicebox_config = DiceboxConfig(config_file=config_file)
 
 """

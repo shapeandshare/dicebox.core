@@ -9,7 +9,7 @@ VERSION = "0.6.0"
 
 def main():
     # config_file = 'dicebox.config'
-    config_file = "./projects/mnist/dicebox.config"
+    config_file = "./projects/mnist/dicebox.pool.config"
     dicebox_config: DiceboxConfig = DiceboxConfig(config_file=config_file)
 
     ###############################################################################
