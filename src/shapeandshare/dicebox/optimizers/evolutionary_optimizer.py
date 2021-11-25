@@ -281,8 +281,26 @@ class EvolutionaryOptimizer(NetworkFactory):
                             children.append(baby)
 
         parent_genomes.extend(children)
-        parent_networks: List[Network] = [(self.create_network(genome)) for genome in parent_genomes]
-        parents: List[DiceboxNetwork] = [(self.build_dicebox_network(network=network)) for network in parent_networks]
+        # parent_networks: List[Network] = [(self.create_network(genome)) for genome in parent_genomes]
+        parent_networks: List[Network] = []
+        for genome in parent_genomes:
+            try:
+                parent_networks.append(self.create_network(genome))
+            except Exception as error:
+                # Allow compile errors, skip..
+                print(str(error))
+                pass
+
+        # parents: List[DiceboxNetwork] = [(self.build_dicebox_network(network=network)) for network in parent_networks]
+        parents: List[DiceboxNetwork] = []
+        for network in parent_networks:
+            try:
+                parents.append(self.build_dicebox_network(network=network))
+            except Exception as error:
+                # allow build failure, skip..
+                print(str(error))
+                pass
+
         return parents
 
     def build_dicebox_network(self, network: Network) -> DiceboxNetwork:
