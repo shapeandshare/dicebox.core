@@ -26,7 +26,7 @@ def build_population_level_report():
                     average_accuracy = generation_data["average_accuracy"]
                     print(f"({str(generation_number)}) average accuracy: ({average_accuracy})")
                     for individual in generation_data["population"]:
-                        if individual['accuracy'] >= average_accuracy:
+                        if individual["accuracy"] >= average_accuracy:
                             print(f"individual accuracy (above population average): ({individual['accuracy']})")
                             if individual not in fittest:
                                 fittest.append(individual)
@@ -46,7 +46,6 @@ def build_population_level_report():
             for individual in fittest:
                 if individual["accuracy"] == score:
                     top_performers.append(individual)
-
 
         with open((population / "fittest.json").resolve().as_posix(), "w") as file:
             file.write(json.dumps({"top_performers": top_performers, "above_pop_avg": fittest}, indent=4))

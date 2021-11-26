@@ -48,6 +48,7 @@ def lonestar() -> object:
         ],
     }
 
+
 # def lonestar() -> Any:
 #     return {
 #         "input_shape": [28, 28, 3],

@@ -9,7 +9,8 @@ from ..models.layer import (
     DenseLayer,
     Conv2DLayer,
     Conv2DPadding,
-    select_random_conv2d_padding_type, FlattenLayer,
+    select_random_conv2d_padding_type,
+    FlattenLayer,
 )
 from ..utils.helpers import random_index, random_index_between, random_strict
 

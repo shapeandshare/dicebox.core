@@ -36,74 +36,156 @@ logging.basicConfig(
     filename="%s/trainingprocessor.%s.log" % (dicebox_config.LOGS_DIR, os.uname()[1]),
 )
 
+
 def lonestar() -> object:
     genome = {
-                "input_shape": [
-                    28,
-                    28,
-                    3
-                ],
-                "output_size": 10,
-                "optimizer": "adagrad",
-                "layers": [
-                    {
-                        "type": "dense",
-                        "size": 233,
-                        "activation": "softplus"
-                    },
-                    {
-                        "type": "dense",
-                        "size": 108,
-                        "activation": "tanh"
-                    },
-                    {
-                        "type": "dense",
-                        "size": 222,
-                        "activation": "tanh"
-                    },
-                    {
-                        "type": "flatten"
-                    },
-                    {
-                        "type": "dropout",
-                        "rate": 0.49411764705882355
-                    },
-                    {
-                        "type": "dense",
-                        "size": 174,
-                        "activation": "tanh"
-                    },
-                    {
-                        "type": "flatten"
-                    }
-                ]
-            }
+        "input_shape": [28, 28, 3],
+        "output_size": 10,
+        "optimizer": "nadam",
+        "layers": [
+            {
+                "type": "conv2d",
+                "filters": 95,
+                "kernel_size": [3, 3],
+                "strides": [1, 1],
+                "padding": "same",
+                "activation": "elu",
+            },
+            {"type": "dropout", "rate": 0.17254901960784313},
+            {"type": "dense", "size": 87, "activation": "elu"},
+            {
+                "type": "conv2d",
+                "filters": 192,
+                "kernel_size": [4, 4],
+                "strides": [1, 1],
+                "padding": "valid",
+                "activation": "hard_sigmoid",
+            },
+            {"type": "dense", "size": 43, "activation": "softplus"},
+            {
+                "type": "conv2d",
+                "filters": 50,
+                "kernel_size": [1, 3],
+                "strides": [1, 1],
+                "padding": "same",
+                "activation": "softsign",
+            },
+            {"type": "dropout", "rate": 0.27058823529411763},
+        ],
+    }
     return genome
 
-# def lonestar() -> object:
-#     return {
-#         "input_shape": [28, 28, 3],
-#         "output_size": 10,
-#         "optimizer": "adagrad",
-#         "layers": [
-#             {"type": "flatten"},
-#             {"type": "dense", "size": 128, "activation": "relu"},
-#             {"type": "dropout", "rate": 0.01},
-#         ],
-#     }
+    # def lonestar() -> object:
+    #     genome = {
+    #                 "input_shape": [
+    #                     28,
+    #                     28,
+    #                     3
+    #                 ],
+    #                 "output_size": 10,
+    #                 "optimizer": "adagrad",
+    #                 "layers": [
+    #                     {
+    #                         "type": "dense",
+    #                         "size": 233,
+    #                         "activation": "softplus"
+    #                     },
+    #                     {
+    #                         "type": "dense",
+    #                         "size": 108,
+    #                         "activation": "tanh"
+    #                     },
+    #                     {
+    #                         "type": "dense",
+    #                         "size": 222,
+    #                         "activation": "tanh"
+    #                     },
+    #                     {
+    #                         "type": "flatten"
+    #                     },
+    #                     {
+    #                         "type": "dropout",
+    #                         "rate": 0.49411764705882355
+    #                     },
+    #                     {
+    #                         "type": "dense",
+    #                         "size": 174,
+    #                         "activation": "tanh"
+    #                     },
+    #                     {
+    #                         "type": "flatten"
+    #                     }
+    #                 ]
+    #             }
+    #     return genome
 
-# def lonestar() -> Any:
-#     return {
-#         "input_shape": [28, 28, 3],
-#         "output_size": 10,
-#         "optimizer": "adagrad",
-#         "layers": [
-#             {"type": "dropout", "rate": 0.6274509803921569},
-#             {"type": "dense", "size": 533, "activation": "sigmoid"},
-#             {"type": "dense", "size": 902, "activation": "elu"},
-#         ],
-#     }
+    # def lonestar() -> object:
+    #     genome = {
+    #                 "input_shape": [
+    #                     28,
+    #                     28,
+    #                     3
+    #                 ],
+    #                 "output_size": 10,
+    #                 "optimizer": "adagrad",
+    #                 "layers": [
+    #                     {
+    #                         "type": "dense",
+    #                         "size": 233,
+    #                         "activation": "softplus"
+    #                     },
+    #                     {
+    #                         "type": "dense",
+    #                         "size": 108,
+    #                         "activation": "tanh"
+    #                     },
+    #                     {
+    #                         "type": "dense",
+    #                         "size": 222,
+    #                         "activation": "tanh"
+    #                     },
+    #                     {
+    #                         "type": "flatten"
+    #                     },
+    #                     {
+    #                         "type": "dropout",
+    #                         "rate": 0.49411764705882355
+    #                     },
+    #                     {
+    #                         "type": "dense",
+    #                         "size": 174,
+    #                         "activation": "tanh"
+    #                     },
+    #                     {
+    #                         "type": "flatten"
+    #                     }
+    #                 ]
+    #             }
+    #     return genome
 
+    # def lonestar() -> object:
+    #     return {
+    #         "input_shape": [28, 28, 3],
+    #         "output_size": 10,
+    #         "optimizer": "adagrad",
+    #         "layers": [
+    #             {"type": "flatten"},
+    #             {"type": "dense", "size": 128, "activation": "relu"},
+    #             {"type": "dropout", "rate": 0.01},
+    #         ],
+    #     }
+
+    # def lonestar() -> Any:
+    #     return {
+    #         "input_shape": [28, 28, 3],
+    #         "output_size": 10,
+    #         "optimizer": "adagrad",
+    #         "layers": [
+    #             {"type": "dropout", "rate": 0.6274509803921569},
+    #             {"type": "dense", "size": 533, "activation": "sigmoid"},
+    #             {"type": "dense", "size": 902, "activation": "elu"},
+    #         ],
+    #     }
 
     """
     Training Logic
