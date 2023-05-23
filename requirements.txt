@@ -6,7 +6,7 @@ tensorflow==2.4.0
 pillow==8.1.0
 configparser==5.0.1
 pika==1.1.0
-requests==2.25.1
+requests==2.31.0
 typing==3.7.4.3
 
 
